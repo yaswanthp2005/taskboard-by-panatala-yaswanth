@@ -1,0 +1,49 @@
+{
+  "title": "TaskPractise",
+  "pageTitle": "{{title}} | TaskPractise",
+  "common": {
+    "somethingWentWrong": "Something went wrong!"
+  },
+  "auth": {
+    "signIn": "Sign In",
+    "signUp": "Sign Up",
+    "orRegisterNow": "Or Register Now",
+    "orLoginNow": "Or Login Now",
+    "email": "Email",
+    "password": "Password",
+    "firstName": "First name",
+    "lastName": "Last name",
+    "passwordConfirmation": "Password Confirmation",
+    "register": "Register",
+    "loginPageTitle": "Login",
+    "signupPageTitle": "Sign up",
+    "emailPlaceholder": "oliver@example.com",
+    "firstNamePlaceholder": "Oliver",
+    "lastNamePlaceholder": "Smith",
+    "passwordPlaceholder": "********",
+    "validation": {
+      "emailRequired": "Email is required",
+      "emailInvalid": "Enter a valid email",
+      "passwordRequired": "Password is required",
+      "firstNameRequired": "First name is required",
+      "lastNameRequired": "Last name is required",
+      "passwordMin": "Password must be at least 6 characters",
+      "passwordsMustMatch": "Passwords must match",
+      "passwordConfirmationRequired": "Password confirmation is required"
+    }
+  },
+  "neetoMolecules": {
+    "errorPage": {
+      "cantBeFound": "The page you're looking <br /> for is missing.",
+      "unauthorized": "You don't have permissions <br /> to access this page.",
+      "internalServerError": "The server encountered an error and <br /> could not complete your request.",
+      "backToHome": "Back to home",
+      "contactUs": "If the problem persists please <button>contact us</button>.",
+      "title": {
+        "cantBeFound": "Page not found",
+        "unauthorized": "Unauthorized",
+        "internalServerError": "Internal server error"
+      }
+    }
+  }
+}

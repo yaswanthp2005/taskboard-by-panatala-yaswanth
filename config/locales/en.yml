@@ -41,3 +41,5 @@ en:
   signup_successful: "Signup successful. Please login to continue"
   session:
     expiry: "Your session has expired. Please login again."
+  authorization:
+    denied: "Access denied. You are not authorized to perform this action."

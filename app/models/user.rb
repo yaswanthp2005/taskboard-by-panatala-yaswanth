@@ -1,46 +1,26 @@
 # frozen_string_literal: true
 
 class User < ApplicationRecord
-  # Include default devise modules. Others available are:
-  # :confirmable, :lockable, :timeoutable and :omniauthable
-  devise :database_authenticatable, :registerable,
-    :recoverable, :trackable, :validatable, :rememberable
-  validates :email, uniqueness: true
-  validates :password_confirmation, presence: true, on: :create
-  validates :first_name, :last_name, :email, presence: true
+  MAX_NAME_LENGTH = 255
+  MAX_EMAIL_LENGTH = 255
+  MIN_PASSWORD_LENGTH = 6
+  VALID_EMAIL_REGEX = /\A[\w+\-.]+@[a-z\d\-.]+\.[a-z]+\z/i.freeze
 
-  before_save :ensure_authentication_token_is_present
+  has_secure_password
+  has_secure_token :authentication_token
 
-  def name
-    [first_name, last_name].join(" ").strip
-  end
+  validates :first_name, presence: true, length: { maximum: MAX_NAME_LENGTH }
+  validates :last_name, presence: true, length: { maximum: MAX_NAME_LENGTH }
+  validates :email, presence: true, uniqueness: true, length: { maximum: MAX_EMAIL_LENGTH },
+    format: { with: VALID_EMAIL_REGEX }
+  validates :password, presence: true, length: { minimum: MIN_PASSWORD_LENGTH }
+  validates :password, confirmation: true
 
-  def super_admin?
-    role == "super_admin"
-  end
-
-  def as_json(options = {})
-    new_options = options.merge(only: [:email, :first_name, :last_name, :current_sign_in_at])
-
-    super new_options
-  end
+  before_save :downcase_email
 
   private
 
-    def send_devise_notification(notification, *args)
-      devise_mailer.send(notification, self, *args).deliver_later(queue: "devise_email")
-    end
-
-    def ensure_authentication_token_is_present
-      if authentication_token.blank?
-        self.authentication_token = generate_authentication_token
-      end
-    end
-
-    def generate_authentication_token
-      loop do
-        token = Devise.friendly_token
-        break token unless User.where(authentication_token: token).first
-      end
+    def downcase_email
+      email.downcase!
     end
 end

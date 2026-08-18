@@ -30,6 +30,8 @@ gem "devise", "~> 4.7"
 # Error tracking
 gem "honeybadger"
 
+gem "rails_db"
+
 # Support cross-browser css compatibility
 gem "autoprefixer-rails"
 
@@ -38,6 +40,8 @@ gem "activeadmin"
 
 # Email validation
 gem "email_validator"
+
+gem "pundit"
 
 # Adds prefix to subject in emails
 gem "email_prefixer"

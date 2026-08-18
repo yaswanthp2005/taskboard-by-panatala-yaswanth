@@ -41,6 +41,7 @@ const defaultConfigurations = {
   plugins: [
     svgPlugin(),
     sassPlugin({
+      silenceDeprecations: ["import"],
       transform: async source => {
         const { css } = await postcss(postCssConfig.plugins).process(source, {
           from: undefined,

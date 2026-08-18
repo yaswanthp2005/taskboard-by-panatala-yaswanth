@@ -8,7 +8,14 @@ const port = process.env.DEVSERVER_PORT || 8000;
 
 const baseConfig = {
   assetsInclude: ["**/*.yaml"],
-  css: { postcss: postCssConfig },
+  css: {
+    postcss: postCssConfig,
+    preprocessorOptions: {
+      scss: {
+        silenceDeprecations: ["import"],
+      },
+    },
+  },
   server: { port, origin: `http://localhost:${port}` },
   build: {
     manifest: true,

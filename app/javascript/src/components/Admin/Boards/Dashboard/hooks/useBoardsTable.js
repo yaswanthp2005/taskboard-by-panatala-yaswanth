@@ -8,11 +8,12 @@ import { useHistory } from "react-router-dom";
 import { buildURL } from "utils/buildURL";
 
 import { DEFAULT_PAGE_SIZE } from "../constants";
+import { buildBoardsRequestParams } from "../utils";
 
 const useBoardsTable = () => {
   const history = useHistory();
   const queryParams = useQueryParams();
-  const { page, limit } = queryParams;
+  const { page, limit, search = "" } = queryParams;
 
   const currentPageNumber = useMemo(() => {
     const parsedPage = Number(page);
@@ -27,11 +28,13 @@ const useBoardsTable = () => {
   }, [limit]);
 
   const requestParams = useMemo(
-    () => ({
-      limit: pageSize,
-      page: currentPageNumber,
-    }),
-    [currentPageNumber, pageSize]
+    () =>
+      buildBoardsRequestParams({
+        limit: pageSize,
+        page: currentPageNumber,
+        search,
+      }),
+    [currentPageNumber, pageSize, search]
   );
 
   const { data, isLoading } = useFetchBoards(requestParams);
@@ -45,10 +48,11 @@ const useBoardsTable = () => {
         buildURL({
           path: routes.boards.index,
           page: nextPage === 1 ? null : nextPage,
+          search: search || null,
         })
       );
     },
-    [history]
+    [history, search]
   );
 
   return {
@@ -58,6 +62,7 @@ const useBoardsTable = () => {
     isLoading,
     pageSize,
     rowData: boards,
+    search,
     totalCount,
   };
 };

@@ -1,7 +1,7 @@
 import QUERY_KEYS from "constants/query";
 
 import boardsApi from "apis/boards";
-import { useQuery } from "react-query";
+import { useMutation, useQuery, useQueryClient } from "react-query";
 
 const useFetchBoards = (params = {}) =>
   useQuery([QUERY_KEYS.BOARDS, params], async () => {
@@ -13,4 +13,14 @@ const useFetchBoards = (params = {}) =>
     };
   });
 
-export { useFetchBoards };
+const useCreateBoard = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation(payload => boardsApi.create(payload), {
+    onSuccess: () => {
+      queryClient.invalidateQueries([QUERY_KEYS.BOARDS]);
+    },
+  });
+};
+
+export { useCreateBoard, useFetchBoards };

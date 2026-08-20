@@ -7,7 +7,7 @@ Rails.application.routes.draw do
       namespace :v1 do
         resources :users, only: :create
         resource :session, only: :create
-        resources :boards, only: :index
+        resources :boards, only: %i[index create]
       end
     end
   end

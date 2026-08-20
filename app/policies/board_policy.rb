@@ -5,6 +5,10 @@ class BoardPolicy < ApplicationPolicy
     user.present?
   end
 
+  def create?
+    user.present?
+  end
+
   class Scope < Scope
     def resolve
       return scope.none if user.blank?

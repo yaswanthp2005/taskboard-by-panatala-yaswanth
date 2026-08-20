@@ -2,6 +2,8 @@
   "title": "TaskPractise",
   "pageTitle": "{{title}} | TaskPractise",
   "common": {
+    "cancel": "Cancel",
+    "save": "Save",
     "somethingWentWrong": "Something went wrong!"
   },
   "auth": {
@@ -36,6 +38,19 @@
     "title": "Boards",
     "subtitle": "Manage your task boards",
     "pageTitle": "Boards",
+    "createBoard": "Create Board",
+    "searchPlaceholder": "Search boards",
+    "form": {
+      "name": "Name",
+      "namePlaceholder": "Enter board name",
+      "color": "Color",
+      "colorPlaceholder": "#4F46E5",
+      "description": "Description",
+      "descriptionPlaceholder": "Enter board desciption"
+    },
+    "validation": {
+      "nameRequired": "Name is required"
+    },
     "table": {
       "name": "Name",
       "description": "Description",
@@ -43,7 +58,8 @@
       "updatedAt": "Last updated"
     },
     "emptyState": {
-      "title": "No boards to show"
+      "title": "No boards to show",
+      "noSearchResults": "No boards match your search"
     }
   },
   "neetoMolecules": {

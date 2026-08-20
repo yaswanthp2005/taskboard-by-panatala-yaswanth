@@ -9,6 +9,14 @@ class BoardPolicy < ApplicationPolicy
     user.present?
   end
 
+  def update?
+    owner?
+  end
+
+  def destroy?
+    owner?
+  end
+
   class Scope < Scope
     def resolve
       return scope.none if user.blank?
@@ -16,4 +24,10 @@ class BoardPolicy < ApplicationPolicy
       scope.where(owner_id: user.id)
     end
   end
+
+  private
+
+    def owner?
+      user.present? && record.owner_id == user.id
+    end
 end

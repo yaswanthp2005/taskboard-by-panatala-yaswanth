@@ -3,6 +3,7 @@ import routes from "constants/routes";
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 
 import { Container } from "components/commons";
+import { useDeleteBoard } from "components/hooks/reactQuery/useBoardsApi";
 import useFuncDebounce from "components/hooks/useFuncDebounce";
 import { useTranslation } from "react-i18next";
 import { useHistory } from "react-router-dom";
@@ -10,6 +11,8 @@ import { buildURL } from "utils/buildURL";
 import withTitle from "utils/withTitle";
 
 import AddBoardPane from "./AddBoardPane";
+import DeleteAlert from "./Alerts/DeleteAlert";
+import EditBoardPane from "./EditBoardPane";
 import Header from "./Header";
 import useBoardsTable from "./hooks/useBoardsTable";
 import BoardsTable from "./Table";
@@ -30,8 +33,12 @@ const Dashboard = () => {
     totalCount,
   } = useBoardsTable();
 
+  const { mutateAsync: deleteBoard, isLoading: isDeleting } = useDeleteBoard();
+
   const [searchKey, setSearchKey] = useState(search);
   const [isAddBoardPaneOpen, setIsAddBoardPaneOpen] = useState(false);
+  const [boardToEdit, setBoardToEdit] = useState(null);
+  const [boardToDelete, setBoardToDelete] = useState(null);
 
   useEffect(() => {
     setSearchKey(search);
@@ -51,8 +58,30 @@ const Dashboard = () => {
     });
   });
 
-  const columnData = useMemo(() => buildColumnData({ t }), [t]);
+  const columnData = useMemo(
+    () =>
+      buildColumnData({
+        onDelete: setBoardToDelete,
+        onRename: setBoardToEdit,
+        t,
+      }),
+    [t]
+  );
+
   const emptyStateTitle = getEmptyStateTitleKey(search);
+
+  const handleDeleteBoard = async () => {
+    if (!boardToDelete) {
+      return;
+    }
+
+    try {
+      await deleteBoard({ id: boardToDelete.id });
+      setBoardToDelete(null);
+    } catch (error) {
+      logger.error(error);
+    }
+  };
 
   return (
     <Container>
@@ -78,6 +107,17 @@ const Dashboard = () => {
       <AddBoardPane
         isOpen={isAddBoardPaneOpen}
         onClose={() => setIsAddBoardPaneOpen(false)}
+      />
+      <EditBoardPane
+        board={boardToEdit}
+        isOpen={Boolean(boardToEdit)}
+        onClose={() => setBoardToEdit(null)}
+      />
+      <DeleteAlert
+        boardToDelete={boardToDelete}
+        isDeleting={isDeleting}
+        onClose={() => setBoardToDelete(null)}
+        onSubmit={handleDeleteBoard}
       />
     </Container>
   );

@@ -100,4 +100,61 @@ class Api::V1::BoardsControllerTest < ActionDispatch::IntegrationTest
 
     assert_response :unauthorized
   end
+
+  def test_update_changes_board_name
+    board = create(:board, name: "Product Roadmap", owner: @owner)
+
+    patch api_v1_board_path(board),
+      params: { board: { name: "Updated Roadmap" } },
+      headers: headers(@owner),
+      as: :json
+
+    assert_response :success
+    assert_equal I18n.t("successfully_updated", entity: "Board"), response_body["notice"]
+    assert_equal "Updated Roadmap", board.reload.name
+  end
+
+  def test_update_rejects_blank_name
+    board = create(:board, name: "Product Roadmap", owner: @owner)
+
+    patch api_v1_board_path(board),
+      params: { board: { name: "" } },
+      headers: headers(@owner),
+      as: :json
+
+    assert_response :unprocessable_entity
+    assert_equal "Name can't be blank", response_body["error"]
+  end
+
+  def test_update_rejects_board_from_another_user
+    board = create(:board, name: "Other Board", owner: @other_user)
+
+    patch api_v1_board_path(board),
+      params: { board: { name: "Updated Board" } },
+      headers: headers(@owner),
+      as: :json
+
+    assert_response :not_found
+  end
+
+  def test_destroy_deletes_board
+    board = create(:board, name: "Product Roadmap", owner: @owner)
+
+    assert_difference "Board.count", -1 do
+      delete api_v1_board_path(board), headers: headers(@owner), as: :json
+    end
+
+    assert_response :success
+    assert_equal I18n.t("successfully_deleted", count: 1, entity: "Board"), response_body["notice"]
+  end
+
+  def test_destroy_rejects_board_from_another_user
+    board = create(:board, name: "Other Board", owner: @other_user)
+
+    assert_no_difference "Board.count" do
+      delete api_v1_board_path(board), headers: headers(@owner), as: :json
+    end
+
+    assert_response :not_found
+  end
 end

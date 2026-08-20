@@ -4,6 +4,7 @@
   "common": {
     "cancel": "Cancel",
     "save": "Save",
+    "yesDelete": "Yes, delete",
     "somethingWentWrong": "Something went wrong!"
   },
   "auth": {
@@ -39,6 +40,7 @@
     "subtitle": "Manage your task boards",
     "pageTitle": "Boards",
     "createBoard": "Create Board",
+    "renameBoard": "Rename Board",
     "searchPlaceholder": "Search boards",
     "form": {
       "name": "Name",
@@ -52,10 +54,17 @@
       "nameRequired": "Name is required"
     },
     "table": {
-      "name": "Name",
-      "description": "Description",
-      "color": "Color",
-      "updatedAt": "Last updated"
+      "board": "Board",
+      "color": "Color"
+    },
+    "actions": {
+      "menu": "Board actions",
+      "rename": "Rename",
+      "delete": "Delete"
+    },
+    "delete": {
+      "title": "Delete board?",
+      "confirmMessage": "Are you sure you want to delete the board <1>{{name}}</1>? This action cannot be undone."
     },
     "emptyState": {
       "title": "No boards to show",

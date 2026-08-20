@@ -23,4 +23,24 @@ const useCreateBoard = () => {
   });
 };
 
-export { useCreateBoard, useFetchBoards };
+const useUpdateBoard = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation(payload => boardsApi.update(payload), {
+    onSuccess: () => {
+      queryClient.invalidateQueries([QUERY_KEYS.BOARDS]);
+    },
+  });
+};
+
+const useDeleteBoard = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation(payload => boardsApi.destroy(payload), {
+    onSuccess: () => {
+      queryClient.invalidateQueries([QUERY_KEYS.BOARDS]);
+    },
+  });
+};
+
+export { useCreateBoard, useDeleteBoard, useFetchBoards, useUpdateBoard };

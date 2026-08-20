@@ -4,6 +4,8 @@ class Api::V1::BoardsController < ApplicationController
   after_action :verify_authorized, except: :index
   after_action :verify_policy_scoped, only: :index
 
+  before_action :load_board, only: %i[update destroy]
+
   def index
     authorize Board
     boards = policy_scope(Board).order(updated_at: :desc)
@@ -19,9 +21,25 @@ class Api::V1::BoardsController < ApplicationController
     render_notice(t("successfully_created", entity: "Board"), :ok)
   end
 
+  def update
+    authorize @board
+    @board.update!(board_params)
+    render_notice(t("successfully_updated", entity: "Board"), :ok)
+  end
+
+  def destroy
+    authorize @board
+    @board.destroy!
+    render_notice(t("successfully_deleted", count: 1, entity: "Board"))
+  end
+
   private
 
+    def load_board
+      @board = policy_scope(Board).find(params[:id])
+    end
+
     def board_params
-      params.require(:board).permit(:name, :color)
+      params.require(:board).permit(:name, :description, :color)
     end
 end

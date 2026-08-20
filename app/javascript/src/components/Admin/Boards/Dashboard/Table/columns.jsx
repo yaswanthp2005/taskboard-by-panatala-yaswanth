@@ -2,8 +2,10 @@ import React from "react";
 
 import { Typography } from "neetoui";
 
+import ActionsDropdown from "./ActionsDropdown";
+import BoardCell from "./cells/BoardCell";
+
 import { COLUMN_KEYS } from "../constants";
-import { formatBoardUpdatedAt } from "../utils";
 
 const ColorCell = ({ color }) => (
   <div className="flex items-center gap-x-2">
@@ -15,19 +17,13 @@ const ColorCell = ({ color }) => (
   </div>
 );
 
-const buildColumnData = ({ t }) => [
+const buildColumnData = ({ onDelete, onRename, t }) => [
   {
-    title: t("boards.table.name"),
+    title: t("boards.table.board"),
     dataIndex: "name",
-    key: COLUMN_KEYS.NAME,
-    ellipsis: true,
-  },
-  {
-    title: t("boards.table.description"),
-    dataIndex: "description",
-    key: COLUMN_KEYS.DESCRIPTION,
-    ellipsis: true,
-    render: description => description || "-",
+    key: COLUMN_KEYS.BOARD,
+    ellipsis: false,
+    render: (_, board) => <BoardCell board={board} />,
   },
   {
     title: t("boards.table.color"),
@@ -37,11 +33,14 @@ const buildColumnData = ({ t }) => [
     render: color => <ColorCell color={color} />,
   },
   {
-    title: t("boards.table.updatedAt"),
-    dataIndex: "updatedAt",
-    key: COLUMN_KEYS.UPDATED_AT,
-    width: 220,
-    render: updatedAt => formatBoardUpdatedAt(updatedAt),
+    dataIndex: "actions",
+    fixed: "right",
+    key: COLUMN_KEYS.ACTIONS,
+    align: "center",
+    width: 80,
+    render: (_, board) => (
+      <ActionsDropdown board={board} onDelete={onDelete} onRename={onRename} />
+    ),
   },
 ];
 

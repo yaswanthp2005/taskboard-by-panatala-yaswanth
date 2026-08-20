@@ -265,6 +265,10 @@ GEM
       racc (~> 1.4)
     orm_adapter (0.5.0)
     ostruct (0.6.1)
+    pagy (43.6.1)
+      json
+      uri
+      yaml
     parallel (1.26.3)
     parser (3.3.7.1)
       ast (~> 2.4.1)
@@ -425,6 +429,7 @@ GEM
       unicode-emoji (~> 4.0, >= 4.0.4)
     unicode-emoji (4.0.4)
     uniform_notifier (1.16.0)
+    uri (1.1.1)
     warden (1.2.9)
       rack (>= 2.0.9)
     web-console (4.2.1)
@@ -437,6 +442,7 @@ GEM
       base64
       websocket-extensions (>= 0.1.0)
     websocket-extensions (0.1.5)
+    yaml (0.4.0)
     zeitwerk (2.7.2)
 
 PLATFORMS
@@ -468,6 +474,7 @@ DEPENDENCIES
   mail_interceptor
   minitest
   minitest-ci
+  pagy (~> 43.5)
   pg
   pry-byebug
   puma

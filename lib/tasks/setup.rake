@@ -38,5 +38,74 @@ def delete_all_records_from_all_tables
 end
 
 def create_sample_data!
-  # Add seed data here after creating your migrations.
+  create_users!
+  oliver = User.find_by!(email: "oliver@example.com")
+  luna = User.find_by!(email: "luna@example.com")
+  create_boards!(oliver, luna)
+end
+
+def create_users!
+  [
+    {
+      first_name: "Oliver",
+      last_name: "Smith",
+      email: "oliver@example.com"
+    },
+    {
+      first_name: "Luna",
+      last_name: "Smith",
+      email: "luna@example.com"
+    },
+    {
+      first_name: "Sam",
+      last_name: "Smith",
+      email: "sam@example.com"
+    }
+  ].each do |user_attributes|
+    User.create!(
+      user_attributes.merge(
+        password: default_user_password,
+        password_confirmation: default_user_password
+      )
+    )
+  end
+end
+
+SAMPLE_BOARD_DEFINITIONS = [
+  { name: "Product Roadmap", description: "Track upcoming features and releases.", color: "#4F46E5" },
+  { name: "Engineering Sprint", description: "Current sprint tasks and bugs.", color: "#059669" },
+  { name: "Design Backlog", description: "UI/UX improvements and design reviews.", color: "#DC2626" },
+  { name: "Marketing Campaigns", description: "Campaign planning and content calendar.", color: "#D97706" },
+  { name: "Customer Support", description: "Support tickets and follow-ups.", color: "#0891B2" },
+  { name: "HR Onboarding", description: "New hire onboarding checklist.", color: "#7C3AED" },
+  { name: "Sales Pipeline", description: "Leads and deal stages.", color: "#DB2777" },
+  { name: "Personal Tasks", description: "Day-to-day personal to-dos.", color: "#64748B" },
+  { name: "Research Ideas", description: "Exploratory ideas and spikes.", color: "#0D9488" },
+  { name: "Release Checklist", description: "Pre-release verification steps.", color: "#EA580C" },
+  { name: "Team Retrospective", description: "Action items from retrospectives.", color: "#2563EB" },
+  { name: "Documentation", description: "Docs to write and update.", color: "#9333EA" }
+].freeze
+
+def create_boards!(primary_owner, secondary_owner)
+  SAMPLE_BOARD_DEFINITIONS.each do |definition|
+    primary_owner.boards.create!(definition)
+  end
+
+  secondary_owner.boards.create!(
+    name: "Luna's Project Board",
+    description: "Private board for Luna's projects.",
+    color: "#16A34A"
+  )
+end
+
+def default_user_password
+  "welcome"
+end
+
+desc "Populates sample boards for existing users"
+task populate_boards: [:environment] do
+  oliver = User.find_by!(email: "oliver@example.com")
+  luna = User.find_by!(email: "luna@example.com")
+  create_boards!(oliver, luna)
+  puts "sample boards have been added."
 end

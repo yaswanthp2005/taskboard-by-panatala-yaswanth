@@ -1,4 +1,5 @@
+import Container from "./Container";
 import NotFound from "./NotFound";
 import PrivateRoute from "./PrivateRoute";
 
-export { NotFound, PrivateRoute };
+export { Container, NotFound, PrivateRoute };

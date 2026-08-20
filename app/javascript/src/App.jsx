@@ -2,9 +2,9 @@ import routes from "constants/routes";
 
 import React from "react";
 
+import Dashboard from "components/Admin/Boards";
 import { Login, Signup } from "components/Authentication";
 import { PrivateRoute, NotFound } from "components/commons";
-import Home from "components/Home";
 import { QueryClientProvider } from "react-query";
 import { Route, Switch, BrowserRouter as Router } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
@@ -24,16 +24,11 @@ const App = () => {
           <Route exact component={Signup} path={routes.signup} />
           <PrivateRoute
             exact
-            component={Home}
+            component={Dashboard}
             condition={isLoggedIn}
-            path={routes.root}
+            path={routes.boards.index}
             redirectRoute={routes.login}
           />
-          {/* <Redirect
-            exact
-            from={routes.settings.index}
-            to={routes.settings.general}
-          /> */}
           <Route component={NotFound} />
         </Switch>
       </Router>

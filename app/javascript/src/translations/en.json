@@ -32,6 +32,20 @@
       "passwordConfirmationRequired": "Password confirmation is required"
     }
   },
+  "boards": {
+    "title": "Boards",
+    "subtitle": "Manage your task boards",
+    "pageTitle": "Boards",
+    "table": {
+      "name": "Name",
+      "description": "Description",
+      "color": "Color",
+      "updatedAt": "Last updated"
+    },
+    "emptyState": {
+      "title": "No boards to show"
+    }
+  },
   "neetoMolecules": {
     "errorPage": {
       "cantBeFound": "The page you're looking <br /> for is missing.",

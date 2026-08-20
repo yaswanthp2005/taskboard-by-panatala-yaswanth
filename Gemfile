@@ -43,6 +43,8 @@ gem "email_validator"
 
 gem "pundit"
 
+gem "pagy", "~> 43.5"
+
 # Adds prefix to subject in emails
 gem "email_prefixer"
 

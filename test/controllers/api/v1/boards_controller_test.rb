@@ -25,6 +25,17 @@ class Api::V1::BoardsControllerTest < ActionDispatch::IntegrationTest
     assert_equal 10, response_body.dig("pagination", "limit")
   end
 
+  def test_index_includes_boards_shared_with_user
+    shared_board = create(:board, name: "Shared Board", owner: @other_user)
+    create(:board_member, board: shared_board, user: @owner)
+
+    get api_v1_boards_path, headers: headers(@owner), as: :json
+
+    assert_response :success
+    board_names = response_body["boards"].pluck("name")
+    assert_includes board_names, "Shared Board"
+  end
+
   def test_index_paginates_boards
     11.times do |index|
       create(:board, name: "Board #{index}", owner: @owner)

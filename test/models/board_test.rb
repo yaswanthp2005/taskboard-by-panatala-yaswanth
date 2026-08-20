@@ -29,4 +29,10 @@ class BoardTest < ActiveSupport::TestCase
   def test_belongs_to_owner
     assert_equal @owner, @board.owner
   end
+
+  def test_has_no_members_on_create
+    board = create(:board, owner: @owner)
+
+    assert_empty board.members
+  end
 end

@@ -10,10 +10,20 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2026_08_18_103000) do
+ActiveRecord::Schema[7.1].define(version: 2026_08_20_140000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pgcrypto"
   enable_extension "plpgsql"
+
+  create_table "board_members", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.uuid "board_id", null: false
+    t.uuid "user_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["board_id", "user_id"], name: "index_board_members_on_board_id_and_user_id", unique: true
+    t.index ["board_id"], name: "index_board_members_on_board_id"
+    t.index ["user_id"], name: "index_board_members_on_user_id"
+  end
 
   create_table "boards", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
     t.uuid "owner_id", null: false
@@ -38,5 +48,7 @@ ActiveRecord::Schema[7.1].define(version: 2026_08_18_103000) do
     t.index ["email"], name: "index_users_on_email", unique: true
   end
 
+  add_foreign_key "board_members", "boards"
+  add_foreign_key "board_members", "users"
   add_foreign_key "boards", "users", column: "owner_id"
 end

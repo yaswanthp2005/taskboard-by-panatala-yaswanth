@@ -7,6 +7,7 @@ const BoardsTable = ({
   boards,
   columnData,
   currentPageNumber,
+  emptyStateTitle,
   handlePageChange,
   isLoading,
   pageSize,
@@ -16,7 +17,7 @@ const BoardsTable = ({
   const { t } = useTranslation();
 
   if (!isLoading && !boards.length) {
-    return <NoData title={t("boards.emptyState.title")} />;
+    return <NoData title={t(emptyStateTitle)} />;
   }
 
   return (

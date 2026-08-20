@@ -51,4 +51,53 @@ class Api::V1::BoardsControllerTest < ActionDispatch::IntegrationTest
 
     assert_response :unauthorized
   end
+
+  def test_index_filters_by_search
+    product_board = create(:board, name: "Product Roadmap", owner: @owner)
+    create(:board, name: "Marketing Campaigns", owner: @owner)
+    create(:board, name: "Product Ideas", owner: @other_user)
+
+    get api_v1_boards_path, params: { search: "product" }, headers: headers(@owner), as: :json
+
+    assert_response :success
+    response_boards = response_body["boards"]
+    assert_equal 1, response_boards.size
+    assert_equal product_board.name, response_boards.first["name"]
+  end
+
+  def test_create_adds_board_for_current_user
+    assert_difference -> { @owner.boards.count }, 1 do
+      post api_v1_boards_path,
+        params: { board: { name: "New Board", color: "#4F46E5" } },
+        headers: headers(@owner),
+        as: :json
+    end
+
+    assert_response :success
+    board = @owner.boards.find_by!(name: "New Board")
+    assert_equal "#4F46E5", board.color
+    assert_equal I18n.t("successfully_created", entity: "Board"), response_body["notice"]
+  end
+
+  def test_create_rejects_blank_name
+    assert_no_difference "Board.count" do
+      post api_v1_boards_path,
+        params: { board: { name: "", color: "#4F46E5" } },
+        headers: headers(@owner),
+        as: :json
+    end
+
+    assert_response :unprocessable_entity
+    assert_equal "Name can't be blank", response_body["error"]
+  end
+
+  def test_create_rejects_unauthenticated_request
+    assert_no_difference "Board.count" do
+      post api_v1_boards_path,
+        params: { board: { name: "New Board" } },
+        as: :json
+    end
+
+    assert_response :unauthorized
+  end
 end

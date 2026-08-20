@@ -10,6 +10,8 @@ class User < ApplicationRecord
   has_secure_token :authentication_token
 
   has_many :boards, foreign_key: :owner_id, dependent: :destroy, inverse_of: :owner
+  has_many :board_members, dependent: :destroy
+  has_many :member_boards, through: :board_members, source: :board
 
   validates :first_name, presence: true, length: { maximum: MAX_NAME_LENGTH }
   validates :last_name, presence: true, length: { maximum: MAX_NAME_LENGTH }

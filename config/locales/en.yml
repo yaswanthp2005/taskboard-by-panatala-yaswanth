@@ -43,3 +43,11 @@ en:
     expiry: "Your session has expired. Please login again."
   authorization:
     denied: "Access denied. You are not authorized to perform this action."
+  board_member:
+    invited_successfully: "Member was successfully invited to the board."
+    email_required: "Email is required."
+    user_not_registered: "No registered user found with this email."
+    already_member: "This user is already a member of the board."
+    owner_already_on_board: "The board owner is already on this board."
+    only_owner_can_invite: "Only the board owner can invite members."
+    owner_cannot_be_member: "The board owner cannot be added as a member."

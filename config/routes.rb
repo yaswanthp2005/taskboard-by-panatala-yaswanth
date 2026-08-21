@@ -7,8 +7,9 @@ Rails.application.routes.draw do
       namespace :v1 do
         resources :users, only: :create
         resource :session, only: :create
-        resources :boards, only: %i[index create update destroy] do
+        resources :boards, only: %i[index show create update destroy], param: :slug do
           resources :members, only: :create, controller: "board_members"
+          resources :cards, only: %i[show update]
         end
       end
     end

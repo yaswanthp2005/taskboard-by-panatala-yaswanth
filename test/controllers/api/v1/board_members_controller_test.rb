@@ -82,6 +82,17 @@ class Api::V1::BoardMembersControllerTest < ActionDispatch::IntegrationTest
     assert_response :not_found
   end
 
+  def test_create_rejects_board_member
+    create(:board_member, board: @board, user: @member)
+
+    post api_v1_board_members_path(@board),
+      params: { member: { email: "newmember@example.com" } },
+      headers: headers(@member),
+      as: :json
+
+    assert_response :forbidden
+  end
+
   def test_create_rejects_unauthenticated_request
     post api_v1_board_members_path(@board),
       params: { member: { email: @member.email } },

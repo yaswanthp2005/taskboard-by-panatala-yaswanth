@@ -4,7 +4,7 @@ class Api::V1::BoardsController < ApplicationController
   after_action :verify_authorized, except: :index
   after_action :verify_policy_scoped, only: :index
 
-  before_action :load_board, only: %i[update destroy]
+  before_action :load_board, only: %i[show update destroy]
 
   def index
     authorize Board
@@ -19,6 +19,10 @@ class Api::V1::BoardsController < ApplicationController
     authorize board
     board.save!
     render_notice(t("successfully_created", entity: "Board"), :ok)
+  end
+
+  def show
+    authorize @board
   end
 
   def update
@@ -36,7 +40,7 @@ class Api::V1::BoardsController < ApplicationController
   private
 
     def load_board
-      @board = policy_scope(Board).find(params[:id])
+      @board = policy_scope(Board).find_by!(slug: params[:slug])
     end
 
     def board_params

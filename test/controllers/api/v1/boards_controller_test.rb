@@ -18,6 +18,7 @@ class Api::V1::BoardsControllerTest < ActionDispatch::IntegrationTest
     response_boards = response_body["boards"]
     assert_equal 1, response_boards.size
     assert_equal board.name, response_boards.first["name"]
+    assert_equal board.slug, response_boards.first["slug"]
     assert_equal board.description, response_boards.first["description"]
     assert_equal board.color, response_boards.first["color"]
     assert_equal 1, response_body.dig("pagination", "count")
@@ -76,6 +77,36 @@ class Api::V1::BoardsControllerTest < ActionDispatch::IntegrationTest
     assert_equal product_board.name, response_boards.first["name"]
   end
 
+  def test_show_returns_board_for_owner
+    board = create(:board, name: "Product Roadmap", owner: @owner)
+
+    get api_v1_board_path(board), headers: headers(@owner), as: :json
+
+    assert_response :success
+    assert_equal board.name, response_body["name"]
+    assert_equal board.slug, response_body["slug"]
+    assert response_body["is_owner"]
+  end
+
+  def test_show_returns_board_for_member
+    board = create(:board, name: "Shared Board", owner: @other_user)
+    create(:board_member, board:, user: @owner)
+
+    get api_v1_board_path(board), headers: headers(@owner), as: :json
+
+    assert_response :success
+    assert_equal "Shared Board", response_body["name"]
+    assert_not response_body["is_owner"]
+  end
+
+  def test_show_rejects_non_member
+    board = create(:board, name: "Other Board", owner: @other_user)
+
+    get api_v1_board_path(board), headers: headers(@owner), as: :json
+
+    assert_response :not_found
+  end
+
   def test_create_adds_board_for_current_user
     assert_difference -> { @owner.boards.count }, 1 do
       post api_v1_boards_path,
@@ -87,6 +118,7 @@ class Api::V1::BoardsControllerTest < ActionDispatch::IntegrationTest
     assert_response :success
     board = @owner.boards.find_by!(name: "New Board")
     assert_equal "#4F46E5", board.color
+    assert_equal "new-board", board.slug
     assert_equal I18n.t("successfully_created", entity: "Board"), response_body["notice"]
   end
 
@@ -123,6 +155,7 @@ class Api::V1::BoardsControllerTest < ActionDispatch::IntegrationTest
     assert_response :success
     assert_equal I18n.t("successfully_updated", entity: "Board"), response_body["notice"]
     assert_equal "Updated Roadmap", board.reload.name
+    assert_equal "product-roadmap", board.slug
   end
 
   def test_update_rejects_blank_name
@@ -148,6 +181,19 @@ class Api::V1::BoardsControllerTest < ActionDispatch::IntegrationTest
     assert_response :not_found
   end
 
+  def test_update_rejects_board_member
+    board = create(:board, name: "Shared Board", owner: @other_user)
+    create(:board_member, board:, user: @owner)
+
+    patch api_v1_board_path(board),
+      params: { board: { name: "Updated Board" } },
+      headers: headers(@owner),
+      as: :json
+
+    assert_response :forbidden
+    assert_equal "Shared Board", board.reload.name
+  end
+
   def test_destroy_deletes_board
     board = create(:board, name: "Product Roadmap", owner: @owner)
 
@@ -167,5 +213,16 @@ class Api::V1::BoardsControllerTest < ActionDispatch::IntegrationTest
     end
 
     assert_response :not_found
+  end
+
+  def test_destroy_rejects_board_member
+    board = create(:board, name: "Shared Board", owner: @other_user)
+    create(:board_member, board:, user: @owner)
+
+    assert_no_difference "Board.count" do
+      delete api_v1_board_path(board), headers: headers(@owner), as: :json
+    end
+
+    assert_response :forbidden
   end
 end

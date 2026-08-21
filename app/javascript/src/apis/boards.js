@@ -4,14 +4,17 @@ import axios from "axios";
 
 const fetch = params => axios.get(`${ADMIN_API_BASE_URL}/boards`, { params });
 
+const show = slug => axios.get(`${ADMIN_API_BASE_URL}/boards/${slug}`);
+
 const create = payload =>
   axios.post(`${ADMIN_API_BASE_URL}/boards`, { board: payload });
 
-const update = ({ id, ...payload }) =>
-  axios.patch(`${ADMIN_API_BASE_URL}/boards/${id}`, { board: payload });
+const update = ({ slug, ...payload }) =>
+  axios.patch(`${ADMIN_API_BASE_URL}/boards/${slug}`, { board: payload });
 
-const destroy = ({ id }) => axios.delete(`${ADMIN_API_BASE_URL}/boards/${id}`);
+const destroy = ({ slug }) =>
+  axios.delete(`${ADMIN_API_BASE_URL}/boards/${slug}`);
 
-const boardsApi = { create, destroy, fetch, update };
+const boardsApi = { create, destroy, fetch, show, update };
 
 export default boardsApi;

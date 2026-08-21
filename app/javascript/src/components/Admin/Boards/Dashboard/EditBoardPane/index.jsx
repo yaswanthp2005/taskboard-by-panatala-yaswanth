@@ -18,7 +18,7 @@ const EditBoardPane = ({ board, isOpen, onClose }) => {
   const handleSubmit = async (values, { resetForm, setSubmitting }) => {
     try {
       await updateBoard({
-        id: board.id,
+        slug: board.slug,
         name: values.name.trim(),
       });
       resetForm();
@@ -43,7 +43,7 @@ const EditBoardPane = ({ board, isOpen, onClose }) => {
       </Pane.Header>
       <NeetoUIForm
         className="w-full"
-        key={isOpen ? `edit-board-${board.id}` : "edit-board-closed"}
+        key={isOpen ? `edit-board-${board.slug}` : "edit-board-closed"}
         formikProps={{
           initialValues: buildEditBoardFormInitialValues(board),
           validateOnMount: true,

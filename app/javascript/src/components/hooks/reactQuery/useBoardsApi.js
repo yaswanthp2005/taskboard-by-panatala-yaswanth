@@ -13,6 +13,17 @@ const useFetchBoards = (params = {}) =>
     };
   });
 
+const useFetchBoard = slug =>
+  useQuery(
+    [QUERY_KEYS.BOARDS, slug],
+    async () => {
+      const { data } = await boardsApi.show(slug);
+
+      return data;
+    },
+    { enabled: Boolean(slug) }
+  );
+
 const useCreateBoard = () => {
   const queryClient = useQueryClient();
 
@@ -43,4 +54,10 @@ const useDeleteBoard = () => {
   });
 };
 
-export { useCreateBoard, useDeleteBoard, useFetchBoards, useUpdateBoard };
+export {
+  useCreateBoard,
+  useDeleteBoard,
+  useFetchBoard,
+  useFetchBoards,
+  useUpdateBoard,
+};

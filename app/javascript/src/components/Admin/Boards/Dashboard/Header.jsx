@@ -4,7 +4,7 @@ import { Search } from "neetoicons";
 import { Button, Input, Typography } from "neetoui";
 import { useTranslation } from "react-i18next";
 
-const Header = ({ onAddBoard, onSearch, search }) => {
+const DashboardHeader = ({ onAddBoard, onSearch, search }) => {
   const { t } = useTranslation();
 
   return (
@@ -33,4 +33,4 @@ const Header = ({ onAddBoard, onSearch, search }) => {
   );
 };
 
-export default Header;
+export default DashboardHeader;

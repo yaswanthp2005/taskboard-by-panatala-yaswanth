@@ -15,3 +15,6 @@ Rails.application.config.assets.version = "1.0"
 
 # Add node_modules folder to the asset load path.
 Rails.application.config.assets.paths << Rails.root.join("node_modules")
+Rails.application.config.assets.paths << Rails.root.join("app/assets/builds")
+
+Rails.application.config.assets.precompile += %w[application.js application.css]

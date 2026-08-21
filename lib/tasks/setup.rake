@@ -88,6 +88,12 @@ SAMPLE_BOARD_DEFINITIONS = [
 
 DEFAULT_LIST_TITLES = ["To Do", "In Progress", "Done"].freeze
 
+SAMPLE_CARDS_BY_LIST = {
+  "To Do" => ["Set up project board", "Review requirements"],
+  "In Progress" => ["Design board layout"],
+  "Done" => ["Create user accounts"]
+}.freeze
+
 def create_boards!(primary_owner, secondary_owner)
   SAMPLE_BOARD_DEFINITIONS.each do |definition|
     board = primary_owner.boards.create!(definition)
@@ -104,7 +110,14 @@ end
 
 def create_lists!(board)
   DEFAULT_LIST_TITLES.each do |title|
-    board.lists.create!(title:)
+    list = board.lists.create!(title:)
+    create_sample_cards!(list)
+  end
+end
+
+def create_sample_cards!(list)
+  SAMPLE_CARDS_BY_LIST.fetch(list.title, []).each do |title|
+    list.cards.create!(title:)
   end
 end
 

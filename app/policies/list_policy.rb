@@ -1,14 +1,6 @@
 # frozen_string_literal: true
 
-class CardPolicy < ApplicationPolicy
-  def show?
-    accessible?
-  end
-
-  def create?
-    accessible?
-  end
-
+class ListPolicy < ApplicationPolicy
   def update?
     accessible?
   end

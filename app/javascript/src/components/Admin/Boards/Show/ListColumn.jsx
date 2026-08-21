@@ -11,7 +11,7 @@ const ListColumn = ({ isDragAndDropDisabled, section }) => {
   const { t } = useTranslation();
 
   return (
-    <div className="neeto-ui-rounded-lg flex h-full max-h-full min-h-[calc(100vh-12rem)] flex-col bg-gray-100">
+    <div className="neeto-ui-rounded-lg flex h-full w-full flex-col bg-gray-100">
       <div className="neeto-molecules-boardview-section__header shrink-0 py-3">
         <Typography style="h5" weight="semibold">
           {section.name}

@@ -45,6 +45,8 @@ gem "pundit"
 
 gem "pagy", "~> 43.5"
 
+gem "acts_as_list", "~> 1.2"
+
 # Adds prefix to subject in emails
 gem "email_prefixer"
 

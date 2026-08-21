@@ -43,6 +43,9 @@ en:
     expiry: "Your session has expired. Please login again."
   authorization:
     denied: "Access denied. You are not authorized to perform this action."
+  board:
+    slug:
+      immutable: "cannot be changed once created"
   board_member:
     invited_successfully: "Member was successfully invited to the board."
     email_required: "Email is required."

@@ -71,6 +71,12 @@
       "noSearchResults": "No boards match your search"
     }
   },
+  "boardView": {
+    "pageTitle": "Board",
+    "addList": "Add list",
+    "addListDescription": "Add another stage to this board",
+    "addCard": "Add card"
+  },
   "neetoMolecules": {
     "errorPage": {
       "cantBeFound": "The page you're looking <br /> for is missing.",

@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
-class Api::v1::BoardMembersController < ApplicationController
-  after_action :verify_authorized, except: :index
+class Api::V1::BoardMembersController < ApplicationController
+  after_action :verify_authorized
 
   before_action :load_board
 
@@ -23,7 +23,7 @@ class Api::v1::BoardMembersController < ApplicationController
   private
 
     def load_board
-      @board = policy_scope(Board).find(params[:board_id])
+      @board = policy_scope(Board).find_by!(slug: params[:board_slug])
     end
 
     def member_params

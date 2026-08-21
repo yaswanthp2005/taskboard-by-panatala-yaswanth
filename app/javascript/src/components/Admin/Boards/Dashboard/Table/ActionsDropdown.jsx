@@ -7,6 +7,10 @@ import { useTranslation } from "react-i18next";
 const ActionsDropdown = ({ board, onDelete, onRename }) => {
   const { t } = useTranslation();
 
+  if (!board.isOwner) {
+    return null;
+  }
+
   return (
     <Dropdown
       buttonStyle="text"

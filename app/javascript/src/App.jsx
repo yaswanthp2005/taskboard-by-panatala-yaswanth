@@ -1,15 +1,18 @@
 import routes from "constants/routes";
 
-import React from "react";
+import React, { Suspense, lazy } from "react";
 
 import Dashboard from "components/Admin/Boards";
 import { Login, Signup } from "components/Authentication";
 import { PrivateRoute, NotFound } from "components/commons";
+import { Spinner } from "neetoui";
 import { QueryClientProvider } from "react-query";
 import { Route, Switch, BrowserRouter as Router } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
 import queryClient from "utils/queryClient";
 import { getFromLocalStorage } from "utils/storage";
+
+const BoardShow = lazy(() => import("components/Admin/Boards/Show"));
 
 const App = () => {
   const authToken = getFromLocalStorage("authToken");
@@ -29,6 +32,21 @@ const App = () => {
             path={routes.boards.index}
             redirectRoute={routes.login}
           />
+          <Suspense
+            fallback={
+              <div className="flex min-h-screen items-center justify-center">
+                <Spinner />
+              </div>
+            }
+          >
+            <PrivateRoute
+              exact
+              component={BoardShow}
+              condition={isLoggedIn}
+              path={routes.boards.show}
+              redirectRoute={routes.login}
+            />
+          </Suspense>
           <Route component={NotFound} />
         </Switch>
       </Router>

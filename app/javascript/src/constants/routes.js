@@ -6,6 +6,7 @@ const routes = {
   signup: `${BASE_URL}signup`,
   boards: {
     index: BASE_URL,
+    show: `${BASE_URL}:slug`,
   },
 };
 

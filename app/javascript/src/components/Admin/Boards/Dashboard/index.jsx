@@ -1,11 +1,10 @@
 import routes from "constants/routes";
 
-import React, { useCallback, useEffect, useMemo, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 
 import { Container } from "components/commons";
 import { useDeleteBoard } from "components/hooks/reactQuery/useBoardsApi";
 import useFuncDebounce from "components/hooks/useFuncDebounce";
-import { useTranslation } from "react-i18next";
 import { useHistory } from "react-router-dom";
 import { buildURL } from "utils/buildURL";
 import withTitle from "utils/withTitle";
@@ -13,14 +12,12 @@ import withTitle from "utils/withTitle";
 import AddBoardPane from "./AddBoardPane";
 import DeleteAlert from "./Alerts/DeleteAlert";
 import EditBoardPane from "./EditBoardPane";
-import Header from "./Header";
+import BoardsGrid from "./Grid";
+import DashboardHeader from "./Header";
 import useBoardsTable from "./hooks/useBoardsTable";
-import BoardsTable from "./Table";
-import buildColumnData from "./Table/columns";
 import { getEmptyStateTitleKey } from "./utils";
 
 const Dashboard = () => {
-  const { t } = useTranslation();
   const history = useHistory();
   const {
     boards,
@@ -28,7 +25,6 @@ const Dashboard = () => {
     handlePageChange,
     isLoading,
     pageSize,
-    rowData,
     search,
     totalCount,
   } = useBoardsTable();
@@ -58,16 +54,6 @@ const Dashboard = () => {
     });
   });
 
-  const columnData = useMemo(
-    () =>
-      buildColumnData({
-        onDelete: setBoardToDelete,
-        onRename: setBoardToEdit,
-        t,
-      }),
-    [t]
-  );
-
   const emptyStateTitle = getEmptyStateTitleKey(search);
 
   const handleDeleteBoard = async () => {
@@ -76,16 +62,20 @@ const Dashboard = () => {
     }
 
     try {
-      await deleteBoard({ id: boardToDelete.id });
+      await deleteBoard({ slug: boardToDelete.slug });
       setBoardToDelete(null);
     } catch (error) {
       logger.error(error);
     }
   };
 
+  const handleOpenBoard = board => {
+    history.push(routes.boards.show.replace(":slug", board.slug));
+  };
+
   return (
     <Container>
-      <Header
+      <DashboardHeader
         search={searchKey}
         onAddBoard={() => setIsAddBoardPaneOpen(true)}
         onSearch={value => {
@@ -93,16 +83,17 @@ const Dashboard = () => {
           debouncedSearch(value);
         }}
       />
-      <BoardsTable
+      <BoardsGrid
         boards={boards}
-        columnData={columnData}
         currentPageNumber={currentPageNumber}
         emptyStateTitle={emptyStateTitle}
         handlePageChange={handlePageChange}
         isLoading={isLoading}
         pageSize={pageSize}
-        rowData={rowData}
         totalCount={totalCount}
+        onDelete={setBoardToDelete}
+        onOpen={handleOpenBoard}
+        onRename={setBoardToEdit}
       />
       <AddBoardPane
         isOpen={isAddBoardPaneOpen}

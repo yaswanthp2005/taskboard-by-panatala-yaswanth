@@ -40,7 +40,7 @@ class Api::V1::BoardsController < ApplicationController
   private
 
     def load_board
-      @board = policy_scope(Board).includes(:lists).find_by!(slug: params[:slug])
+      @board = policy_scope(Board).includes(lists: :cards).find_by!(slug: params[:slug])
     end
 
     def board_params

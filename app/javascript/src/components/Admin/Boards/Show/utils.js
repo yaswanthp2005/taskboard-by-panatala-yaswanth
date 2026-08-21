@@ -4,7 +4,12 @@ const mapListsToSections = (lists = []) =>
     .map(list => ({
       id: list.id,
       name: list.title,
-      items: [],
+      items: [...(list.cards ?? [])]
+        .sort((first, second) => first.position - second.position)
+        .map(card => ({
+          id: card.id,
+          title: card.title,
+        })),
     }));
 
 const moveSection = (sections, source, destination) => {

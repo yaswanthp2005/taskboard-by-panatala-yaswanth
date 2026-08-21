@@ -2,7 +2,7 @@
 
 FactoryBot.define do
   factory :card do
-    association :board
+    association :list
     sequence(:title) { |index| "Card #{index}" }
   end
 end

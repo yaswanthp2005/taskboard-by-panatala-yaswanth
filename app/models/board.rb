@@ -10,7 +10,7 @@ class Board < ApplicationRecord
   has_many :board_members, dependent: :destroy
   has_many :members, through: :board_members, source: :user
   has_many :lists, -> { order(:position) }, dependent: :destroy, inverse_of: :board
-  has_many :cards, dependent: :destroy
+  has_many :cards, through: :lists
 
   validates :name, presence: true, length: { maximum: MAX_NAME_LENGTH }
   validates :description, length: { maximum: MAX_DESCRIPTION_LENGTH }, allow_blank: true

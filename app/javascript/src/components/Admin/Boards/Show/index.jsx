@@ -49,7 +49,7 @@ const Show = () => {
         ]}
       />
       <Scrollable className="flex w-full flex-col" size="small">
-        <BoardKanban lists={board.lists ?? []} />
+        <BoardKanban boardSlug={board.slug} lists={board.lists ?? []} />
       </Scrollable>
     </Container>
   );

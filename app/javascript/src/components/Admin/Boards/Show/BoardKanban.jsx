@@ -1,13 +1,14 @@
 import React, { useCallback, useEffect, useState } from "react";
 
 import BoardView from "@bigbinary/neeto-molecules/BoardView";
+import PropTypes from "prop-types";
 
 import AddListColumn from "./AddListColumn";
 import ListColumn from "./ListColumn";
 import TaskCard from "./TaskCard";
 import { mapListsToSections, moveItem, moveSection } from "./utils";
 
-const BoardKanban = ({ lists = [] }) => {
+const BoardKanban = ({ boardSlug, lists = [] }) => {
   const [sections, setSections] = useState(() => mapListsToSections(lists));
 
   useEffect(() => {
@@ -34,12 +35,17 @@ const BoardKanban = ({ lists = [] }) => {
         sections={sections}
         renderSection={({ section, isDragAndDropDisabled }) => (
           <ListColumn
+            boardSlug={boardSlug}
             isDragAndDropDisabled={isDragAndDropDisabled}
             section={section}
           />
         )}
         renderSectionOverlay={({ section }) => (
-          <ListColumn isDragAndDropDisabled section={section} />
+          <ListColumn
+            isDragAndDropDisabled
+            boardSlug={boardSlug}
+            section={section}
+          />
         )}
         onMoveItem={handleMoveItem}
         onMoveSection={handleMoveSection}
@@ -47,6 +53,11 @@ const BoardKanban = ({ lists = [] }) => {
       <AddListColumn />
     </div>
   );
+};
+
+BoardKanban.propTypes = {
+  boardSlug: PropTypes.string.isRequired,
+  lists: PropTypes.array,
 };
 
 export default BoardKanban;

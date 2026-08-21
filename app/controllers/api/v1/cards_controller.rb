@@ -3,8 +3,16 @@
 class Api::V1::CardsController < ApplicationController
   after_action :verify_authorized
 
-  before_action :load_board
+  before_action :load_board, only: :create
+  before_action :load_list, only: :create
   before_action :load_card, only: %i[show update]
+
+  def create
+    card = @list.cards.build(card_params)
+    authorize card
+    card.save!
+    render_notice(t("successfully_created", entity: "Card"), :ok)
+  end
 
   def show
     authorize @card
@@ -22,8 +30,12 @@ class Api::V1::CardsController < ApplicationController
       @board = policy_scope(Board).find_by!(slug: params[:board_slug])
     end
 
+    def load_list
+      @list = @board.lists.find(params[:list_id])
+    end
+
     def load_card
-      @card = @board.cards.find(params[:id])
+      @card = Card.joins(list: :board).merge(policy_scope(Board)).find(params[:id])
     end
 
     def card_params

@@ -75,7 +75,8 @@
     "pageTitle": "Board",
     "addList": "Add list",
     "addListDescription": "Add another stage to this board",
-    "addCard": "Add card"
+    "addCard": "Add card",
+    "defaultCardTitle": "New card"
   },
   "neetoMolecules": {
     "errorPage": {

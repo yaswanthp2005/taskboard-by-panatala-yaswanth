@@ -1,30 +1,37 @@
-import React, { useCallback, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 
 import BoardView from "@bigbinary/neeto-molecules/BoardView";
 
 import AddListColumn from "./AddListColumn";
-import { buildInitialLists } from "./constants";
 import ListColumn from "./ListColumn";
 import TaskCard from "./TaskCard";
-import { moveItem, moveSection } from "./utils";
+import { mapListsToSections, moveItem, moveSection } from "./utils";
 
-const BoardKanban = () => {
-  const [lists, setLists] = useState(buildInitialLists);
+const BoardKanban = ({ lists = [] }) => {
+  const [sections, setSections] = useState(() => mapListsToSections(lists));
+
+  useEffect(() => {
+    setSections(mapListsToSections(lists));
+  }, [lists]);
 
   const handleMoveSection = useCallback((source, destination) => {
-    setLists(currentLists => moveSection(currentLists, source, destination));
+    setSections(currentSections =>
+      moveSection(currentSections, source, destination)
+    );
   }, []);
 
   const handleMoveItem = useCallback((source, destination) => {
-    setLists(currentLists => moveItem(currentLists, source, destination));
+    setSections(currentSections =>
+      moveItem(currentSections, source, destination)
+    );
   }, []);
 
   return (
-    <div className="flex min-h-0 flex-1 gap-x-3 overflow-x-auto pb-4">
+    <div className="flex h-full min-h-0 w-full items-start gap-x-3 overflow-x-auto pb-4 pt-4">
       <BoardView
-        className="min-h-[calc(100vh-12rem)] items-start"
+        className="h-full items-start"
         renderItemOverlay={({ item }) => <TaskCard item={item} />}
-        sections={lists}
+        sections={sections}
         renderSection={({ section, isDragAndDropDisabled }) => (
           <ListColumn
             isDragAndDropDisabled={isDragAndDropDisabled}

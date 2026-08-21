@@ -4,6 +4,7 @@ import React from "react";
 
 import Container from "@bigbinary/neeto-molecules/Container";
 import Header from "@bigbinary/neeto-molecules/Header";
+import Scrollable from "@bigbinary/neeto-molecules/Scrollable";
 import { useFetchBoard } from "components/hooks/reactQuery/useBoardsApi";
 import { Spinner, Typography } from "neetoui";
 import { useTranslation } from "react-i18next";
@@ -34,7 +35,7 @@ const Show = () => {
   }
 
   return (
-    <Container isHeaderFixed className="flex min-h-screen flex-col">
+    <Container isHeaderFixed>
       <Header
         title={board.name}
         breadcrumbs={[
@@ -47,7 +48,9 @@ const Show = () => {
           },
         ]}
       />
-      <BoardKanban />
+      <Scrollable className="flex w-full flex-col" size="small">
+        <BoardKanban lists={board.lists ?? []} />
+      </Scrollable>
     </Container>
   );
 };

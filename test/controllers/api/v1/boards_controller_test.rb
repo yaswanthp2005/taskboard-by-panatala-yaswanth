@@ -86,6 +86,23 @@ class Api::V1::BoardsControllerTest < ActionDispatch::IntegrationTest
     assert_equal board.name, response_body["name"]
     assert_equal board.slug, response_body["slug"]
     assert response_body["is_owner"]
+    assert_equal [], response_body["lists"]
+  end
+
+  def test_show_returns_board_lists_ordered_by_position
+    board = create(:board, name: "Product Roadmap", owner: @owner)
+    todo_list = create(:list, title: "To Do", board:)
+    in_progress_list = create(:list, title: "In Progress", board:)
+    done_list = create(:list, title: "Done", board:)
+
+    get api_v1_board_path(board), headers: headers(@owner), as: :json
+
+    assert_response :success
+    response_lists = response_body["lists"]
+    assert_equal 3, response_lists.size
+    assert_equal [todo_list.id, in_progress_list.id, done_list.id],
+      response_lists.pluck("id")
+    assert_equal [1, 2, 3], response_lists.pluck("position")
   end
 
   def test_show_returns_board_for_member

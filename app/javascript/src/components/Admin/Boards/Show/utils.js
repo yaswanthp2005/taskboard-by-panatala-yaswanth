@@ -1,3 +1,12 @@
+const mapListsToSections = (lists = []) =>
+  [...lists]
+    .sort((first, second) => first.position - second.position)
+    .map(list => ({
+      id: list.id,
+      name: list.title,
+      items: [],
+    }));
+
 const moveSection = (sections, source, destination) => {
   const nextSections = [...sections];
   const destinationIndex =
@@ -40,4 +49,4 @@ const moveItem = (sections, source, destination) => {
   return nextSections;
 };
 
-export { moveItem, moveSection };
+export { mapListsToSections, moveItem, moveSection };

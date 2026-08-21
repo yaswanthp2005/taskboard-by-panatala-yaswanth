@@ -86,16 +86,26 @@ SAMPLE_BOARD_DEFINITIONS = [
   { name: "Documentation", description: "Docs to write and update.", color: "#9333EA" }
 ].freeze
 
+DEFAULT_LIST_TITLES = ["To Do", "In Progress", "Done"].freeze
+
 def create_boards!(primary_owner, secondary_owner)
   SAMPLE_BOARD_DEFINITIONS.each do |definition|
-    primary_owner.boards.create!(definition)
+    board = primary_owner.boards.create!(definition)
+    create_lists!(board)
   end
 
-  secondary_owner.boards.create!(
+  board = secondary_owner.boards.create!(
     name: "Luna's Project Board",
     description: "Private board for Luna's projects.",
     color: "#16A34A"
   )
+  create_lists!(board)
+end
+
+def create_lists!(board)
+  DEFAULT_LIST_TITLES.each do |title|
+    board.lists.create!(title:)
+  end
 end
 
 def default_user_password

@@ -22,6 +22,26 @@ class CardTest < ActiveSupport::TestCase
     assert_includes card.errors[:title], "can't be blank"
   end
 
+  def test_is_invalid_when_description_exceeds_max_length
+    card = build(:card, list: @list, description: "a" * (Card::MAX_DESCRIPTION_LENGTH + 1))
+
+    assert_not card.valid?
+    assert_includes card.errors[:description], "is too long (maximum is #{Card::MAX_DESCRIPTION_LENGTH} characters)"
+  end
+
+  def test_allows_blank_description_and_due_date
+    card = build(:card, list: @list, description: nil, due_date: nil)
+
+    assert card.valid?
+  end
+
+  def test_accepts_description_and_due_date
+    card = create(:card, list: @list, description: "Add login flow", due_date: Date.new(2026, 8, 25))
+
+    assert_equal "Add login flow", card.description
+    assert_equal Date.new(2026, 8, 25), card.due_date
+  end
+
   def test_belongs_to_list
     card = create(:card, list: @list)
 

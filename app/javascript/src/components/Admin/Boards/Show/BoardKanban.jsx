@@ -9,6 +9,7 @@ import {
 import PropTypes from "prop-types";
 
 import AddListColumn from "./AddListColumn";
+import CardDetailPane from "./CardDetailPane";
 import DeleteListAlert from "./DeleteListAlert";
 import ListColumn from "./ListColumn";
 import TaskCard from "./TaskCard";
@@ -17,6 +18,7 @@ import { mapListsToSections, moveItem, moveSection } from "./utils";
 const BoardKanban = ({ boardSlug, lists = [] }) => {
   const [sections, setSections] = useState(() => mapListsToSections(lists));
   const [listToDelete, setListToDelete] = useState(null);
+  const [cardPane, setCardPane] = useState(null);
   const { mutateAsync: moveList } = useMoveList(boardSlug);
   const { mutateAsync: moveCard } = useMoveCard(boardSlug);
   const { mutateAsync: deleteList, isLoading: isDeletingList } =
@@ -106,7 +108,11 @@ const BoardKanban = ({ boardSlug, lists = [] }) => {
               boardSlug={boardSlug}
               isDragAndDropDisabled={isDragAndDropDisabled}
               section={section}
+              onAddCard={listId => setCardPane({ type: "create", listId })}
               onDelete={setListToDelete}
+              onCardClick={item =>
+                setCardPane({ type: "edit", cardId: item.id })
+              }
             />
           )}
           renderSectionOverlay={({ section }) => (
@@ -126,6 +132,13 @@ const BoardKanban = ({ boardSlug, lists = [] }) => {
         listToDelete={listToDelete}
         onClose={() => setListToDelete(null)}
         onSubmit={handleDeleteList}
+      />
+      <CardDetailPane
+        boardSlug={boardSlug}
+        cardId={cardPane?.type === "edit" ? cardPane.cardId : null}
+        isOpen={Boolean(cardPane)}
+        listId={cardPane?.type === "create" ? cardPane.listId : null}
+        onClose={() => setCardPane(null)}
       />
     </>
   );

@@ -53,7 +53,7 @@ class Api::V1::CardsController < ApplicationController
     end
 
     def card_params
-      params.require(:card).permit(:title)
+      params.require(:card).permit(:title, :description, :due_date)
     end
 
     def move_params

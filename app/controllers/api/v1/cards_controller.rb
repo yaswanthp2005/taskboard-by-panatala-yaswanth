@@ -5,7 +5,7 @@ class Api::V1::CardsController < ApplicationController
 
   before_action :load_board, only: :create
   before_action :load_list, only: :create
-  before_action :load_card, only: %i[show update move]
+  before_action :load_card, only: %i[show update move destroy]
 
   def create
     card = @list.cards.build(card_params)
@@ -36,6 +36,12 @@ class Api::V1::CardsController < ApplicationController
     ).process
 
     render_notice(t("successfully_updated", entity: "Card"), :ok)
+  end
+
+  def destroy
+    authorize @card
+    @card.destroy!
+    render_notice(t("successfully_deleted", count: 1, entity: "Card"))
   end
 
   private

@@ -94,6 +94,11 @@
     "dueDatePlaceholder": "Select due date",
     "validation": {
       "titleRequired": "Title is required"
+    },
+    "delete": {
+      "action": "Delete card",
+      "title": "Delete card?",
+      "confirmMessage": "Are you sure you want to delete the card <1>{{title}}</1>?"
     }
   },
   "neetoMolecules": {

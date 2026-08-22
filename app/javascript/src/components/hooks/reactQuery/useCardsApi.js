@@ -35,6 +35,17 @@ const useUpdateCard = boardSlug => {
   });
 };
 
+const useDeleteCard = boardSlug => {
+  const queryClient = useQueryClient();
+
+  return useMutation(({ id }) => cardsApi.destroy({ id }), {
+    onSuccess: (_data, variables) => {
+      queryClient.invalidateQueries([QUERY_KEYS.BOARDS, boardSlug]);
+      queryClient.removeQueries([QUERY_KEYS.CARDS, variables.id]);
+    },
+  });
+};
+
 const useMoveCard = boardSlug => {
   const queryClient = useQueryClient();
 
@@ -45,4 +56,10 @@ const useMoveCard = boardSlug => {
   });
 };
 
-export { useCreateCard, useFetchCard, useMoveCard, useUpdateCard };
+export {
+  useCreateCard,
+  useDeleteCard,
+  useFetchCard,
+  useMoveCard,
+  useUpdateCard,
+};

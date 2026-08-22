@@ -2,15 +2,20 @@ import React from "react";
 
 import BoardView from "@bigbinary/neeto-molecules/BoardView";
 import { useCreateCard } from "components/hooks/reactQuery/useCardsApi";
-import { Plus } from "neetoicons";
-import { Button } from "neetoui";
+import { MenuHorizontal, Plus } from "neetoicons";
+import { Button, Dropdown } from "neetoui";
 import PropTypes from "prop-types";
 import { useTranslation } from "react-i18next";
 
 import ListTitle from "./ListTitle";
 import TaskCard from "./TaskCard";
 
-const ListColumn = ({ boardSlug, isDragAndDropDisabled, section }) => {
+const ListColumn = ({
+  boardSlug,
+  isDragAndDropDisabled,
+  onDelete,
+  section,
+}) => {
   const { t } = useTranslation();
   const { mutateAsync: createCard, isLoading: isCreatingCard } =
     useCreateCard(boardSlug);
@@ -26,14 +31,33 @@ const ListColumn = ({ boardSlug, isDragAndDropDisabled, section }) => {
     }
   };
 
+  const handleDelete = () => {
+    onDelete?.({ id: section.id, name: section.name });
+  };
+
   return (
     <div className="neeto-ui-rounded-lg flex h-full w-full flex-col bg-gray-100">
-      <div className="neeto-molecules-boardview-section__header shrink-0 py-3">
+      <div className="neeto-molecules-boardview-section__header flex shrink-0 items-start justify-between gap-x-2 py-3">
         <ListTitle
           boardSlug={boardSlug}
           listId={section.id}
           title={section.name}
         />
+        {onDelete && (
+          <Dropdown
+            buttonProps={{ className: "shrink-0" }}
+            icon={MenuHorizontal}
+            label=""
+            position="bottom-end"
+            strategy="fixed"
+          >
+            <Dropdown.Menu>
+              <Dropdown.MenuItem onClick={handleDelete}>
+                {t("boardView.deleteList.action")}
+              </Dropdown.MenuItem>
+            </Dropdown.Menu>
+          </Dropdown>
+        )}
       </div>
       <BoardView.Section
         isDragAndDropDisabled={isDragAndDropDisabled}
@@ -58,11 +82,17 @@ const ListColumn = ({ boardSlug, isDragAndDropDisabled, section }) => {
 ListColumn.propTypes = {
   boardSlug: PropTypes.string.isRequired,
   isDragAndDropDisabled: PropTypes.bool,
+  onDelete: PropTypes.func,
   section: PropTypes.shape({
     id: PropTypes.string.isRequired,
     name: PropTypes.string.isRequired,
     items: PropTypes.array,
   }).isRequired,
+};
+
+ListColumn.defaultProps = {
+  isDragAndDropDisabled: false,
+  onDelete: undefined,
 };
 
 export default ListColumn;

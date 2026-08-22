@@ -9,7 +9,10 @@ Rails.application.routes.draw do
         resource :session, only: :create
         resources :boards, only: %i[index show create update destroy], param: :slug do
           resources :members, only: :create, controller: "board_members"
-          resources :lists, only: :update do
+          resources :lists, only: %i[update destroy] do
+            collection do
+              patch :reorder
+            end
             resources :cards, only: %i[create show update], shallow: true
           end
         end

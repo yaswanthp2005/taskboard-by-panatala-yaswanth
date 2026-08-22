@@ -1,7 +1,7 @@
 import QUERY_KEYS from "constants/query";
 
 import cardsApi from "apis/cards";
-import { useMutation, useQueryClient } from "react-query";
+import { useMutation, useQuery, useQueryClient } from "react-query";
 
 const useCreateCard = boardSlug => {
   const queryClient = useQueryClient();
@@ -9,6 +9,28 @@ const useCreateCard = boardSlug => {
   return useMutation(payload => cardsApi.create({ boardSlug, ...payload }), {
     onSuccess: () => {
       queryClient.invalidateQueries([QUERY_KEYS.BOARDS, boardSlug]);
+    },
+  });
+};
+
+const useFetchCard = (id, { enabled = true } = {}) =>
+  useQuery(
+    [QUERY_KEYS.CARDS, id],
+    async () => {
+      const { data } = await cardsApi.show({ id });
+
+      return data;
+    },
+    { enabled: Boolean(id) && enabled }
+  );
+
+const useUpdateCard = boardSlug => {
+  const queryClient = useQueryClient();
+
+  return useMutation(payload => cardsApi.update(payload), {
+    onSuccess: (_data, variables) => {
+      queryClient.invalidateQueries([QUERY_KEYS.BOARDS, boardSlug]);
+      queryClient.invalidateQueries([QUERY_KEYS.CARDS, variables.id]);
     },
   });
 };
@@ -23,4 +45,4 @@ const useMoveCard = boardSlug => {
   });
 };
 
-export { useCreateCard, useMoveCard };
+export { useCreateCard, useFetchCard, useMoveCard, useUpdateCard };

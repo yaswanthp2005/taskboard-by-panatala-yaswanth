@@ -1,7 +1,6 @@
 import React from "react";
 
 import BoardView from "@bigbinary/neeto-molecules/BoardView";
-import { useCreateCard } from "components/hooks/reactQuery/useCardsApi";
 import { MenuHorizontal, Plus } from "neetoicons";
 import { Button, Dropdown } from "neetoui";
 import PropTypes from "prop-types";
@@ -13,22 +12,15 @@ import TaskCard from "./TaskCard";
 const ListColumn = ({
   boardSlug,
   isDragAndDropDisabled,
+  onAddCard,
+  onCardClick,
   onDelete,
   section,
 }) => {
   const { t } = useTranslation();
-  const { mutateAsync: createCard, isLoading: isCreatingCard } =
-    useCreateCard(boardSlug);
 
-  const handleAddCard = async () => {
-    try {
-      await createCard({
-        listId: section.id,
-        title: t("boardView.defaultCardTitle"),
-      });
-    } catch (error) {
-      logger.error(error);
-    }
+  const handleAddCard = () => {
+    onAddCard?.(section.id);
   };
 
   const handleDelete = () => {
@@ -62,15 +54,15 @@ const ListColumn = ({
       <BoardView.Section
         isDragAndDropDisabled={isDragAndDropDisabled}
         items={section.items}
-        renderItem={({ item }) => <TaskCard item={item} />}
         section={section}
+        renderItem={({ item }) => (
+          <TaskCard item={item} onClick={() => onCardClick?.(item)} />
+        )}
       />
       <div className="shrink-0 px-4 pb-4">
         <Button
-          disabled={isCreatingCard}
           icon={Plus}
           label={t("boardView.addCard")}
-          loading={isCreatingCard}
           style="text"
           onClick={handleAddCard}
         />
@@ -82,6 +74,8 @@ const ListColumn = ({
 ListColumn.propTypes = {
   boardSlug: PropTypes.string.isRequired,
   isDragAndDropDisabled: PropTypes.bool,
+  onAddCard: PropTypes.func,
+  onCardClick: PropTypes.func,
   onDelete: PropTypes.func,
   section: PropTypes.shape({
     id: PropTypes.string.isRequired,
@@ -92,6 +86,8 @@ ListColumn.propTypes = {
 
 ListColumn.defaultProps = {
   isDragAndDropDisabled: false,
+  onAddCard: undefined,
+  onCardClick: undefined,
   onDelete: undefined,
 };
 

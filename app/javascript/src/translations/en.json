@@ -83,6 +83,19 @@
       "confirmMessage": "Are you sure you want to delete the list <1>{{name}}</1>? All cards in this list will also be deleted."
     }
   },
+  "cardDetail": {
+    "title": "Card details",
+    "addTitle": "Add card",
+    "titleLabel": "Title",
+    "titlePlaceholder": "Enter card title",
+    "description": "Description",
+    "descriptionPlaceholder": "Add a more detailed description…",
+    "dueDate": "Due date",
+    "dueDatePlaceholder": "Select due date",
+    "validation": {
+      "titleRequired": "Title is required"
+    }
+  },
   "neetoMolecules": {
     "errorPage": {
       "cantBeFound": "The page you're looking <br /> for is missing.",

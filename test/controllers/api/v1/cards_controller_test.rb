@@ -64,10 +64,14 @@ class Api::V1::CardsControllerTest < ActionDispatch::IntegrationTest
   end
 
   def test_show_allows_board_owner
+    @card.update!(description: "Login is broken on Safari", due_date: Date.new(2026, 8, 25))
+
     get api_v1_card_path(@card), headers: headers(@owner), as: :json
 
     assert_response :success
     assert_equal @card.title, response_body["title"]
+    assert_equal "Login is broken on Safari", response_body["description"]
+    assert_equal "2026-08-25", response_body["due_date"]
   end
 
   def test_show_allows_board_member
@@ -89,12 +93,33 @@ class Api::V1::CardsControllerTest < ActionDispatch::IntegrationTest
     create(:board_member, board: @board, user: @member)
 
     patch api_v1_card_path(@card),
-      params: { card: { title: "Updated card title" } },
+      params: {
+        card: {
+          title: "Updated card title",
+          description: "Updated description",
+          due_date: "2026-09-01"
+        }
+      },
       headers: headers(@member),
       as: :json
 
     assert_response :success
-    assert_equal "Updated card title", @card.reload.title
+    @card.reload
+    assert_equal "Updated card title", @card.title
+    assert_equal "Updated description", @card.description
+    assert_equal Date.new(2026, 9, 1), @card.due_date
+  end
+
+  def test_update_clears_due_date
+    @card.update!(due_date: Date.new(2026, 8, 25))
+
+    patch api_v1_card_path(@card),
+      params: { card: { due_date: nil } },
+      headers: headers(@owner),
+      as: :json
+
+    assert_response :success
+    assert_nil @card.reload.due_date
   end
 
   def test_update_rejects_non_member

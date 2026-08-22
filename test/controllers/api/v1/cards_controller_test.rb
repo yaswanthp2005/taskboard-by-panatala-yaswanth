@@ -107,27 +107,27 @@ class Api::V1::CardsControllerTest < ActionDispatch::IntegrationTest
     assert_equal "Fix login bug", @card.reload.title
   end
 
-  def test_reorder_updates_card_positions_within_list
+  def test_move_reorders_card_within_same_list
     second_card = create(:card, list: @list, title: "Write tests")
     third_card = create(:card, list: @list, title: "Review PR")
 
-    patch reorder_api_v1_board_list_cards_path(@board.slug, @list),
-      params: { card_ids: [third_card.id, @card.id, second_card.id] },
+    patch move_api_v1_card_path(third_card),
+      params: { list_id: @list.id, position: 1 },
       headers: headers(@owner),
       as: :json
 
     assert_response :success
     assert_equal [third_card, @card, second_card], @list.cards.to_a
     assert_equal [1, 2, 3], @list.cards.pluck(:position)
-    assert_equal I18n.t("successfully_updated", entity: "Cards"), response_body["notice"]
+    assert_equal I18n.t("successfully_updated", entity: "Card"), response_body["notice"]
   end
 
-  def test_reorder_allows_board_member
+  def test_move_allows_board_member_to_reorder_within_list
     create(:board_member, board: @board, user: @member)
     second_card = create(:card, list: @list, title: "Write tests")
 
-    patch reorder_api_v1_board_list_cards_path(@board.slug, @list),
-      params: { card_ids: [second_card.id, @card.id] },
+    patch move_api_v1_card_path(@card),
+      params: { list_id: @list.id, position: 2 },
       headers: headers(@member),
       as: :json
 
@@ -135,50 +135,60 @@ class Api::V1::CardsControllerTest < ActionDispatch::IntegrationTest
     assert_equal [second_card, @card], @list.cards.to_a
   end
 
-  def test_reorder_rejects_duplicate_card_ids
-    create(:card, list: @list, title: "Write tests")
+  def test_move_changes_list_membership_and_position
+    second_card = create(:card, list: @list, title: "Write tests")
+    destination_list = create(:list, board: @board, title: "Done")
+    create(:card, list: destination_list, title: "Ship feature")
 
-    patch reorder_api_v1_board_list_cards_path(@board.slug, @list),
-      params: { card_ids: [@card.id, @card.id] },
+    patch move_api_v1_card_path(@card),
+      params: { list_id: destination_list.id, position: 1 },
       headers: headers(@owner),
       as: :json
 
-    assert_response :unprocessable_entity
-    assert_equal I18n.t("card.reorder.invalid"), response_body["error"]
+    assert_response :success
+    assert_equal destination_list, @card.reload.list
+    assert_equal 1, @card.position
+    assert_equal [second_card], @list.cards.to_a
+    assert_equal [@card, destination_list.cards.find_by!(title: "Ship feature")],
+      destination_list.cards.to_a
+    assert_equal I18n.t("successfully_updated", entity: "Card"), response_body["notice"]
   end
 
-  def test_reorder_rejects_incomplete_card_ids
-    create(:card, list: @list, title: "Write tests")
+  def test_move_allows_board_member
+    create(:board_member, board: @board, user: @member)
+    destination_list = create(:list, board: @board, title: "Done")
 
-    patch reorder_api_v1_board_list_cards_path(@board.slug, @list),
-      params: { card_ids: [@card.id] },
-      headers: headers(@owner),
+    patch move_api_v1_card_path(@card),
+      params: { list_id: destination_list.id, position: 1 },
+      headers: headers(@member),
       as: :json
 
-    assert_response :unprocessable_entity
-    assert_equal I18n.t("card.reorder.incomplete"), response_body["error"]
+    assert_response :success
+    assert_equal destination_list, @card.reload.list
   end
 
-  def test_reorder_rejects_card_from_another_list
-    other_list = create(:list, board: @board, title: "Done")
-    other_card = create(:card, list: other_list, title: "Ship feature")
+  def test_move_rejects_list_from_another_board
+    other_board = create(:board, owner: @owner)
+    other_list = create(:list, board: other_board, title: "Other")
 
-    patch reorder_api_v1_board_list_cards_path(@board.slug, @list),
-      params: { card_ids: [other_card.id] },
+    patch move_api_v1_card_path(@card),
+      params: { list_id: other_list.id, position: 1 },
       headers: headers(@owner),
       as: :json
 
     assert_response :not_found
+    assert_equal @list, @card.reload.list
   end
 
-  def test_reorder_rejects_non_member
-    second_card = create(:card, list: @list, title: "Write tests")
+  def test_move_rejects_non_member
+    destination_list = create(:list, board: @board, title: "Done")
 
-    patch reorder_api_v1_board_list_cards_path(@board.slug, @list),
-      params: { card_ids: [second_card.id, @card.id] },
+    patch move_api_v1_card_path(@card),
+      params: { list_id: destination_list.id, position: 1 },
       headers: headers(@other_user),
       as: :json
 
     assert_response :not_found
+    assert_equal @list, @card.reload.list
   end
 end

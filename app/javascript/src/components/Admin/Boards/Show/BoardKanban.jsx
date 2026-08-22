@@ -1,10 +1,10 @@
 import React, { useCallback, useEffect, useState } from "react";
 
 import BoardView from "@bigbinary/neeto-molecules/BoardView";
-import { useReorderCards } from "components/hooks/reactQuery/useCardsApi";
+import { useMoveCard } from "components/hooks/reactQuery/useCardsApi";
 import {
   useDeleteList,
-  useReorderLists,
+  useMoveList,
 } from "components/hooks/reactQuery/useListsApi";
 import PropTypes from "prop-types";
 
@@ -17,8 +17,8 @@ import { mapListsToSections, moveItem, moveSection } from "./utils";
 const BoardKanban = ({ boardSlug, lists = [] }) => {
   const [sections, setSections] = useState(() => mapListsToSections(lists));
   const [listToDelete, setListToDelete] = useState(null);
-  const { mutateAsync: reorderLists } = useReorderLists(boardSlug);
-  const { mutateAsync: reorderCards } = useReorderCards(boardSlug);
+  const { mutateAsync: moveList } = useMoveList(boardSlug);
+  const { mutateAsync: moveCard } = useMoveCard(boardSlug);
   const { mutateAsync: deleteList, isLoading: isDeletingList } =
     useDeleteList(boardSlug);
 
@@ -33,16 +33,23 @@ const BoardKanban = ({ boardSlug, lists = [] }) => {
 
       setSections(nextSections);
 
+      const movedListId = previousSections[source.index]?.id;
+
+      if (!movedListId) {
+        return;
+      }
+
       try {
-        await reorderLists({
-          listIds: nextSections.map(section => section.id),
+        await moveList({
+          id: movedListId,
+          position: destination.index + 1,
         });
       } catch (error) {
         setSections(previousSections);
         logger.error(error);
       }
     },
-    [reorderLists, sections]
+    [moveList, sections]
   );
 
   const handleMoveItem = useCallback(
@@ -52,25 +59,26 @@ const BoardKanban = ({ boardSlug, lists = [] }) => {
 
       setSections(nextSections);
 
-      if (source.section.id !== destination.section.id) {
+      const movedCardId = previousSections.find(
+        section => section.id === source.section.id
+      )?.items[source.index]?.id;
+
+      if (!movedCardId) {
         return;
       }
 
-      const reorderedSection = nextSections.find(
-        section => section.id === source.section.id
-      );
-
       try {
-        await reorderCards({
-          listId: source.section.id,
-          cardIds: reorderedSection.items.map(item => item.id),
+        await moveCard({
+          id: movedCardId,
+          listId: destination.section.id,
+          position: destination.index + 1,
         });
       } catch (error) {
         setSections(previousSections);
         logger.error(error);
       }
     },
-    [reorderCards, sections]
+    [moveCard, sections]
   );
 
   const handleDeleteList = async () => {

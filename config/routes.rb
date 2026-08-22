@@ -10,12 +10,12 @@ Rails.application.routes.draw do
         resources :boards, only: %i[index show create update destroy], param: :slug do
           resources :members, only: :create, controller: "board_members"
           resources :lists, only: %i[update destroy] do
-            collection do
-              patch :reorder
+            member do
+              patch :move
             end
             resources :cards, only: %i[create show update], shallow: true do
-              collection do
-                patch :reorder
+              member do
+                patch :move
               end
             end
           end

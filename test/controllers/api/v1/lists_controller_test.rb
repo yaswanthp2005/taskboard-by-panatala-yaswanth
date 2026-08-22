@@ -13,65 +13,43 @@ class Api::V1::ListsControllerTest < ActionDispatch::IntegrationTest
     @third_list = create(:list, board: @board, title: "Done")
   end
 
-  def test_reorder_updates_list_positions
-    patch reorder_api_v1_board_lists_path(@board.slug),
-      params: { list_ids: [@third_list.id, @first_list.id, @second_list.id] },
+  def test_move_updates_list_position
+    patch move_api_v1_board_list_path(@board.slug, @third_list),
+      params: { position: 1 },
       headers: headers(@owner),
       as: :json
 
     assert_response :success
     assert_equal [1, 2, 3], @board.lists.order(:position).pluck(:position)
     assert_equal [@third_list, @first_list, @second_list], @board.lists.to_a
-    assert_equal I18n.t("successfully_updated", entity: "Lists"), response_body["notice"]
+    assert_equal I18n.t("successfully_updated", entity: "List"), response_body["notice"]
   end
 
-  def test_reorder_allows_board_member
+  def test_move_allows_board_member
     create(:board_member, board: @board, user: @member)
 
-    patch reorder_api_v1_board_lists_path(@board.slug),
-      params: { list_ids: [@second_list.id, @third_list.id, @first_list.id] },
+    patch move_api_v1_board_list_path(@board.slug, @second_list),
+      params: { position: 1 },
       headers: headers(@member),
       as: :json
 
     assert_response :success
-    assert_equal [@second_list, @third_list, @first_list], @board.lists.to_a
+    assert_equal [@second_list, @first_list, @third_list], @board.lists.to_a
   end
 
-  def test_reorder_rejects_duplicate_list_ids
-    patch reorder_api_v1_board_lists_path(@board.slug),
-      params: { list_ids: [@first_list.id, @first_list.id, @second_list.id] },
+  def test_move_rejects_invalid_position
+    patch move_api_v1_board_list_path(@board.slug, @first_list),
+      params: { position: 0 },
       headers: headers(@owner),
       as: :json
 
     assert_response :unprocessable_entity
-    assert_equal I18n.t("list.reorder.invalid"), response_body["error"]
+    assert_equal I18n.t("list.move.invalid_position"), response_body["error"]
   end
 
-  def test_reorder_rejects_incomplete_list_ids
-    patch reorder_api_v1_board_lists_path(@board.slug),
-      params: { list_ids: [@first_list.id, @second_list.id] },
-      headers: headers(@owner),
-      as: :json
-
-    assert_response :unprocessable_entity
-    assert_equal I18n.t("list.reorder.incomplete"), response_body["error"]
-  end
-
-  def test_reorder_rejects_list_from_another_board
-    other_board = create(:board, owner: @owner)
-    other_list = create(:list, board: other_board, title: "Other")
-
-    patch reorder_api_v1_board_lists_path(@board.slug),
-      params: { list_ids: [@first_list.id, @second_list.id, other_list.id] },
-      headers: headers(@owner),
-      as: :json
-
-    assert_response :not_found
-  end
-
-  def test_reorder_rejects_non_member
-    patch reorder_api_v1_board_lists_path(@board.slug),
-      params: { list_ids: [@third_list.id, @first_list.id, @second_list.id] },
+  def test_move_rejects_non_member
+    patch move_api_v1_board_list_path(@board.slug, @third_list),
+      params: { position: 1 },
       headers: headers(@other_user),
       as: :json
 

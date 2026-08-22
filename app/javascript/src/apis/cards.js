@@ -17,12 +17,12 @@ const update = ({ id, ...payload }) =>
     card: payload,
   });
 
-const reorder = ({ boardSlug, listId, cardIds }) =>
-  axios.patch(
-    `${ADMIN_API_BASE_URL}/boards/${boardSlug}/lists/${listId}/cards/reorder`,
-    { card_ids: cardIds }
-  );
+const move = ({ id, listId, position }) =>
+  axios.patch(`${ADMIN_API_BASE_URL}/cards/${id}/move`, {
+    list_id: listId,
+    position,
+  });
 
-const cardsApi = { create, reorder, show, update };
+const cardsApi = { create, move, show, update };
 
 export default cardsApi;

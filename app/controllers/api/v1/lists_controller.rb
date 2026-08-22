@@ -4,7 +4,7 @@ class Api::V1::ListsController < ApplicationController
   after_action :verify_authorized
 
   before_action :load_board
-  before_action :load_list, only: %i[update destroy]
+  before_action :load_list, only: %i[update destroy move]
 
   def update
     authorize @list
@@ -18,16 +18,15 @@ class Api::V1::ListsController < ApplicationController
     render_notice(t("successfully_deleted", count: 1, entity: "List"))
   end
 
-  def reorder
-    list = List.new(board: @board)
-    authorize list, :reorder?
+  def move
+    authorize @list, :move?
 
-    ListReorderService.new(
-      board: @board,
-      list_ids: reorder_list_ids
+    ListMoveService.new(
+      list: @list,
+      position: move_params[:position]
     ).process
 
-    render_notice(t("successfully_updated", entity: "Lists"), :ok)
+    render_notice(t("successfully_updated", entity: "List"), :ok)
   end
 
   private
@@ -44,7 +43,7 @@ class Api::V1::ListsController < ApplicationController
       params.require(:list).permit(:title)
     end
 
-    def reorder_list_ids
-      params.require(:list_ids)
+    def move_params
+      params.permit(:position)
     end
 end

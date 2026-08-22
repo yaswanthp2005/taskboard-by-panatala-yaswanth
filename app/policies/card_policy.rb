@@ -13,7 +13,7 @@ class CardPolicy < ApplicationPolicy
     accessible?
   end
 
-  def reorder?
+  def move?
     accessible?
   end
 

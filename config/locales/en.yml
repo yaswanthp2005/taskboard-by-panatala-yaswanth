@@ -55,10 +55,9 @@ en:
     only_owner_can_invite: "Only the board owner can invite members."
     owner_cannot_be_member: "The board owner cannot be added as a member."
   list:
-    reorder:
-      incomplete: "must include all lists for the board"
-      invalid: "contains duplicate list ids"
+    move:
+      invalid_position: "must be a positive integer"
   card:
-    reorder:
-      incomplete: "must include all cards for the list"
-      invalid: "contains duplicate card ids"
+    move:
+      invalid_list: "must belong to the same board as the card"
+      invalid_position: "must be a positive integer"

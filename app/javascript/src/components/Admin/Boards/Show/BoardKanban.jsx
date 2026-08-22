@@ -1,6 +1,7 @@
 import React, { useCallback, useEffect, useState } from "react";
 
 import BoardView from "@bigbinary/neeto-molecules/BoardView";
+import { useReorderCards } from "components/hooks/reactQuery/useCardsApi";
 import {
   useDeleteList,
   useReorderLists,
@@ -17,6 +18,7 @@ const BoardKanban = ({ boardSlug, lists = [] }) => {
   const [sections, setSections] = useState(() => mapListsToSections(lists));
   const [listToDelete, setListToDelete] = useState(null);
   const { mutateAsync: reorderLists } = useReorderLists(boardSlug);
+  const { mutateAsync: reorderCards } = useReorderCards(boardSlug);
   const { mutateAsync: deleteList, isLoading: isDeletingList } =
     useDeleteList(boardSlug);
 
@@ -43,11 +45,33 @@ const BoardKanban = ({ boardSlug, lists = [] }) => {
     [reorderLists, sections]
   );
 
-  const handleMoveItem = useCallback((source, destination) => {
-    setSections(currentSections =>
-      moveItem(currentSections, source, destination)
-    );
-  }, []);
+  const handleMoveItem = useCallback(
+    async (source, destination) => {
+      const previousSections = sections;
+      const nextSections = moveItem(sections, source, destination);
+
+      setSections(nextSections);
+
+      if (source.section.id !== destination.section.id) {
+        return;
+      }
+
+      const reorderedSection = nextSections.find(
+        section => section.id === source.section.id
+      );
+
+      try {
+        await reorderCards({
+          listId: source.section.id,
+          cardIds: reorderedSection.items.map(item => item.id),
+        });
+      } catch (error) {
+        setSections(previousSections);
+        logger.error(error);
+      }
+    },
+    [reorderCards, sections]
+  );
 
   const handleDeleteList = async () => {
     if (!listToDelete) {

@@ -13,7 +13,11 @@ Rails.application.routes.draw do
             collection do
               patch :reorder
             end
-            resources :cards, only: %i[create show update], shallow: true
+            resources :cards, only: %i[create show update], shallow: true do
+              collection do
+                patch :reorder
+              end
+            end
           end
         end
       end

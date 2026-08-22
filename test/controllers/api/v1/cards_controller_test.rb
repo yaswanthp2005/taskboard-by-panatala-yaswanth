@@ -106,4 +106,79 @@ class Api::V1::CardsControllerTest < ActionDispatch::IntegrationTest
     assert_response :not_found
     assert_equal "Fix login bug", @card.reload.title
   end
+
+  def test_reorder_updates_card_positions_within_list
+    second_card = create(:card, list: @list, title: "Write tests")
+    third_card = create(:card, list: @list, title: "Review PR")
+
+    patch reorder_api_v1_board_list_cards_path(@board.slug, @list),
+      params: { card_ids: [third_card.id, @card.id, second_card.id] },
+      headers: headers(@owner),
+      as: :json
+
+    assert_response :success
+    assert_equal [third_card, @card, second_card], @list.cards.to_a
+    assert_equal [1, 2, 3], @list.cards.pluck(:position)
+    assert_equal I18n.t("successfully_updated", entity: "Cards"), response_body["notice"]
+  end
+
+  def test_reorder_allows_board_member
+    create(:board_member, board: @board, user: @member)
+    second_card = create(:card, list: @list, title: "Write tests")
+
+    patch reorder_api_v1_board_list_cards_path(@board.slug, @list),
+      params: { card_ids: [second_card.id, @card.id] },
+      headers: headers(@member),
+      as: :json
+
+    assert_response :success
+    assert_equal [second_card, @card], @list.cards.to_a
+  end
+
+  def test_reorder_rejects_duplicate_card_ids
+    create(:card, list: @list, title: "Write tests")
+
+    patch reorder_api_v1_board_list_cards_path(@board.slug, @list),
+      params: { card_ids: [@card.id, @card.id] },
+      headers: headers(@owner),
+      as: :json
+
+    assert_response :unprocessable_entity
+    assert_equal I18n.t("card.reorder.invalid"), response_body["error"]
+  end
+
+  def test_reorder_rejects_incomplete_card_ids
+    create(:card, list: @list, title: "Write tests")
+
+    patch reorder_api_v1_board_list_cards_path(@board.slug, @list),
+      params: { card_ids: [@card.id] },
+      headers: headers(@owner),
+      as: :json
+
+    assert_response :unprocessable_entity
+    assert_equal I18n.t("card.reorder.incomplete"), response_body["error"]
+  end
+
+  def test_reorder_rejects_card_from_another_list
+    other_list = create(:list, board: @board, title: "Done")
+    other_card = create(:card, list: other_list, title: "Ship feature")
+
+    patch reorder_api_v1_board_list_cards_path(@board.slug, @list),
+      params: { card_ids: [other_card.id] },
+      headers: headers(@owner),
+      as: :json
+
+    assert_response :not_found
+  end
+
+  def test_reorder_rejects_non_member
+    second_card = create(:card, list: @list, title: "Write tests")
+
+    patch reorder_api_v1_board_list_cards_path(@board.slug, @list),
+      params: { card_ids: [second_card.id, @card.id] },
+      headers: headers(@other_user),
+      as: :json
+
+    assert_response :not_found
+  end
 end

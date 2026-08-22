@@ -13,6 +13,10 @@ class CardPolicy < ApplicationPolicy
     accessible?
   end
 
+  def reorder?
+    accessible?
+  end
+
   private
 
     def accessible?

@@ -58,3 +58,7 @@ en:
     reorder:
       incomplete: "must include all lists for the board"
       invalid: "contains duplicate list ids"
+  card:
+    reorder:
+      incomplete: "must include all cards for the list"
+      invalid: "contains duplicate card ids"

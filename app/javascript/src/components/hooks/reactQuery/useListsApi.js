@@ -13,45 +13,11 @@ const useUpdateList = boardSlug => {
   });
 };
 
-const useReorderLists = boardSlug => {
+const useMoveList = boardSlug => {
   const queryClient = useQueryClient();
 
-  return useMutation(payload => listsApi.reorder({ boardSlug, ...payload }), {
-    onMutate: async ({ listIds }) => {
-      await queryClient.cancelQueries([QUERY_KEYS.BOARDS, boardSlug]);
-
-      const previousBoard = queryClient.getQueryData([
-        QUERY_KEYS.BOARDS,
-        boardSlug,
-      ]);
-
-      if (!previousBoard) {
-        return { previousBoard };
-      }
-
-      const listsById = Object.fromEntries(
-        (previousBoard.lists ?? []).map(list => [list.id, list])
-      );
-
-      queryClient.setQueryData([QUERY_KEYS.BOARDS, boardSlug], {
-        ...previousBoard,
-        lists: listIds.map((id, index) => ({
-          ...listsById[id],
-          position: index + 1,
-        })),
-      });
-
-      return { previousBoard };
-    },
-    onError: (_error, _payload, context) => {
-      if (context?.previousBoard) {
-        queryClient.setQueryData(
-          [QUERY_KEYS.BOARDS, boardSlug],
-          context.previousBoard
-        );
-      }
-    },
-    onSettled: () => {
+  return useMutation(payload => listsApi.move({ boardSlug, ...payload }), {
+    onSuccess: () => {
       queryClient.invalidateQueries([QUERY_KEYS.BOARDS, boardSlug]);
     },
   });
@@ -67,4 +33,4 @@ const useDeleteList = boardSlug => {
   });
 };
 
-export { useDeleteList, useReorderLists, useUpdateList };
+export { useDeleteList, useMoveList, useUpdateList };

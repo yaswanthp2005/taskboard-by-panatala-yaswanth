@@ -9,7 +9,7 @@ class ListPolicy < ApplicationPolicy
     accessible?
   end
 
-  def reorder?
+  def move?
     accessible?
   end
 

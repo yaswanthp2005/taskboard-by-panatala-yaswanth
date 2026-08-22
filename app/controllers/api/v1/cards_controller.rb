@@ -3,9 +3,9 @@
 class Api::V1::CardsController < ApplicationController
   after_action :verify_authorized
 
-  before_action :load_board, only: %i[create reorder]
-  before_action :load_list, only: %i[create reorder]
-  before_action :load_card, only: %i[show update]
+  before_action :load_board, only: :create
+  before_action :load_list, only: :create
+  before_action :load_card, only: %i[show update move]
 
   def create
     card = @list.cards.build(card_params)
@@ -24,16 +24,18 @@ class Api::V1::CardsController < ApplicationController
     render_notice(t("successfully_updated", entity: "Card"), :ok)
   end
 
-  def reorder
-    card = Card.new(list: @list)
-    authorize card, :reorder?
+  def move
+    authorize @card, :move?
 
-    CardReorderService.new(
-      list: @list,
-      card_ids: reorder_card_ids
+    destination_list = @card.board.lists.find(move_params[:list_id])
+
+    CardMoveService.new(
+      card: @card,
+      destination_list:,
+      position: move_params[:position]
     ).process
 
-    render_notice(t("successfully_updated", entity: "Cards"), :ok)
+    render_notice(t("successfully_updated", entity: "Card"), :ok)
   end
 
   private
@@ -54,7 +56,7 @@ class Api::V1::CardsController < ApplicationController
       params.require(:card).permit(:title)
     end
 
-    def reorder_card_ids
-      params.require(:card_ids)
+    def move_params
+      params.permit(:list_id, :position)
     end
 end

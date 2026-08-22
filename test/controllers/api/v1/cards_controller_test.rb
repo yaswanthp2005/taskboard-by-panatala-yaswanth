@@ -216,4 +216,32 @@ class Api::V1::CardsControllerTest < ActionDispatch::IntegrationTest
     assert_response :not_found
     assert_equal @list, @card.reload.list
   end
+
+  def test_destroy_deletes_card_for_owner
+    assert_difference -> { Card.count }, -1 do
+      delete api_v1_card_path(@card), headers: headers(@owner), as: :json
+    end
+
+    assert_response :success
+    assert_equal I18n.t("successfully_deleted", count: 1, entity: "Card"), response_body["notice"]
+  end
+
+  def test_destroy_allows_board_member
+    create(:board_member, board: @board, user: @member)
+
+    assert_difference -> { Card.count }, -1 do
+      delete api_v1_card_path(@card), headers: headers(@member), as: :json
+    end
+
+    assert_response :success
+  end
+
+  def test_destroy_rejects_non_member
+    assert_no_difference -> { Card.count } do
+      delete api_v1_card_path(@card), headers: headers(@other_user), as: :json
+    end
+
+    assert_response :not_found
+    assert Card.exists?(@card.id)
+  end
 end

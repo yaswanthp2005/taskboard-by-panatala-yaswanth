@@ -1,7 +1,8 @@
-import React from "react";
+import React, { useState } from "react";
 
 import {
   useCreateCard,
+  useDeleteCard,
   useFetchCard,
   useUpdateCard,
 } from "components/hooks/reactQuery/useCardsApi";
@@ -15,16 +16,20 @@ import {
   buildCardDetailFormInitialValues,
   CARD_DETAIL_FORM_VALIDATION_SCHEMA,
 } from "./constants";
+import DeleteCardAlert from "./DeleteCardAlert";
 import DueDateField from "./DueDateField";
 import Footer from "./Footer";
 
 const CardDetailPane = ({ boardSlug, cardId, isOpen, listId, onClose }) => {
   const { t } = useTranslation();
   const isCreateMode = Boolean(listId) && !cardId;
+  const [cardToDelete, setCardToDelete] = useState(null);
   const { data: card, isLoading } = useFetchCard(cardId, {
     enabled: isOpen && Boolean(cardId),
   });
   const { mutateAsync: createCard } = useCreateCard(boardSlug);
+  const { mutateAsync: deleteCard, isLoading: isDeletingCard } =
+    useDeleteCard(boardSlug);
   const { mutateAsync: updateCard } = useUpdateCard(boardSlug);
 
   const handleSubmit = async (values, { resetForm, setSubmitting }) => {
@@ -47,6 +52,20 @@ const CardDetailPane = ({ boardSlug, cardId, isOpen, listId, onClose }) => {
       logger.error(error);
     } finally {
       setSubmitting(false);
+    }
+  };
+
+  const handleDelete = async () => {
+    if (!cardToDelete) {
+      return;
+    }
+
+    try {
+      await deleteCard({ id: cardToDelete.id });
+      setCardToDelete(null);
+      onClose();
+    } catch (error) {
+      logger.error(error);
     }
   };
 
@@ -83,7 +102,14 @@ const CardDetailPane = ({ boardSlug, cardId, isOpen, listId, onClose }) => {
         </div>
       </Pane.Body>
       <Pane.Footer>
-        <Footer onClose={onClose} />
+        <Footer
+          onClose={onClose}
+          onDelete={
+            isCreateMode
+              ? undefined
+              : () => setCardToDelete({ id: cardId, title: card?.title })
+          }
+        />
       </Pane.Footer>
     </NeetoUIForm>
   );
@@ -108,14 +134,28 @@ const CardDetailPane = ({ boardSlug, cardId, isOpen, listId, onClose }) => {
   };
 
   return (
-    <Pane closeButton closeOnEsc isOpen={isOpen} size="large" onClose={onClose}>
-      <Pane.Header>
-        <Typography style="h3" weight="semibold">
-          {t(isCreateMode ? "cardDetail.addTitle" : "cardDetail.title")}
-        </Typography>
-      </Pane.Header>
-      {renderContent()}
-    </Pane>
+    <>
+      <Pane
+        closeButton
+        closeOnEsc
+        isOpen={isOpen}
+        size="large"
+        onClose={onClose}
+      >
+        <Pane.Header>
+          <Typography style="h3" weight="semibold">
+            {t(isCreateMode ? "cardDetail.addTitle" : "cardDetail.title")}
+          </Typography>
+        </Pane.Header>
+        {renderContent()}
+      </Pane>
+      <DeleteCardAlert
+        cardToDelete={cardToDelete}
+        isDeleting={isDeletingCard}
+        onClose={() => setCardToDelete(null)}
+        onSubmit={handleDelete}
+      />
+    </>
   );
 };
 

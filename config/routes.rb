@@ -13,7 +13,7 @@ Rails.application.routes.draw do
             member do
               patch :move
             end
-            resources :cards, only: %i[create show update], shallow: true do
+            resources :cards, only: %i[create show update destroy], shallow: true do
               member do
                 patch :move
               end

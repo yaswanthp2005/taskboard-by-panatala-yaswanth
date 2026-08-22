@@ -17,6 +17,10 @@ class CardPolicy < ApplicationPolicy
     accessible?
   end
 
+  def destroy?
+    accessible?
+  end
+
   private
 
     def accessible?

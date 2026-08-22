@@ -21,6 +21,8 @@ const update = ({ id, ...payload }) =>
 const move = ({ id, ...payload }) =>
   axios.patch(`${ADMIN_API_BASE_URL}/cards/${id}/move`, camelToSnake(payload));
 
-const cardsApi = { create, move, show, update };
+const destroy = ({ id }) => axios.delete(`${ADMIN_API_BASE_URL}/cards/${id}`);
+
+const cardsApi = { create, destroy, move, show, update };
 
 export default cardsApi;

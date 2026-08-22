@@ -76,7 +76,12 @@
     "addList": "Add list",
     "addListDescription": "Add another stage to this board",
     "addCard": "Add card",
-    "defaultCardTitle": "New card"
+    "defaultCardTitle": "New card",
+    "deleteList": {
+      "action": "Delete list",
+      "title": "Delete list?",
+      "confirmMessage": "Are you sure you want to delete the list <1>{{name}}</1>? All cards in this list will also be deleted."
+    }
   },
   "neetoMolecules": {
     "errorPage": {

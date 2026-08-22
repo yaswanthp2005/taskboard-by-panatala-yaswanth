@@ -7,6 +7,14 @@ const update = ({ boardSlug, id, ...payload }) =>
     list: payload,
   });
 
-const listsApi = { update };
+const destroy = ({ boardSlug, id }) =>
+  axios.delete(`${ADMIN_API_BASE_URL}/boards/${boardSlug}/lists/${id}`);
+
+const reorder = ({ boardSlug, listIds }) =>
+  axios.patch(`${ADMIN_API_BASE_URL}/boards/${boardSlug}/lists/reorder`, {
+    list_ids: listIds,
+  });
+
+const listsApi = { destroy, reorder, update };
 
 export default listsApi;

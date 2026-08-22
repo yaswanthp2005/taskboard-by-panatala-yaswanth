@@ -5,6 +5,14 @@ class ListPolicy < ApplicationPolicy
     accessible?
   end
 
+  def destroy?
+    accessible?
+  end
+
+  def reorder?
+    accessible?
+  end
+
   private
 
     def accessible?

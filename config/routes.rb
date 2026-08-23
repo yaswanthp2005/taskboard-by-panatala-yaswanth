@@ -18,6 +18,7 @@ Rails.application.routes.draw do
               member do
                 patch :move
               end
+              resources :checklist_items, only: %i[create update destroy]
             end
           end
         end

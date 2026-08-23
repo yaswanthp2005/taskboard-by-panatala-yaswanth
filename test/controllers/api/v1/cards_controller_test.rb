@@ -145,6 +145,18 @@ class Api::V1::CardsControllerTest < ActionDispatch::IntegrationTest
     assert_equal "#EF4444", response_body["labels"].first["color"]
   end
 
+  def test_show_includes_checklist_items
+    completed_item = create(:checklist_item, card: @card, text: "Done task", is_complete: true)
+    pending_item = create(:checklist_item, card: @card, text: "Pending task")
+
+    get api_v1_card_path(@card), headers: headers(@owner), as: :json
+
+    assert_response :success
+    assert_equal 2, response_body["checklist_items"].size
+    assert_equal [completed_item.id, pending_item.id], response_body["checklist_items"].pluck("id")
+    assert_equal [true, false], response_body["checklist_items"].pluck("is_complete")
+  end
+
   def test_update_attaches_labels
     bug_label = create(:label, board: @board, name: "Bug")
     feature_label = create(:label, board: @board, name: "Feature")

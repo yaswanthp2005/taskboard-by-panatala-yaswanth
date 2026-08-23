@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2026_08_23_140000) do
+ActiveRecord::Schema[7.1].define(version: 2026_08_23_160000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pgcrypto"
   enable_extension "plpgsql"
@@ -60,6 +60,15 @@ ActiveRecord::Schema[7.1].define(version: 2026_08_23_140000) do
     t.index ["list_id"], name: "index_cards_on_list_id"
   end
 
+  create_table "checklist_items", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.uuid "card_id", null: false
+    t.string "text", null: false
+    t.boolean "is_complete", default: false, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["card_id"], name: "index_checklist_items_on_card_id"
+  end
+
   create_table "labels", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
     t.uuid "board_id", null: false
     t.string "name", null: false
@@ -98,6 +107,7 @@ ActiveRecord::Schema[7.1].define(version: 2026_08_23_140000) do
   add_foreign_key "card_labels", "cards"
   add_foreign_key "card_labels", "labels"
   add_foreign_key "cards", "lists"
+  add_foreign_key "checklist_items", "cards"
   add_foreign_key "labels", "boards"
   add_foreign_key "lists", "boards"
 end

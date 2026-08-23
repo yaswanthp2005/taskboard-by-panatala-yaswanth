@@ -57,7 +57,7 @@ class Api::V1::CardsController < ApplicationController
     def load_card
       @card = Card.joins(list: :board)
         .merge(policy_scope(Board))
-        .includes(:labels)
+        .includes(:labels, :checklist_items)
         .find(params[:id])
     end
 

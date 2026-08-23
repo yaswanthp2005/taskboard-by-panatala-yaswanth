@@ -10,6 +10,7 @@ class Card < ApplicationRecord
 
   has_many :card_labels, dependent: :destroy
   has_many :labels, through: :card_labels
+  has_many :checklist_items, -> { order(:created_at) }, dependent: :destroy, inverse_of: :card
 
   acts_as_list scope: :list, add_new_at: :bottom
 

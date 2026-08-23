@@ -6,6 +6,13 @@ class Api::V1::ListsController < ApplicationController
   before_action :load_board
   before_action :load_list, only: %i[update destroy move]
 
+  def create
+    list = @board.lists.build(list_params)
+    authorize list
+    list.save!
+    render_notice(t("successfully_created", entity: "List"), :ok)
+  end
+
   def update
     authorize @list
     @list.update!(list_params)

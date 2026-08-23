@@ -144,4 +144,40 @@ class Api::V1::ChecklistItemsControllerTest < ActionDispatch::IntegrationTest
     assert_response :not_found
     assert ChecklistItem.exists?(@checklist_item.id)
   end
+
+  def test_bulk_delete_deletes_all_checklist_items_for_owner
+    create(:checklist_item, card: @card, text: "Deploy")
+
+    assert_difference -> { @card.checklist_items.count }, -2 do
+      delete bulk_delete_api_v1_card_checklist_items_path(@card),
+        headers: headers(@owner),
+        as: :json
+    end
+
+    assert_response :success
+    assert_equal I18n.t("successfully_deleted", count: 2, entity: "Checklist item"), response_body["notice"]
+  end
+
+  def test_bulk_delete_allows_board_member
+    create(:board_member, board: @board, user: @member)
+
+    assert_difference -> { @card.checklist_items.count }, -1 do
+      delete bulk_delete_api_v1_card_checklist_items_path(@card),
+        headers: headers(@member),
+        as: :json
+    end
+
+    assert_response :success
+  end
+
+  def test_bulk_delete_rejects_non_member
+    assert_no_difference -> { @card.checklist_items.count } do
+      delete bulk_delete_api_v1_card_checklist_items_path(@card),
+        headers: headers(@other_user),
+        as: :json
+    end
+
+    assert_response :not_found
+    assert ChecklistItem.exists?(@checklist_item.id)
+  end
 end

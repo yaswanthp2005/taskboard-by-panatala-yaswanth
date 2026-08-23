@@ -6,11 +6,11 @@ Rails.application.routes.draw do
     namespace :api do
       namespace :v1 do
         resources :users, only: :create
-        resource :session, only: :create
+        resource :session, only: %i[create destroy]
         resources :boards, only: %i[index show create update destroy], param: :slug do
           resources :members, only: :create, controller: "board_members"
           resources :labels, only: %i[index create update destroy]
-          resources :lists, only: %i[update destroy] do
+          resources :lists, only: %i[create update destroy] do
             member do
               patch :move
             end
@@ -18,7 +18,11 @@ Rails.application.routes.draw do
               member do
                 patch :move
               end
-              resources :checklist_items, only: %i[create update destroy]
+              resources :checklist_items, only: %i[create update destroy] do
+                collection do
+                  delete :bulk_delete
+                end
+              end
             end
           end
         end

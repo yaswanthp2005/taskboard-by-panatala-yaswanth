@@ -1,17 +1,14 @@
-import routes from "constants/routes";
-
 import React, { useState } from "react";
 
 import Container from "@bigbinary/neeto-molecules/Container";
-import Header from "@bigbinary/neeto-molecules/Header";
 import Scrollable from "@bigbinary/neeto-molecules/Scrollable";
+import BoardNavHeader from "components/Admin/Boards/Show/BoardNavHeader";
 import { useFetchBoard } from "components/hooks/reactQuery/useBoardsApi";
 import { useFetchLabels } from "components/hooks/reactQuery/useLabelsApi";
-import { Plus } from "neetoicons";
-import { Button, NoData, Spinner, Typography } from "neetoui";
+import Sidebar from "components/Sidebar";
+import { NoData, Spinner, Typography } from "neetoui";
 import { useTranslation } from "react-i18next";
 import { useParams } from "react-router-dom";
-import { buildURL } from "utils/buildURL";
 import withTitle from "utils/withTitle";
 
 import LabelsHeader from "./Header";
@@ -51,75 +48,62 @@ const Labels = () => {
 
   if (isBoardLoading || isLabelsLoading) {
     return (
-      <Container className="flex min-h-screen items-center justify-center">
+      <div className="flex min-h-screen items-center justify-center">
         <Spinner />
-      </Container>
+      </div>
     );
   }
 
   if (isBoardError || !board) {
     return (
-      <Container className="flex min-h-screen items-center justify-center">
+      <div className="flex min-h-screen items-center justify-center">
         <Typography style="body1">{t("common.somethingWentWrong")}</Typography>
-      </Container>
+      </div>
     );
   }
 
   const editingLabel = labelModal?.mode === "edit" ? labelModal.label : null;
 
   return (
-    <Container isHeaderFixed>
-      <Header
-        title={t("labels.pageTitle")}
-        breadcrumbs={[
-          {
-            text: t("boards.title"),
-            link: routes.boards.index,
-          },
-          {
-            text: board.name,
-            link: buildURL({ path: routes.boards.show, slug: board.slug }),
-          },
-          {
-            text: t("labels.title"),
-          },
-        ]}
-      />
-      <Scrollable className="flex w-full flex-col px-6 py-6" size="small">
-        <div className="max-w-3xl">
-          <LabelsHeader />
-          {labels.length === 0 ? (
-            <div className="flex flex-col items-center gap-y-4">
-              <NoData title={t("labels.emptyState.title")} />
-              <Button
-                disabled={isModalOpen}
-                icon={Plus}
-                label={t("labels.addNewLabel")}
-                style="link"
-                onClick={handleOpenCreateModal}
+    <div className="flex min-h-screen bg-white">
+      <Sidebar />
+      <main className="flex min-h-0 flex-1 flex-col overflow-hidden">
+        <Container
+          isHeaderFixed
+          className="!h-full min-h-0 flex-1 !overflow-hidden"
+        >
+          <BoardNavHeader board={board} />
+          <Scrollable className="flex min-h-0 flex-1 flex-col" size="medium">
+            <div className="px-5 py-6 lg:px-10">
+              <LabelsHeader
+                isAddDisabled={isModalOpen}
+                onAddLabel={handleOpenCreateModal}
               />
+              <div className="max-w-3xl">
+                {labels.length === 0 ? (
+                  <NoData title={t("labels.emptyState.title")} />
+                ) : (
+                  <LabelsList
+                    boardSlug={board.slug}
+                    labelToDelete={labelToDelete}
+                    labels={labels}
+                    onCloseDeleteAlert={handleCloseDeleteAlert}
+                    onDelete={setLabelToDelete}
+                    onEdit={handleOpenEditModal}
+                  />
+                )}
+              </div>
             </div>
-          ) : (
-            <LabelsList
-              boardSlug={board.slug}
-              isAddDisabled={isModalOpen}
-              labelToDelete={labelToDelete}
-              labels={labels}
-              onAddLabel={handleOpenCreateModal}
-              onCloseDeleteAlert={handleCloseDeleteAlert}
-              onDelete={setLabelToDelete}
-              onEdit={handleOpenEditModal}
-            />
-          )}
-        </div>
-      </Scrollable>
+          </Scrollable>
+        </Container>
+      </main>
       <LabelFormModal
         boardSlug={board.slug}
         isOpen={isModalOpen}
         label={editingLabel}
         onClose={handleCloseModal}
       />
-    </Container>
+    </div>
   );
 };
 

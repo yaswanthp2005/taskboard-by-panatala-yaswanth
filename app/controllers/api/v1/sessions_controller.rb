@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 class Api::V1::SessionsController < ApplicationController
-  skip_before_action :authenticate_user_using_x_auth_token
+  skip_before_action :authenticate_user_using_x_auth_token, only: :create
 
   def create
     @user = User.find_by!(email: login_params[:email].downcase)
@@ -12,6 +12,7 @@ class Api::V1::SessionsController < ApplicationController
   end
 
   def destroy
+    current_user.regenerate_authentication_token
   end
 
   private

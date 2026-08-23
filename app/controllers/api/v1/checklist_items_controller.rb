@@ -3,7 +3,7 @@
 class Api::V1::ChecklistItemsController < ApplicationController
   after_action :verify_authorized
 
-  before_action :load_card, only: :create
+  before_action :load_card, only: %i[create bulk_delete]
   before_action :load_checklist_item, only: %i[update destroy]
 
   def create
@@ -11,6 +11,13 @@ class Api::V1::ChecklistItemsController < ApplicationController
     authorize checklist_item
     checklist_item.save!
     render_notice(t("successfully_created", entity: "Checklist item"), :ok)
+  end
+
+  def bulk_delete
+    checklist_item = ChecklistItem.new(card: @card)
+    authorize checklist_item, :bulk_delete?
+    deleted_count = @card.checklist_items.destroy_all.size
+    render_notice(t("successfully_deleted", count: deleted_count, entity: "Checklist item"))
   end
 
   def update

@@ -1,24 +1,18 @@
 import React from "react";
 
 import { useDeleteLabel } from "components/hooks/reactQuery/useLabelsApi";
-import { Plus } from "neetoicons";
-import { Button } from "neetoui";
-import { useTranslation } from "react-i18next";
 
 import DeleteAlert from "./DeleteAlert";
 import LabelRow from "./LabelRow";
 
 const LabelsList = ({
   boardSlug,
-  isAddDisabled,
   labelToDelete,
   labels,
-  onAddLabel,
   onCloseDeleteAlert,
   onDelete,
   onEdit,
 }) => {
-  const { t } = useTranslation();
   const { mutateAsync: deleteLabel, isLoading: isDeleting } =
     useDeleteLabel(boardSlug);
 
@@ -42,15 +36,6 @@ const LabelsList = ({
             onEdit={onEdit}
           />
         ))}
-      </div>
-      <div className="mt-4">
-        <Button
-          disabled={isAddDisabled}
-          icon={Plus}
-          label={t("labels.addNewLabel")}
-          style="link"
-          onClick={onAddLabel}
-        />
       </div>
       <DeleteAlert
         isDeleting={isDeleting}

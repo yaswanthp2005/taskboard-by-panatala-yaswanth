@@ -1,7 +1,10 @@
 import React, { useCallback, useEffect, useState } from "react";
 
 import BoardView from "@bigbinary/neeto-molecules/BoardView";
-import { useMoveCard } from "components/hooks/reactQuery/useCardsApi";
+import {
+  useDeleteCard,
+  useMoveCard,
+} from "components/hooks/reactQuery/useCardsApi";
 import {
   useDeleteList,
   useMoveList,
@@ -10,17 +13,27 @@ import PropTypes from "prop-types";
 
 import AddListColumn from "./AddListColumn";
 import CardDetailPane from "./CardDetailPane";
+import DeleteCardAlert from "./CardDetailPane/DeleteCardAlert";
 import DeleteListAlert from "./DeleteListAlert";
 import ListColumn from "./ListColumn";
 import TaskCard from "./TaskCard";
 import { mapListsToSections, moveItem, moveSection } from "./utils";
 
-const BoardKanban = ({ boardSlug, lists = [] }) => {
+const BoardKanban = ({
+  boardSlug,
+  isAddingList,
+  lists = [],
+  onCancelAddList,
+}) => {
   const [sections, setSections] = useState(() => mapListsToSections(lists));
   const [listToDelete, setListToDelete] = useState(null);
+  const [cardToDelete, setCardToDelete] = useState(null);
   const [cardPane, setCardPane] = useState(null);
   const { mutateAsync: moveList } = useMoveList(boardSlug);
   const { mutateAsync: moveCard } = useMoveCard(boardSlug);
+  const { mutateAsync: deleteCard, isLoading: isDeletingCard } =
+    useDeleteCard(boardSlug);
+
   const { mutateAsync: deleteList, isLoading: isDeletingList } =
     useDeleteList(boardSlug);
 
@@ -96,9 +109,30 @@ const BoardKanban = ({ boardSlug, lists = [] }) => {
     }
   };
 
+  const handleDeleteCard = async () => {
+    if (!cardToDelete) {
+      return;
+    }
+
+    try {
+      await deleteCard({ id: cardToDelete.id });
+      setCardToDelete(null);
+    } catch (error) {
+      logger.error(error);
+    }
+  };
+
+  const handleRequestDeleteCard = card => {
+    if (cardPane?.type === "show" && cardPane.cardId === card.id) {
+      setCardPane(null);
+    }
+
+    setCardToDelete(card);
+  };
+
   return (
     <>
-      <div className="flex h-full min-h-0 w-full items-start gap-x-3 overflow-x-auto pb-4 pt-4">
+      <div className="flex h-full min-h-0 w-full min-w-0 items-start gap-x-3 overflow-x-auto px-5 pb-4 pt-2 lg:px-10">
         <BoardView
           className="h-full items-start"
           renderItemOverlay={({ item }) => <TaskCard item={item} />}
@@ -109,9 +143,13 @@ const BoardKanban = ({ boardSlug, lists = [] }) => {
               isDragAndDropDisabled={isDragAndDropDisabled}
               section={section}
               onAddCard={listId => setCardPane({ type: "create", listId })}
+              onCardDelete={handleRequestDeleteCard}
               onDelete={setListToDelete}
               onCardClick={item =>
-                setCardPane({ type: "edit", cardId: item.id })
+                setCardPane({ type: "show", cardId: item.id, isEditing: false })
+              }
+              onCardEdit={item =>
+                setCardPane({ type: "show", cardId: item.id, isEditing: true })
               }
             />
           )}
@@ -125,7 +163,13 @@ const BoardKanban = ({ boardSlug, lists = [] }) => {
           onMoveItem={handleMoveItem}
           onMoveSection={handleMoveSection}
         />
-        <AddListColumn />
+        {isAddingList && (
+          <AddListColumn
+            boardSlug={boardSlug}
+            onCancel={onCancelAddList}
+            onCreated={onCancelAddList}
+          />
+        )}
       </div>
       <DeleteListAlert
         isDeleting={isDeletingList}
@@ -133,12 +177,20 @@ const BoardKanban = ({ boardSlug, lists = [] }) => {
         onClose={() => setListToDelete(null)}
         onSubmit={handleDeleteList}
       />
+      <DeleteCardAlert
+        cardToDelete={cardToDelete}
+        isDeleting={isDeletingCard}
+        onClose={() => setCardToDelete(null)}
+        onSubmit={handleDeleteCard}
+      />
       <CardDetailPane
         boardSlug={boardSlug}
-        cardId={cardPane?.type === "edit" ? cardPane.cardId : null}
+        cardId={cardPane?.type === "show" ? cardPane.cardId : null}
+        initialEditing={cardPane?.isEditing ?? false}
         isOpen={Boolean(cardPane)}
         listId={cardPane?.type === "create" ? cardPane.listId : null}
         onClose={() => setCardPane(null)}
+        onDelete={handleRequestDeleteCard}
       />
     </>
   );
@@ -146,7 +198,15 @@ const BoardKanban = ({ boardSlug, lists = [] }) => {
 
 BoardKanban.propTypes = {
   boardSlug: PropTypes.string.isRequired,
+  isAddingList: PropTypes.bool,
   lists: PropTypes.array,
+  onCancelAddList: PropTypes.func,
+};
+
+BoardKanban.defaultProps = {
+  isAddingList: false,
+  lists: [],
+  onCancelAddList: undefined,
 };
 
 export default BoardKanban;

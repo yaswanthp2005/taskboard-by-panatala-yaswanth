@@ -1,11 +1,18 @@
 {
-  "title": "TaskPractise",
-  "pageTitle": "{{title}} | TaskPractise",
+  "title": "TaskBoard",
+  "pageTitle": "{{title}} | TaskBoard",
   "common": {
     "cancel": "Cancel",
     "save": "Save",
     "yesDelete": "Yes, delete",
-    "somethingWentWrong": "Something went wrong!"
+    "somethingWentWrong": "Something went wrong!",
+    "user": "User"
+  },
+  "sidebar": {
+    "boards": "Boards",
+    "logout": "Logout",
+    "showMenu": "Show menu",
+    "hideMenu": "Hide menu"
   },
   "auth": {
     "signIn": "Sign In",
@@ -73,9 +80,16 @@
   },
   "boardView": {
     "pageTitle": "Board",
+    "tabs": {
+      "lists": "Lists",
+      "labels": "Labels"
+    },
     "addList": "Add list",
-    "addListDescription": "Add another stage to this board",
+    "addListPlaceholder": "Name this list…",
     "addCard": "Add card",
+    "todoCount": "{{count}} todos",
+    "searchPlaceholder": "Search todos",
+    "filter": "Filter",
     "defaultCardTitle": "New card",
     "deleteList": {
       "action": "Delete list",
@@ -119,6 +133,13 @@
   "cardDetail": {
     "title": "Card details",
     "addTitle": "Add card",
+    "edit": "Edit",
+    "noDescription": "No description",
+    "noDueDate": "No due date",
+    "noLabels": "No labels assigned",
+    "actions": {
+      "menu": "Card actions"
+    },
     "titleLabel": "Title",
     "titlePlaceholder": "Enter card title",
     "description": "Description",
@@ -127,19 +148,24 @@
     "dueDatePlaceholder": "Select due date",
     "labels": "Labels",
     "labelsEmpty": "No labels on this board yet. Add labels from board settings.",
+    "labelsPlaceholder": "Add label",
     "checklist": {
       "title": "Checklist",
-      "progress": "{{completed}}/{{total}}",
+      "itemPlaceholder": "Title",
+      "progress": "{{completed}} of {{total}} todo completed",
       "addItem": "Add item",
       "addItemLabel": "New item",
       "addItemPlaceholder": "Add a checklist item",
-      "removeItem": "Remove checklist item"
+      "removeItem": "Remove",
+      "deleteAll": "Delete all items",
+      "assignMember": "Assign member",
+      "setDueDate": "Set due date"
     },
     "validation": {
       "titleRequired": "Title is required"
     },
     "delete": {
-      "action": "Delete card",
+      "action": "Delete",
       "title": "Delete card?",
       "confirmMessage": "Are you sure you want to delete the card <1>{{title}}</1>?"
     }

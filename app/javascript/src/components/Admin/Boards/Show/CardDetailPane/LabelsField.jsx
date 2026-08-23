@@ -2,8 +2,21 @@ import React, { useMemo } from "react";
 
 import { useFetchLabels } from "components/hooks/reactQuery/useLabelsApi";
 import { useFormikContext } from "formik";
-import { Typography } from "neetoui";
+import { Dropdown, Tag, Typography } from "neetoui";
+import PropTypes from "prop-types";
 import { useTranslation } from "react-i18next";
+
+const LabelColorIcon = ({ color }) => (
+  <span
+    aria-hidden
+    className="inline-block h-2 w-2 shrink-0 rounded-full"
+    style={{ backgroundColor: color }}
+  />
+);
+
+LabelColorIcon.propTypes = {
+  color: PropTypes.string.isRequired,
+};
 
 const LabelsField = ({ boardSlug }) => {
   const { t } = useTranslation();
@@ -15,19 +28,33 @@ const LabelsField = ({ boardSlug }) => {
     [values.labelIds]
   );
 
-  const handleToggleLabel = labelId => {
+  const selectedLabels = useMemo(
+    () => labels.filter(label => selectedLabelIds.has(label.id)),
+    [labels, selectedLabelIds]
+  );
+
+  const availableLabels = useMemo(
+    () => labels.filter(label => !selectedLabelIds.has(label.id)),
+    [labels, selectedLabelIds]
+  );
+
+  const handleAddLabel = labelId => {
     const currentLabelIds = values.labelIds || [];
 
     if (selectedLabelIds.has(labelId)) {
-      setFieldValue(
-        "labelIds",
-        currentLabelIds.filter(id => id !== labelId)
-      );
-
       return;
     }
 
     setFieldValue("labelIds", [...currentLabelIds, labelId]);
+  };
+
+  const handleRemoveLabel = labelId => {
+    const currentLabelIds = values.labelIds || [];
+
+    setFieldValue(
+      "labelIds",
+      currentLabelIds.filter(id => id !== labelId)
+    );
   };
 
   if (isLoading) {
@@ -49,32 +76,56 @@ const LabelsField = ({ boardSlug }) => {
 
   return (
     <div className="flex w-full flex-col gap-y-2">
-      <Typography style="body2" weight="semibold">
-        {t("cardDetail.labels")}
-      </Typography>
-      <div className="flex flex-wrap gap-2">
-        {labels.map(label => {
-          const isSelected = selectedLabelIds.has(label.id);
-
-          return (
-            <button
-              className="rounded-full border px-3 py-1 text-xs font-medium transition-colors"
-              key={label.id}
-              type="button"
-              style={{
-                backgroundColor: isSelected ? label.color : "#ffffff",
-                borderColor: label.color,
-                color: isSelected ? "#ffffff" : label.color,
-              }}
-              onClick={() => handleToggleLabel(label.id)}
-            >
-              {label.name}
-            </button>
-          );
-        })}
+      <div className="flex items-center justify-between gap-x-3">
+        <Typography className="shrink-0" style="body2" weight="semibold">
+          {t("cardDetail.labels")}
+        </Typography>
+        {availableLabels.length > 0 && (
+          <Dropdown
+            buttonStyle="secondary"
+            dropdownProps={{ appendTo: () => document.body }}
+            label={t("cardDetail.labelsPlaceholder")}
+            position="bottom-end"
+            size="small"
+            strategy="fixed"
+          >
+            <Dropdown.Menu>
+              {availableLabels.map(label => (
+                <Dropdown.MenuItem.Button
+                  key={label.id}
+                  onClick={() => handleAddLabel(label.id)}
+                >
+                  <div className="flex items-center gap-x-2">
+                    <LabelColorIcon color={label.color} />
+                    <span>{label.name}</span>
+                  </div>
+                </Dropdown.MenuItem.Button>
+              ))}
+            </Dropdown.Menu>
+          </Dropdown>
+        )}
       </div>
+      {selectedLabels.length > 0 && (
+        <div className="flex flex-wrap items-center gap-2">
+          {selectedLabels.map(label => (
+            <Tag
+              icon={() => <LabelColorIcon color={label.color} />}
+              key={label.id}
+              label={label.name}
+              size="small"
+              style="secondary"
+              type="solid"
+              onClose={() => handleRemoveLabel(label.id)}
+            />
+          ))}
+        </div>
+      )}
     </div>
   );
+};
+
+LabelsField.propTypes = {
+  boardSlug: PropTypes.string.isRequired,
 };
 
 export default LabelsField;

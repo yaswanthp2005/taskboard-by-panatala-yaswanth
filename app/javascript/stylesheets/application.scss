@@ -4,3 +4,24 @@
 
 @import "@bigbinary/neetoui/dist";
 @import "react-toastify/dist/ReactToastify.min.css";
+
+:root {
+  --neeto-molecules-sub-header-bottom-margin: 1.25rem;
+}
+
+.board-kanban-scroll {
+  flex: 1 1 0;
+  min-height: 0;
+  min-width: 0;
+  width: 100%;
+}
+
+.card-detail-pane__header-actions {
+  position: absolute;
+  top: 24px;
+  right: 64px;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+}

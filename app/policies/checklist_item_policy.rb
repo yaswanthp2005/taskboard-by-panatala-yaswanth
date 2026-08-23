@@ -13,6 +13,10 @@ class ChecklistItemPolicy < ApplicationPolicy
     accessible?
   end
 
+  def bulk_delete?
+    accessible?
+  end
+
   private
 
     def accessible?

@@ -2,7 +2,7 @@ import React from "react";
 
 import BoardView from "@bigbinary/neeto-molecules/BoardView";
 import { MenuHorizontal, Plus } from "neetoicons";
-import { Button, Dropdown } from "neetoui";
+import { Button, Dropdown, Typography } from "neetoui";
 import PropTypes from "prop-types";
 import { useTranslation } from "react-i18next";
 
@@ -14,10 +14,13 @@ const ListColumn = ({
   isDragAndDropDisabled,
   onAddCard,
   onCardClick,
+  onCardDelete,
+  onCardEdit,
   onDelete,
   section,
 }) => {
   const { t } = useTranslation();
+  const cardCount = section.items?.length ?? 0;
 
   const handleAddCard = () => {
     onAddCard?.(section.id);
@@ -28,25 +31,35 @@ const ListColumn = ({
   };
 
   return (
-    <div className="neeto-ui-rounded-lg flex h-full w-full flex-col bg-gray-100">
-      <div className="neeto-molecules-boardview-section__header flex shrink-0 items-start justify-between gap-x-2 py-3">
-        <ListTitle
-          boardSlug={boardSlug}
-          listId={section.id}
-          title={section.name}
-        />
+    <div className="neeto-ui-rounded-xl flex h-full min-h-0 w-full flex-col bg-gray-100">
+      <div className="neeto-molecules-boardview-section__header flex shrink-0 items-center justify-between gap-x-2 py-3">
+        <div className="flex min-w-0 flex-1 items-center gap-x-2">
+          <ListTitle
+            boardSlug={boardSlug}
+            listId={section.id}
+            title={section.name}
+          />
+          <Typography
+            className="flex h-5 min-w-[20px] shrink-0 items-center justify-center rounded-full bg-gray-200 px-1.5 text-gray-600"
+            style="body3"
+            weight="medium"
+          >
+            {cardCount}
+          </Typography>
+        </div>
         {onDelete && (
           <Dropdown
-            buttonProps={{ className: "shrink-0" }}
+            buttonProps={{ className: "shrink-0", style: "text" }}
+            dropdownProps={{ appendTo: () => document.body }}
             icon={MenuHorizontal}
             label=""
             position="bottom-end"
             strategy="fixed"
           >
             <Dropdown.Menu>
-              <Dropdown.MenuItem onClick={handleDelete}>
+              <Dropdown.MenuItem.Button style="danger" onClick={handleDelete}>
                 {t("boardView.deleteList.action")}
-              </Dropdown.MenuItem>
+              </Dropdown.MenuItem.Button>
             </Dropdown.Menu>
           </Dropdown>
         )}
@@ -56,10 +69,15 @@ const ListColumn = ({
         items={section.items}
         section={section}
         renderItem={({ item }) => (
-          <TaskCard item={item} onClick={() => onCardClick?.(item)} />
+          <TaskCard
+            item={item}
+            onClick={() => onCardClick?.(item)}
+            onDelete={onCardDelete}
+            onEdit={onCardEdit}
+          />
         )}
       />
-      <div className="shrink-0 px-4 pb-4">
+      <div className="flex shrink-0 justify-center px-4 pb-4 pt-1">
         <Button
           icon={Plus}
           label={t("boardView.addCard")}
@@ -76,6 +94,8 @@ ListColumn.propTypes = {
   isDragAndDropDisabled: PropTypes.bool,
   onAddCard: PropTypes.func,
   onCardClick: PropTypes.func,
+  onCardDelete: PropTypes.func,
+  onCardEdit: PropTypes.func,
   onDelete: PropTypes.func,
   section: PropTypes.shape({
     id: PropTypes.string.isRequired,
@@ -88,6 +108,8 @@ ListColumn.defaultProps = {
   isDragAndDropDisabled: false,
   onAddCard: undefined,
   onCardClick: undefined,
+  onCardDelete: undefined,
+  onCardEdit: undefined,
   onDelete: undefined,
 };
 

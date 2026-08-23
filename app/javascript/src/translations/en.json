@@ -127,6 +127,14 @@
     "dueDatePlaceholder": "Select due date",
     "labels": "Labels",
     "labelsEmpty": "No labels on this board yet. Add labels from board settings.",
+    "checklist": {
+      "title": "Checklist",
+      "progress": "{{completed}}/{{total}}",
+      "addItem": "Add item",
+      "addItemLabel": "New item",
+      "addItemPlaceholder": "Add a checklist item",
+      "removeItem": "Remove checklist item"
+    },
     "validation": {
       "titleRequired": "Title is required"
     },

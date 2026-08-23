@@ -12,6 +12,7 @@ import { Form as NeetoUIForm, Input, Textarea } from "neetoui/formik";
 import PropTypes from "prop-types";
 import { useTranslation } from "react-i18next";
 
+import ChecklistField from "./ChecklistField";
 import {
   buildCardDetailFormInitialValues,
   CARD_DETAIL_FORM_VALIDATION_SCHEMA,
@@ -102,6 +103,13 @@ const CardDetailPane = ({ boardSlug, cardId, isOpen, listId, onClose }) => {
           />
           <DueDateField />
           {!isCreateMode && <LabelsField boardSlug={boardSlug} />}
+          {!isCreateMode && (
+            <ChecklistField
+              boardSlug={boardSlug}
+              cardId={cardId}
+              items={card?.checklistItems ?? []}
+            />
+          )}
         </div>
       </Pane.Body>
       <Pane.Footer>

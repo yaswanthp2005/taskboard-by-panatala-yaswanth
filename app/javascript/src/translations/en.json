@@ -83,6 +83,39 @@
       "confirmMessage": "Are you sure you want to delete the list <1>{{name}}</1>? All cards in this list will also be deleted."
     }
   },
+  "labels": {
+    "title": "Labels",
+    "pageTitle": "Manage labels",
+    "manage": "Manage labels",
+    "subtitle": "Create and manage labels for this board.",
+    "addNewLabel": "Add new label",
+    "emptyState": {
+      "title": "No labels to show"
+    },
+    "form": {
+      "addTitle": "Add label",
+      "editTitle": "Edit label",
+      "nameLabel": "Name",
+      "namePlaceholder": "Enter label name",
+      "colorLabel": "Color",
+      "colorPlaceholder": "#4F46E5",
+      "submitAdd": "Add label",
+      "submitEdit": "Save changes",
+      "validation": {
+        "nameRequired": "Name is required",
+        "colorRequired": "Color is required"
+      }
+    },
+    "actions": {
+      "menu": "Label actions",
+      "edit": "Edit",
+      "delete": "Delete"
+    },
+    "delete": {
+      "title": "Delete label?",
+      "confirmMessage": "Are you sure you want to delete the label <1>{{name}}</1>?"
+    }
+  },
   "cardDetail": {
     "title": "Card details",
     "addTitle": "Add card",

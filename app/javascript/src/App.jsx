@@ -13,6 +13,7 @@ import queryClient from "utils/queryClient";
 import { getFromLocalStorage } from "utils/storage";
 
 const BoardShow = lazy(() => import("components/Admin/Boards/Show"));
+const BoardLabels = lazy(() => import("components/Admin/Boards/Labels"));
 
 const App = () => {
   const authToken = getFromLocalStorage("authToken");
@@ -39,6 +40,13 @@ const App = () => {
               </div>
             }
           >
+            <PrivateRoute
+              exact
+              component={BoardLabels}
+              condition={isLoggedIn}
+              path={routes.boards.labels}
+              redirectRoute={routes.login}
+            />
             <PrivateRoute
               exact
               component={BoardShow}

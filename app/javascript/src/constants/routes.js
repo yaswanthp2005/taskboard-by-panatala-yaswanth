@@ -7,6 +7,7 @@ const routes = {
   boards: {
     index: BASE_URL,
     show: `${BASE_URL}:slug`,
+    labels: `${BASE_URL}:slug/labels`,
   },
 };
 

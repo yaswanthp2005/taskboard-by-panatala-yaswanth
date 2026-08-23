@@ -6,9 +6,10 @@ import Container from "@bigbinary/neeto-molecules/Container";
 import Header from "@bigbinary/neeto-molecules/Header";
 import Scrollable from "@bigbinary/neeto-molecules/Scrollable";
 import { useFetchBoard } from "components/hooks/reactQuery/useBoardsApi";
-import { Spinner, Typography } from "neetoui";
+import { Button, Spinner, Typography } from "neetoui";
 import { useTranslation } from "react-i18next";
-import { useParams } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
+import { buildURL } from "utils/buildURL";
 import withTitle from "utils/withTitle";
 
 import BoardKanban from "./BoardKanban";
@@ -38,6 +39,14 @@ const Show = () => {
     <Container isHeaderFixed>
       <Header
         title={board.name}
+        actionBlock={
+          <Button
+            component={Link}
+            label={t("labels.manage")}
+            style="secondary"
+            to={buildURL({ path: routes.boards.labels, slug: board.slug })}
+          />
+        }
         breadcrumbs={[
           {
             text: t("boards.title"),

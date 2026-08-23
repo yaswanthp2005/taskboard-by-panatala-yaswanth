@@ -19,6 +19,7 @@ import {
 import DeleteCardAlert from "./DeleteCardAlert";
 import DueDateField from "./DueDateField";
 import Footer from "./Footer";
+import LabelsField from "./LabelsField";
 
 const CardDetailPane = ({ boardSlug, cardId, isOpen, listId, onClose }) => {
   const { t } = useTranslation();
@@ -37,6 +38,7 @@ const CardDetailPane = ({ boardSlug, cardId, isOpen, listId, onClose }) => {
       title: values.title.trim(),
       description: values.description.trim(),
       dueDate: values.dueDate ? values.dueDate.format("YYYY-MM-DD") : null,
+      ...(isCreateMode ? {} : { labelIds: values.labelIds }),
     };
 
     try {
@@ -99,6 +101,7 @@ const CardDetailPane = ({ boardSlug, cardId, isOpen, listId, onClose }) => {
             rows={6}
           />
           <DueDateField />
+          {!isCreateMode && <LabelsField boardSlug={boardSlug} />}
         </div>
       </Pane.Body>
       <Pane.Footer>

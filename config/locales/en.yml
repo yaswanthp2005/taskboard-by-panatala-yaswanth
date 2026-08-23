@@ -61,3 +61,5 @@ en:
     move:
       invalid_list: "must belong to the same board as the card"
       invalid_position: "must be a positive integer"
+    labels:
+      must_belong_to_board: "must belong to the same board as the card"

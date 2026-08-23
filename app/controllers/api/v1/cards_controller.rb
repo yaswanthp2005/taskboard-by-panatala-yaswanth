@@ -55,11 +55,14 @@ class Api::V1::CardsController < ApplicationController
     end
 
     def load_card
-      @card = Card.joins(list: :board).merge(policy_scope(Board)).find(params[:id])
+      @card = Card.joins(list: :board)
+        .merge(policy_scope(Board))
+        .includes(:labels)
+        .find(params[:id])
     end
 
     def card_params
-      params.require(:card).permit(:title, :description, :due_date)
+      params.require(:card).permit(:title, :description, :due_date, label_ids: [])
     end
 
     def move_params

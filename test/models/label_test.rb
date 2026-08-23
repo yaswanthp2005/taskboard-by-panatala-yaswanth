@@ -57,4 +57,17 @@ class LabelTest < ActiveSupport::TestCase
       @board.destroy
     end
   end
+
+  def test_destroying_label_removes_card_associations
+    list = create(:list, board: @board, title: "To Do")
+    card = create(:card, list:, title: "Fix bug")
+    label = create(:label, board: @board, name: "Bug")
+    card.labels << label
+
+    assert_difference "CardLabel.count", -1 do
+      label.destroy!
+    end
+
+    assert_empty card.reload.labels
+  end
 end

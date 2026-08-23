@@ -151,13 +151,21 @@ class Api::V1::LabelsControllerTest < ActionDispatch::IntegrationTest
   end
 
   def test_destroy_deletes_label_for_owner
+    urgent_label = create(:label, board: @board, name: "Urgent")
+    list = create(:list, board: @board, title: "In Progress")
+    card = create(:card, list:, title: "Fix login")
+    card.labels << urgent_label
+
     assert_difference -> { Label.count }, -1 do
-      delete api_v1_board_label_path(@board.slug, @label),
-        headers: headers(@owner),
-        as: :json
+      assert_difference -> { CardLabel.count }, -1 do
+        delete api_v1_board_label_path(@board.slug, urgent_label),
+          headers: headers(@owner),
+          as: :json
+      end
     end
 
     assert_response :success
+    assert_empty card.reload.labels
     assert_equal I18n.t("successfully_deleted", count: 1, entity: "Label"), response_body["notice"]
   end
 

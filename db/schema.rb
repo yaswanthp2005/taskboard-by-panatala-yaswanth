@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2026_08_23_120000) do
+ActiveRecord::Schema[7.1].define(version: 2026_08_23_140000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pgcrypto"
   enable_extension "plpgsql"
@@ -36,6 +36,16 @@ ActiveRecord::Schema[7.1].define(version: 2026_08_23_120000) do
     t.index ["owner_id", "name"], name: "index_boards_on_owner_id_and_name"
     t.index ["owner_id"], name: "index_boards_on_owner_id"
     t.index ["slug"], name: "index_boards_on_slug", unique: true
+  end
+
+  create_table "card_labels", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.uuid "card_id", null: false
+    t.uuid "label_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["card_id", "label_id"], name: "index_card_labels_on_card_id_and_label_id", unique: true
+    t.index ["card_id"], name: "index_card_labels_on_card_id"
+    t.index ["label_id"], name: "index_card_labels_on_label_id"
   end
 
   create_table "cards", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
@@ -85,6 +95,8 @@ ActiveRecord::Schema[7.1].define(version: 2026_08_23_120000) do
   add_foreign_key "board_members", "boards"
   add_foreign_key "board_members", "users"
   add_foreign_key "boards", "users", column: "owner_id"
+  add_foreign_key "card_labels", "cards"
+  add_foreign_key "card_labels", "labels"
   add_foreign_key "cards", "lists"
   add_foreign_key "labels", "boards"
   add_foreign_key "lists", "boards"

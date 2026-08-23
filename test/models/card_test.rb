@@ -76,4 +76,33 @@ class CardTest < ActiveSupport::TestCase
       @list.destroy
     end
   end
+
+  def test_can_attach_labels_from_same_board
+    bug_label = create(:label, board: @board, name: "Bug")
+    feature_label = create(:label, board: @board, name: "Feature")
+    card = create(:card, list: @list)
+
+    card.update!(label_ids: [bug_label.id, feature_label.id])
+
+    assert_equal [bug_label.id, feature_label.id].sort, card.labels.pluck(:id).sort
+  end
+
+  def test_rejects_labels_from_other_board
+    other_board = create(:board, owner: @owner)
+    other_label = create(:label, board: other_board, name: "Other")
+    card = build(:card, list: @list)
+    card.label_ids = [other_label.id]
+
+    assert_not card.valid?
+    assert_includes card.errors[:labels], I18n.t("card.labels.must_belong_to_board")
+  end
+
+  def test_can_detach_labels
+    bug_label = create(:label, board: @board, name: "Bug")
+    card = create(:card, list: @list, label_ids: [bug_label.id])
+
+    card.update!(label_ids: [])
+
+    assert_empty card.reload.labels
+  end
 end

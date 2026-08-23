@@ -132,6 +132,59 @@ class Api::V1::CardsControllerTest < ActionDispatch::IntegrationTest
     assert_equal "Fix login bug", @card.reload.title
   end
 
+  def test_show_includes_attached_labels
+    bug_label = create(:label, board: @board, name: "Bug", color: "#EF4444")
+    @card.update!(label_ids: [bug_label.id])
+
+    get api_v1_card_path(@card), headers: headers(@owner), as: :json
+
+    assert_response :success
+    assert_equal 1, response_body["labels"].size
+    assert_equal bug_label.id, response_body["labels"].first["id"]
+    assert_equal "Bug", response_body["labels"].first["name"]
+    assert_equal "#EF4444", response_body["labels"].first["color"]
+  end
+
+  def test_update_attaches_labels
+    bug_label = create(:label, board: @board, name: "Bug")
+    feature_label = create(:label, board: @board, name: "Feature")
+
+    patch api_v1_card_path(@card),
+      params: { card: { label_ids: [bug_label.id, feature_label.id] } },
+      headers: headers(@owner),
+      as: :json
+
+    assert_response :success
+    assert_equal [bug_label.id, feature_label.id].sort, @card.reload.labels.pluck(:id).sort
+  end
+
+  def test_update_detaches_labels
+    bug_label = create(:label, board: @board, name: "Bug")
+    @card.update!(label_ids: [bug_label.id])
+
+    patch api_v1_card_path(@card),
+      params: { card: { label_ids: [] } },
+      headers: headers(@owner),
+      as: :json
+
+    assert_response :success
+    assert_empty @card.reload.labels
+  end
+
+  def test_update_rejects_label_from_other_board
+    other_board = create(:board, owner: @owner)
+    other_label = create(:label, board: other_board, name: "Other")
+
+    patch api_v1_card_path(@card),
+      params: { card: { label_ids: [other_label.id] } },
+      headers: headers(@owner),
+      as: :json
+
+    assert_response :unprocessable_entity
+    assert_equal "Labels #{I18n.t('card.labels.must_belong_to_board')}", response_body["error"]
+    assert_empty @card.reload.labels
+  end
+
   def test_move_reorders_card_within_same_list
     second_card = create(:card, list: @list, title: "Write tests")
     third_card = create(:card, list: @list, title: "Review PR")

@@ -5,53 +5,48 @@ import { Button } from "neetoui";
 import PropTypes from "prop-types";
 import { useTranslation } from "react-i18next";
 
-const Footer = ({ onClose, onDelete }) => {
-  const { isSubmitting, isValid, resetForm } = useFormikContext();
+const Footer = ({ isCreateMode, onCancelEdit, onClose }) => {
+  const { dirty, isSubmitting, isValid, resetForm, values } =
+    useFormikContext();
   const { t } = useTranslation();
 
   const handleCancel = () => {
     resetForm();
-    onClose();
+
+    if (isCreateMode) {
+      onClose();
+    } else {
+      onCancelEdit();
+    }
   };
 
+  const isSaveDisabled = isCreateMode
+    ? isSubmitting || !values.title?.trim()
+    : isSubmitting || !isValid || !dirty;
+
   return (
-    <div className="flex w-full items-center justify-between gap-x-3">
-      {onDelete ? (
-        <Button
-          label={t("cardDetail.delete.action")}
-          style="danger"
-          type="button"
-          onClick={onDelete}
-        />
-      ) : (
-        <span />
-      )}
-      <div className="flex gap-x-3">
-        <Button
-          label={t("common.cancel")}
-          style="secondary"
-          type="button"
-          onClick={handleCancel}
-        />
-        <Button
-          disabled={!isValid || isSubmitting}
-          label={t("common.save")}
-          loading={isSubmitting}
-          style="primary"
-          type="submit"
-        />
-      </div>
+    <div className="flex w-full items-center justify-end gap-x-3">
+      <Button
+        label={t("common.cancel")}
+        style="secondary"
+        type="button"
+        onClick={handleCancel}
+      />
+      <Button
+        disabled={isSaveDisabled}
+        label={t("common.save")}
+        loading={isSubmitting}
+        style="primary"
+        type="submit"
+      />
     </div>
   );
 };
 
 Footer.propTypes = {
+  isCreateMode: PropTypes.bool.isRequired,
+  onCancelEdit: PropTypes.func.isRequired,
   onClose: PropTypes.func.isRequired,
-  onDelete: PropTypes.func,
-};
-
-Footer.defaultProps = {
-  onDelete: undefined,
 };
 
 export default Footer;

@@ -9,6 +9,7 @@ const mapListsToSections = (lists = []) =>
         .map(card => ({
           id: card.id,
           title: card.title,
+          dueDate: card.dueDate,
         })),
     }));
 

@@ -44,7 +44,18 @@ const useDeleteChecklistItem = (boardSlug, cardId) => {
   });
 };
 
+const useBulkDeleteChecklistItems = (boardSlug, cardId) => {
+  const queryClient = useQueryClient();
+
+  return useMutation(() => checklistItemsApi.bulkDelete({ cardId }), {
+    onSuccess: () => {
+      invalidateCardQueries(queryClient, boardSlug, cardId);
+    },
+  });
+};
+
 export {
+  useBulkDeleteChecklistItems,
   useCreateChecklistItem,
   useDeleteChecklistItem,
   useUpdateChecklistItem,

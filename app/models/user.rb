@@ -17,8 +17,8 @@ class User < ApplicationRecord
   validates :last_name, presence: true, length: { maximum: MAX_NAME_LENGTH }
   validates :email, presence: true, uniqueness: true, length: { maximum: MAX_EMAIL_LENGTH },
     format: { with: VALID_EMAIL_REGEX }
-  validates :password, presence: true, length: { minimum: MIN_PASSWORD_LENGTH }
-  validates :password, confirmation: true
+  validates :password, length: { minimum: MIN_PASSWORD_LENGTH }, if: -> { password.present? }
+  validates :password, confirmation: true, if: -> { password.present? }
 
   before_save :downcase_email
 

@@ -3,6 +3,16 @@ import QUERY_KEYS from "constants/query";
 import listsApi from "apis/lists";
 import { useMutation, useQueryClient } from "react-query";
 
+const useCreateList = boardSlug => {
+  const queryClient = useQueryClient();
+
+  return useMutation(payload => listsApi.create({ boardSlug, ...payload }), {
+    onSuccess: () => {
+      queryClient.invalidateQueries([QUERY_KEYS.BOARDS, boardSlug]);
+    },
+  });
+};
+
 const useUpdateList = boardSlug => {
   const queryClient = useQueryClient();
 
@@ -33,4 +43,4 @@ const useDeleteList = boardSlug => {
   });
 };
 
-export { useDeleteList, useMoveList, useUpdateList };
+export { useCreateList, useDeleteList, useMoveList, useUpdateList };

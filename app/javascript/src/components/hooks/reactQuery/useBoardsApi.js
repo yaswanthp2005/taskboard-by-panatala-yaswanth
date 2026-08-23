@@ -38,8 +38,9 @@ const useUpdateBoard = () => {
   const queryClient = useQueryClient();
 
   return useMutation(payload => boardsApi.update(payload), {
-    onSuccess: () => {
+    onSuccess: (_, variables) => {
       queryClient.invalidateQueries([QUERY_KEYS.BOARDS]);
+      queryClient.invalidateQueries([QUERY_KEYS.BOARDS, variables.slug]);
     },
   });
 };

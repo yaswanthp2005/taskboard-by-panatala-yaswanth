@@ -1,66 +1,66 @@
-import routes from "constants/routes";
+import React, { useState } from "react";
 
-import React from "react";
-
-import Container from "@bigbinary/neeto-molecules/Container";
-import Header from "@bigbinary/neeto-molecules/Header";
 import Scrollable from "@bigbinary/neeto-molecules/Scrollable";
 import { useFetchBoard } from "components/hooks/reactQuery/useBoardsApi";
-import { Button, Spinner, Typography } from "neetoui";
+import Sidebar from "components/Sidebar";
+import { Spinner, Typography } from "neetoui";
 import { useTranslation } from "react-i18next";
-import { Link, useParams } from "react-router-dom";
-import { buildURL } from "utils/buildURL";
+import { useParams } from "react-router-dom";
 import withTitle from "utils/withTitle";
 
+import BoardHeader from "./BoardHeader";
 import BoardKanban from "./BoardKanban";
+
+const getTotalCards = lists =>
+  (lists ?? []).reduce((total, list) => total + (list.cards?.length ?? 0), 0);
 
 const Show = () => {
   const { t } = useTranslation();
   const { slug } = useParams();
+  const [isAddingList, setIsAddingList] = useState(false);
   const { data: board, isError, isLoading } = useFetchBoard(slug);
 
   if (isLoading) {
     return (
-      <Container className="flex min-h-screen items-center justify-center">
+      <div className="flex min-h-screen items-center justify-center">
         <Spinner />
-      </Container>
+      </div>
     );
   }
 
   if (isError || !board) {
     return (
-      <Container className="flex min-h-screen items-center justify-center">
+      <div className="flex min-h-screen items-center justify-center">
         <Typography style="body1">{t("common.somethingWentWrong")}</Typography>
-      </Container>
+      </div>
     );
   }
 
+  const totalCards = getTotalCards(board.lists);
+
   return (
-    <Container isHeaderFixed>
-      <Header
-        title={board.name}
-        actionBlock={
-          <Button
-            component={Link}
-            label={t("labels.manage")}
-            style="secondary"
-            to={buildURL({ path: routes.boards.labels, slug: board.slug })}
+    <div className="flex h-screen overflow-hidden bg-white">
+      <Sidebar />
+      <div className="flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden">
+        <BoardHeader
+          board={board}
+          isAddingList={isAddingList}
+          totalCards={totalCards}
+          onAddList={() => setIsAddingList(true)}
+        />
+        <Scrollable
+          className="board-kanban-scroll flex !h-auto w-full flex-col overflow-y-hidden"
+          size="small"
+        >
+          <BoardKanban
+            boardSlug={board.slug}
+            isAddingList={isAddingList}
+            lists={board.lists ?? []}
+            onCancelAddList={() => setIsAddingList(false)}
           />
-        }
-        breadcrumbs={[
-          {
-            text: t("boards.title"),
-            link: routes.boards.index,
-          },
-          {
-            text: board.name,
-          },
-        ]}
-      />
-      <Scrollable className="flex w-full flex-col" size="small">
-        <BoardKanban boardSlug={board.slug} lists={board.lists ?? []} />
-      </Scrollable>
-    </Container>
+        </Scrollable>
+      </div>
+    </div>
   );
 };
 

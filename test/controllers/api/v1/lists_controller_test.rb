@@ -13,6 +13,55 @@ class Api::V1::ListsControllerTest < ActionDispatch::IntegrationTest
     @third_list = create(:list, board: @board, title: "Done")
   end
 
+  def test_create_adds_list_for_owner
+    assert_difference -> { @board.lists.count }, 1 do
+      post api_v1_board_lists_path(@board.slug),
+        params: { list: { title: "Backlog" } },
+        headers: headers(@owner),
+        as: :json
+    end
+
+    assert_response :success
+    list = @board.lists.find_by!(title: "Backlog")
+    assert_equal 4, list.position
+    assert_equal I18n.t("successfully_created", entity: "List"), response_body["notice"]
+  end
+
+  def test_create_allows_board_member
+    create(:board_member, board: @board, user: @member)
+
+    assert_difference -> { @board.lists.count }, 1 do
+      post api_v1_board_lists_path(@board.slug),
+        params: { list: { title: "Review" } },
+        headers: headers(@member),
+        as: :json
+    end
+
+    assert_response :success
+  end
+
+  def test_create_rejects_blank_title
+    assert_no_difference -> { @board.lists.count } do
+      post api_v1_board_lists_path(@board.slug),
+        params: { list: { title: "" } },
+        headers: headers(@owner),
+        as: :json
+    end
+
+    assert_response :unprocessable_entity
+  end
+
+  def test_create_rejects_non_member
+    assert_no_difference -> { @board.lists.count } do
+      post api_v1_board_lists_path(@board.slug),
+        params: { list: { title: "Backlog" } },
+        headers: headers(@other_user),
+        as: :json
+    end
+
+    assert_response :not_found
+  end
+
   def test_move_updates_list_position
     patch move_api_v1_board_list_path(@board.slug, @third_list),
       params: { position: 1 },

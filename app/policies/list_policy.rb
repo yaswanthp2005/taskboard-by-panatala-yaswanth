@@ -1,6 +1,10 @@
 # frozen_string_literal: true
 
 class ListPolicy < ApplicationPolicy
+  def create?
+    accessible?
+  end
+
   def update?
     accessible?
   end

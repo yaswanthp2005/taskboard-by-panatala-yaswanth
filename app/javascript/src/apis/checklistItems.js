@@ -16,6 +16,11 @@ const update = ({ id, ...payload }) =>
 const destroy = ({ id }) =>
   axios.delete(`${ADMIN_API_BASE_URL}/checklist_items/${id}`);
 
-const checklistItemsApi = { create, destroy, update };
+const bulkDelete = ({ cardId }) =>
+  axios.delete(
+    `${ADMIN_API_BASE_URL}/cards/${cardId}/checklist_items/bulk_delete`
+  );
+
+const checklistItemsApi = { bulkDelete, create, destroy, update };
 
 export default checklistItemsApi;

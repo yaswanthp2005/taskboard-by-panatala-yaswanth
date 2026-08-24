@@ -13,6 +13,7 @@ class Card < ApplicationRecord
   has_many :card_assignees, dependent: :destroy
   has_many :assignees, -> { order(:first_name, :last_name) }, through: :card_assignees, source: :user
   has_many :checklist_items, -> { order(:created_at) }, dependent: :destroy, inverse_of: :card
+  has_many :activities, dependent: :nullify
 
   acts_as_list scope: :list, add_new_at: :bottom
 

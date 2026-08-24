@@ -10,17 +10,29 @@ class Api::V1::ListsController < ApplicationController
     list = @board.lists.build(list_params)
     authorize list
     list.save!
+    record_activity(
+      action: Constants::Activity::LIST_CREATED,
+      metadata: { list_title: list.title }
+    )
     render_notice(t("successfully_created", entity: "List"), :ok)
   end
 
   def update
     authorize @list
     @list.update!(list_params)
+    record_activity(
+      action: Constants::Activity::LIST_UPDATED,
+      metadata: { list_title: @list.title }
+    )
     render_notice(t("successfully_updated", entity: "List"), :ok)
   end
 
   def destroy
     authorize @list
+    record_activity(
+      action: Constants::Activity::LIST_DELETED,
+      metadata: { list_title: @list.title }
+    )
     @list.destroy!
     render_notice(t("successfully_deleted", count: 1, entity: "List"))
   end
@@ -52,5 +64,14 @@ class Api::V1::ListsController < ApplicationController
 
     def move_params
       params.permit(:position)
+    end
+
+    def record_activity(action:, metadata: {})
+      ActivityRecorderService.new(
+        board: @board,
+        actor: current_user,
+        action:,
+        metadata:
+      ).process
     end
 end

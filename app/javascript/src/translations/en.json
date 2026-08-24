@@ -82,7 +82,8 @@
     "pageTitle": "Board",
     "tabs": {
       "lists": "Lists",
-      "labels": "Labels"
+      "labels": "Labels",
+      "activities": "Activities"
     },
     "addList": "Add list",
     "addListPlaceholder": "Name this list…",
@@ -95,6 +96,24 @@
       "action": "Delete list",
       "title": "Delete list?",
       "confirmMessage": "Are you sure you want to delete the list <1>{{name}}</1>? All cards in this list will also be deleted."
+    }
+  },
+  "activity": {
+    "title": "Activity",
+    "pageTitle": "Activity",
+    "subtitle": "Recent activity on this board.",
+    "empty": "No activity yet",
+    "thisCard": "this card",
+    "aCard": "a card",
+    "actions": {
+      "cardCreated": "{{actorName}} created {{cardTitle}}",
+      "cardUpdated": "{{actorName}} updated {{cardTitle}}",
+      "cardMoved": "{{actorName}} moved {{cardTitle}} to {{listTitle}}",
+      "cardDeleted": "{{actorName}} deleted {{cardTitle}}",
+      "listCreated": "{{actorName}} created the list {{listTitle}}",
+      "listUpdated": "{{actorName}} updated the list {{listTitle}}",
+      "listDeleted": "{{actorName}} deleted the list {{listTitle}}",
+      "default": "{{actorName}} performed an action"
     }
   },
   "labels": {

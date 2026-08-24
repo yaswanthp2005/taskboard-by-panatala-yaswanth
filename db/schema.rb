@@ -10,10 +10,25 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2026_08_24_110000) do
+ActiveRecord::Schema[7.1].define(version: 2026_08_24_120000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pgcrypto"
   enable_extension "plpgsql"
+
+  create_table "activities", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.uuid "board_id", null: false
+    t.uuid "card_id"
+    t.uuid "actor_id", null: false
+    t.string "action", null: false
+    t.jsonb "metadata", default: {}, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["actor_id"], name: "index_activities_on_actor_id"
+    t.index ["board_id", "created_at"], name: "index_activities_on_board_id_and_created_at"
+    t.index ["board_id"], name: "index_activities_on_board_id"
+    t.index ["card_id", "created_at"], name: "index_activities_on_card_id_and_created_at"
+    t.index ["card_id"], name: "index_activities_on_card_id"
+  end
 
   create_table "board_members", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
     t.uuid "board_id", null: false
@@ -111,6 +126,9 @@ ActiveRecord::Schema[7.1].define(version: 2026_08_24_110000) do
     t.index ["email"], name: "index_users_on_email", unique: true
   end
 
+  add_foreign_key "activities", "boards"
+  add_foreign_key "activities", "cards"
+  add_foreign_key "activities", "users", column: "actor_id"
   add_foreign_key "board_members", "boards"
   add_foreign_key "board_members", "users"
   add_foreign_key "boards", "users", column: "owner_id"

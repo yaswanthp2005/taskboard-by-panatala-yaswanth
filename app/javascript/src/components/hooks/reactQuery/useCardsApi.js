@@ -3,12 +3,21 @@ import QUERY_KEYS from "constants/query";
 import cardsApi from "apis/cards";
 import { useMutation, useQuery, useQueryClient } from "react-query";
 
+const invalidateActivityQueries = (queryClient, boardSlug, cardId = null) => {
+  queryClient.invalidateQueries([QUERY_KEYS.ACTIVITIES, "board", boardSlug]);
+
+  if (cardId) {
+    queryClient.invalidateQueries([QUERY_KEYS.ACTIVITIES, "card", cardId]);
+  }
+};
+
 const useCreateCard = boardSlug => {
   const queryClient = useQueryClient();
 
   return useMutation(payload => cardsApi.create({ boardSlug, ...payload }), {
     onSuccess: () => {
       queryClient.invalidateQueries([QUERY_KEYS.BOARDS, boardSlug]);
+      invalidateActivityQueries(queryClient, boardSlug);
     },
   });
 };
@@ -31,6 +40,7 @@ const useUpdateCard = boardSlug => {
     onSuccess: (_data, variables) => {
       queryClient.invalidateQueries([QUERY_KEYS.BOARDS, boardSlug]);
       queryClient.invalidateQueries([QUERY_KEYS.CARDS, variables.id]);
+      invalidateActivityQueries(queryClient, boardSlug, variables.id);
     },
   });
 };
@@ -42,6 +52,7 @@ const useDeleteCard = boardSlug => {
     onSuccess: (_data, variables) => {
       queryClient.invalidateQueries([QUERY_KEYS.BOARDS, boardSlug]);
       queryClient.removeQueries([QUERY_KEYS.CARDS, variables.id]);
+      invalidateActivityQueries(queryClient, boardSlug, variables.id);
     },
   });
 };
@@ -50,8 +61,9 @@ const useMoveCard = boardSlug => {
   const queryClient = useQueryClient();
 
   return useMutation(payload => cardsApi.move(payload), {
-    onSuccess: () => {
+    onSuccess: (_data, variables) => {
       queryClient.invalidateQueries([QUERY_KEYS.BOARDS, boardSlug]);
+      invalidateActivityQueries(queryClient, boardSlug, variables.id);
     },
   });
 };

@@ -1,7 +1,7 @@
 import QUERY_KEYS from "constants/query";
 
 import membersApi from "apis/members";
-import { useQuery } from "react-query";
+import { useMutation, useQuery, useQueryClient } from "react-query";
 
 const useFetchBoardMembers = boardSlug =>
   useQuery(
@@ -16,4 +16,14 @@ const useFetchBoardMembers = boardSlug =>
     { enabled: Boolean(boardSlug) }
   );
 
-export { useFetchBoardMembers };
+const useInviteMember = boardSlug => {
+  const queryClient = useQueryClient();
+
+  return useMutation(({ email }) => membersApi.create({ boardSlug, email }), {
+    onSuccess: () => {
+      queryClient.invalidateQueries([QUERY_KEYS.MEMBERS, boardSlug]);
+    },
+  });
+};
+
+export { useFetchBoardMembers, useInviteMember };

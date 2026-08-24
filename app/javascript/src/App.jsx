@@ -17,6 +17,7 @@ const BoardLabels = lazy(() => import("components/Admin/Boards/Labels"));
 const BoardActivities = lazy(() =>
   import("components/Admin/Boards/Activities")
 );
+const BoardMembers = lazy(() => import("components/Admin/Boards/Members"));
 
 const App = () => {
   const authToken = getFromLocalStorage("authToken");
@@ -55,6 +56,13 @@ const App = () => {
               component={BoardActivities}
               condition={isLoggedIn}
               path={routes.boards.activities}
+              redirectRoute={routes.login}
+            />
+            <PrivateRoute
+              exact
+              component={BoardMembers}
+              condition={isLoggedIn}
+              path={routes.boards.members}
               redirectRoute={routes.login}
             />
             <PrivateRoute

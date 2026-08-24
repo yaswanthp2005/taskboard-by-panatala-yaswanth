@@ -83,7 +83,8 @@
     "tabs": {
       "lists": "Lists",
       "labels": "Labels",
-      "activities": "Activities"
+      "activities": "Activities",
+      "members": "Members"
     },
     "addList": "Add list",
     "addListPlaceholder": "Name this list…",
@@ -114,6 +115,29 @@
       "listUpdated": "{{actorName}} updated the list {{listTitle}}",
       "listDeleted": "{{actorName}} deleted the list {{listTitle}}",
       "default": "{{actorName}} performed an action"
+    }
+  },
+  "members": {
+    "title": "Members",
+    "pageTitle": "Members",
+    "subtitle": "View and manage who has access to this board.",
+    "addMember": "Add member",
+    "emptyState": {
+      "title": "No members to show"
+    },
+    "roles": {
+      "owner": "Owner",
+      "member": "Member"
+    },
+    "form": {
+      "addTitle": "Add member",
+      "emailLabel": "Email",
+      "emailPlaceholder": "member@example.com",
+      "submitAdd": "Add member",
+      "validation": {
+        "emailRequired": "Email is required",
+        "emailInvalid": "Enter a valid email"
+      }
     }
   },
   "labels": {

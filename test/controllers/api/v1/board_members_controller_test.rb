@@ -110,6 +110,13 @@ class Api::V1::BoardMembersControllerTest < ActionDispatch::IntegrationTest
     member_ids = response_body["members"].pluck("id")
 
     assert_equal [@owner.id, @member.id].sort, member_ids.sort
+
+    owner_response = response_body["members"].find { |member| member["id"] == @owner.id }
+    member_response = response_body["members"].find { |member| member["id"] == @member.id }
+
+    assert_equal "owner", owner_response["role"]
+    assert_equal "member", member_response["role"]
+    assert_equal @owner.id, response_body["members"].first["id"]
   end
 
   def test_index_allows_board_member

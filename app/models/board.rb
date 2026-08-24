@@ -12,6 +12,7 @@ class Board < ApplicationRecord
   has_many :lists, -> { order(:position) }, dependent: :destroy, inverse_of: :board
   has_many :labels, -> { order(:name) }, dependent: :destroy, inverse_of: :board
   has_many :cards, through: :lists
+  has_many :activities, dependent: :destroy
 
   validates :name, presence: true, length: { maximum: MAX_NAME_LENGTH }
   validates :description, length: { maximum: MAX_DESCRIPTION_LENGTH }, allow_blank: true

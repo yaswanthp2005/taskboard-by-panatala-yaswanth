@@ -8,6 +8,7 @@ const routes = {
     index: BASE_URL,
     show: `${BASE_URL}:slug`,
     labels: `${BASE_URL}:slug/labels`,
+    activities: `${BASE_URL}:slug/activities`,
   },
 };
 

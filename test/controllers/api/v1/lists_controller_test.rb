@@ -142,4 +142,19 @@ class Api::V1::ListsControllerTest < ActionDispatch::IntegrationTest
 
     assert_response :not_found
   end
+
+  def test_update_records_activity
+    assert_difference -> { @board.activities.where(action: Constants::Activity::LIST_UPDATED).count }, 1 do
+      patch api_v1_board_list_path(@board.slug, @first_list),
+        params: { list: { title: "Updated list" } },
+        headers: headers(@owner),
+        as: :json
+    end
+
+    assert_response :success
+    activity = @board.activities.order(:created_at).last
+    assert_equal Constants::Activity::LIST_UPDATED, activity.action
+    assert_equal @owner, activity.actor
+    assert_equal "Updated list", activity.metadata["list_title"]
+  end
 end

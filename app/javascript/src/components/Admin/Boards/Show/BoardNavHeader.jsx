@@ -49,6 +49,14 @@ const BoardNavHeader = ({ board }) => {
       return;
     }
 
+    if (tab === BOARD_TAB_KEYS.ACTIVITIES) {
+      history.push(
+        buildURL({ path: routes.boards.activities, slug: board.slug })
+      );
+
+      return;
+    }
+
     history.push(buildURL({ path: routes.boards.show, slug: board.slug }));
   };
 
@@ -73,6 +81,13 @@ const BoardNavHeader = ({ board }) => {
             onClick={() => handleTabChange(BOARD_TAB_KEYS.LABELS)}
           >
             {t("boardView.tabs.labels")}
+          </Tab.Item>
+          <Tab.Item
+            active={activeTab === BOARD_TAB_KEYS.ACTIVITIES}
+            data-cy="activities-tab"
+            onClick={() => handleTabChange(BOARD_TAB_KEYS.ACTIVITIES)}
+          >
+            {t("boardView.tabs.activities")}
           </Tab.Item>
         </Tab>
         <span />

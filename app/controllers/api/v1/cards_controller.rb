@@ -11,6 +11,12 @@ class Api::V1::CardsController < ApplicationController
     card = @list.cards.build(card_params)
     authorize card
     card.save!
+    record_activity(
+      board: @board,
+      action: Constants::Activity::CARD_CREATED,
+      card:,
+      metadata: { card_title: card.title, list_title: @list.title }
+    )
     render_notice(t("successfully_created", entity: "Card"), :ok)
   end
 
@@ -21,6 +27,12 @@ class Api::V1::CardsController < ApplicationController
   def update
     authorize @card
     @card.update!(card_params)
+    record_activity(
+      board: @card.board,
+      action: Constants::Activity::CARD_UPDATED,
+      card: @card,
+      metadata: { card_title: @card.title }
+    )
     render_notice(t("successfully_updated", entity: "Card"), :ok)
   end
 
@@ -28,6 +40,7 @@ class Api::V1::CardsController < ApplicationController
     authorize @card, :move?
 
     destination_list = @card.board.lists.find(move_params[:list_id])
+    source_list_title = @card.list.title
 
     CardMoveService.new(
       card: @card,
@@ -35,11 +48,28 @@ class Api::V1::CardsController < ApplicationController
       position: move_params[:position]
     ).process
 
+    record_activity(
+      board: @card.board,
+      action: Constants::Activity::CARD_MOVED,
+      card: @card,
+      metadata: {
+        card_title: @card.title,
+        source_list_title:,
+        destination_list_title: destination_list.title
+      }
+    )
+
     render_notice(t("successfully_updated", entity: "Card"), :ok)
   end
 
   def destroy
     authorize @card
+    record_activity(
+      board: @card.board,
+      action: Constants::Activity::CARD_DELETED,
+      card: @card,
+      metadata: { card_title: @card.title, list_title: @card.list.title }
+    )
     @card.destroy!
     render_notice(t("successfully_deleted", count: 1, entity: "Card"))
   end
@@ -67,5 +97,15 @@ class Api::V1::CardsController < ApplicationController
 
     def move_params
       params.permit(:list_id, :position)
+    end
+
+    def record_activity(board:, action:, card: nil, metadata: {})
+      ActivityRecorderService.new(
+        board:,
+        actor: current_user,
+        action:,
+        card:,
+        metadata:
+      ).process
     end
 end

@@ -8,6 +8,8 @@ import { useTranslation } from "react-i18next";
 import ChecklistField from "./ChecklistField";
 import { formatMemberName, getInitials } from "./utils";
 
+import ActivityFeed from "../ActivityFeed";
+
 const CardDetailView = ({ boardSlug, card, cardId }) => {
   const { t } = useTranslation();
   const formattedDueDate = card.dueDate
@@ -102,6 +104,7 @@ const CardDetailView = ({ boardSlug, card, cardId }) => {
           showItemActions={false}
         />
       )}
+      <ActivityFeed cardId={cardId} />
     </div>
   );
 };

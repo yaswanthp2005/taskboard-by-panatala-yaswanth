@@ -4,6 +4,7 @@ const QUERY_KEYS = {
   CARDS: "cards",
   LABELS: "labels",
   MEMBERS: "members",
+  ACTIVITIES: "activities",
 };
 
 export default QUERY_KEYS;

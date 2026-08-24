@@ -65,3 +65,13 @@ en:
       must_belong_to_board: "must belong to the same board as the card"
     assignee:
       must_be_board_member: "must be a member of the board"
+  activity:
+    actions:
+      card_created: "created this card"
+      card_updated: "updated this card"
+      card_moved: "moved this card to {{listTitle}}"
+      card_deleted: "deleted this card"
+      member_invited: "invited {{inviteeName}} to the board"
+      list_created: "created the list {{listTitle}}"
+      list_updated: "updated the list {{listTitle}}"
+      list_deleted: "deleted the list {{listTitle}}"

@@ -14,6 +14,7 @@ class User < ApplicationRecord
   has_many :member_boards, through: :board_members, source: :board
   has_many :card_assignees, dependent: :destroy
   has_many :assigned_cards, through: :card_assignees, source: :card
+  has_many :activities, foreign_key: :actor_id, dependent: :nullify, inverse_of: :actor
 
   validates :first_name, presence: true, length: { maximum: MAX_NAME_LENGTH }
   validates :last_name, presence: true, length: { maximum: MAX_NAME_LENGTH }

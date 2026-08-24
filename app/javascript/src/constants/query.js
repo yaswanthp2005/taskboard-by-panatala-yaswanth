@@ -3,6 +3,7 @@ const QUERY_KEYS = {
   LISTS: "lists",
   CARDS: "cards",
   LABELS: "labels",
+  MEMBERS: "members",
 };
 
 export default QUERY_KEYS;

@@ -6,6 +6,7 @@ import PropTypes from "prop-types";
 import { useTranslation } from "react-i18next";
 
 import ChecklistField from "./ChecklistField";
+import { formatMemberName, getInitials } from "./utils";
 
 const CardDetailView = ({ boardSlug, card, cardId }) => {
   const { t } = useTranslation();
@@ -45,6 +46,30 @@ const CardDetailView = ({ boardSlug, card, cardId }) => {
         <Typography className="text-gray-800" style="body2">
           {formattedDueDate || t("cardDetail.noDueDate")}
         </Typography>
+      </div>
+      <div className="flex w-full flex-col gap-y-1">
+        <Typography className="text-gray-500" style="body3" weight="semibold">
+          {t("cardDetail.assignee")}
+        </Typography>
+        {card.assignees?.length ? (
+          <div className="flex flex-wrap gap-2">
+            {card.assignees.map(assignee => (
+              <span
+                className="flex items-center gap-x-2 rounded-full bg-indigo-50 px-3 py-1 text-xs font-medium text-indigo-700"
+                key={assignee.id}
+              >
+                <span className="flex h-5 w-5 items-center justify-center rounded-full bg-indigo-100 text-[10px]">
+                  {getInitials(assignee)}
+                </span>
+                {formatMemberName(assignee)}
+              </span>
+            ))}
+          </div>
+        ) : (
+          <Typography className="text-gray-500" style="body3">
+            {t("cardDetail.noAssignee")}
+          </Typography>
+        )}
       </div>
       <div className="flex w-full flex-col gap-y-2">
         <Typography className="text-gray-500" style="body3" weight="semibold">
@@ -87,6 +112,13 @@ CardDetailView.propTypes = {
     title: PropTypes.string.isRequired,
     description: PropTypes.string,
     dueDate: PropTypes.string,
+    assignees: PropTypes.arrayOf(
+      PropTypes.shape({
+        id: PropTypes.string.isRequired,
+        firstName: PropTypes.string,
+        lastName: PropTypes.string,
+      })
+    ),
     labels: PropTypes.array,
     checklistItems: PropTypes.array,
   }).isRequired,

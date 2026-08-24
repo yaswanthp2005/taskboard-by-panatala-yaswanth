@@ -5,6 +5,12 @@ class Api::V1::BoardMembersController < ApplicationController
 
   before_action :load_board
 
+  def index
+    authorize BoardMember
+    @members = User.where(id: [@board.owner_id] + @board.member_ids)
+      .order(:first_name, :last_name)
+  end
+
   def create
     board_member = BoardMember.new(board: @board)
     authorize board_member

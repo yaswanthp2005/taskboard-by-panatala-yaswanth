@@ -1,15 +1,17 @@
 import React from "react";
 
 import dayjs from "dayjs";
-import { Calendar, MenuHorizontal, UserAdd } from "neetoicons";
+import { Calendar, MenuHorizontal } from "neetoicons";
 import { Dropdown, Typography } from "neetoui";
 import PropTypes from "prop-types";
 import { useTranslation } from "react-i18next";
 
+import AssigneePicker from "./AssigneePicker";
+
 const formatDueDate = dueDate =>
   dueDate ? dayjs(dueDate).format("D MMM") : null;
 
-const TaskCard = ({ item, onClick, onDelete, onEdit }) => {
+const TaskCard = ({ boardSlug, item, onClick, onDelete, onEdit }) => {
   const { t } = useTranslation();
   const formattedDueDate = formatDueDate(item.dueDate);
 
@@ -73,19 +75,29 @@ const TaskCard = ({ item, onClick, onDelete, onEdit }) => {
         ) : (
           <span />
         )}
-        <span className="shrink-0 text-gray-400">
-          <UserAdd size={16} />
-        </span>
+        <AssigneePicker
+          assignees={item.assignees ?? []}
+          boardSlug={boardSlug}
+          cardId={item.id}
+        />
       </div>
     </div>
   );
 };
 
 TaskCard.propTypes = {
+  boardSlug: PropTypes.string.isRequired,
   item: PropTypes.shape({
     id: PropTypes.string.isRequired,
     title: PropTypes.string.isRequired,
     dueDate: PropTypes.string,
+    assignees: PropTypes.arrayOf(
+      PropTypes.shape({
+        id: PropTypes.string.isRequired,
+        firstName: PropTypes.string,
+        lastName: PropTypes.string,
+      })
+    ),
   }).isRequired,
   onClick: PropTypes.func,
   onDelete: PropTypes.func,

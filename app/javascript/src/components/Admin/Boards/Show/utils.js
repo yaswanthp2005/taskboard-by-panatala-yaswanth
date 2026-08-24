@@ -10,6 +10,7 @@ const mapListsToSections = (lists = []) =>
           id: card.id,
           title: card.title,
           dueDate: card.dueDate,
+          assignees: card.assignees ?? [],
         })),
     }));
 

@@ -135,8 +135,10 @@ const BoardKanban = ({
       <div className="flex h-full min-h-0 w-full min-w-0 items-start gap-x-3 overflow-x-auto px-5 pb-4 pt-2 lg:px-10">
         <BoardView
           className="h-full items-start"
-          renderItemOverlay={({ item }) => <TaskCard item={item} />}
           sections={sections}
+          renderItemOverlay={({ item }) => (
+            <TaskCard boardSlug={boardSlug} item={item} />
+          )}
           renderSection={({ section, isDragAndDropDisabled }) => (
             <ListColumn
               boardSlug={boardSlug}

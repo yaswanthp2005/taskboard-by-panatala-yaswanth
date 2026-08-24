@@ -309,4 +309,90 @@ class Api::V1::CardsControllerTest < ActionDispatch::IntegrationTest
     assert_response :not_found
     assert Card.exists?(@card.id)
   end
+
+  def test_show_includes_assignees
+    create(:board_member, board: @board, user: @member)
+    @card.update!(assignee_ids: [@member.id])
+
+    get api_v1_card_path(@card), headers: headers(@owner), as: :json
+
+    assert_response :success
+    assert_equal 1, response_body["assignees"].size
+    assert_equal @member.id, response_body["assignees"].first["id"]
+    assert_equal @member.first_name, response_body["assignees"].first["first_name"]
+    assert_equal @member.last_name, response_body["assignees"].first["last_name"]
+    assert_equal @member.email, response_body["assignees"].first["email"]
+  end
+
+  def test_update_assigns_board_member_as_assignee
+    create(:board_member, board: @board, user: @member)
+
+    patch api_v1_card_path(@card),
+      params: { card: { assignee_ids: [@member.id] } },
+      headers: headers(@owner),
+      as: :json
+
+    assert_response :success
+    assert_equal [@member], @card.reload.assignees.to_a
+  end
+
+  def test_update_assigns_multiple_board_members
+    second_member = create(:user)
+    create(:board_member, board: @board, user: @member)
+    create(:board_member, board: @board, user: second_member)
+
+    patch api_v1_card_path(@card),
+      params: { card: { assignee_ids: [@member.id, second_member.id] } },
+      headers: headers(@owner),
+      as: :json
+
+    assert_response :success
+    assert_equal [@member.id, second_member.id].sort, @card.reload.assignee_ids.sort
+  end
+
+  def test_update_assigns_board_owner_as_assignee
+    patch api_v1_card_path(@card),
+      params: { card: { assignee_ids: [@owner.id] } },
+      headers: headers(@owner),
+      as: :json
+
+    assert_response :success
+    assert_equal [@owner], @card.reload.assignees.to_a
+  end
+
+  def test_update_allows_member_to_assign_assignee
+    create(:board_member, board: @board, user: @member)
+
+    patch api_v1_card_path(@card),
+      params: { card: { assignee_ids: [@owner.id] } },
+      headers: headers(@member),
+      as: :json
+
+    assert_response :success
+    assert_equal [@owner], @card.reload.assignees.to_a
+  end
+
+  def test_update_rejects_non_board_member_as_assignee
+    patch api_v1_card_path(@card),
+      params: { card: { assignee_ids: [@other_user.id] } },
+      headers: headers(@owner),
+      as: :json
+
+    assert_response :unprocessable_entity
+    assert_equal "Assignees #{I18n.t('card.assignee.must_be_board_member')}", response_body["error"]
+    assert_empty @card.reload.assignees
+  end
+
+  def test_update_clears_assignees
+    create(:board_member, board: @board, user: @member)
+    @card.update!(assignee_ids: [@member.id])
+
+    patch api_v1_card_path(@card),
+      params: { card: { assignee_ids: [] } },
+      headers: headers(@owner),
+      as: :json
+
+    assert_response :success
+    assert_empty @card.reload.assignees
+  end
 end

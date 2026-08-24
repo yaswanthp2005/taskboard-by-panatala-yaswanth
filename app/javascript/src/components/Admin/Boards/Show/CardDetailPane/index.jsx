@@ -11,6 +11,7 @@ import { Form as NeetoUIForm, Textarea } from "neetoui/formik";
 import PropTypes from "prop-types";
 import { useTranslation } from "react-i18next";
 
+import AssigneeField from "./AssigneeField";
 import CardDetailView from "./CardDetailView";
 import ChecklistField from "./ChecklistField";
 import {
@@ -57,6 +58,7 @@ const CardDetailPane = ({
       description: values.description.trim(),
       dueDate: values.dueDate ? values.dueDate.format("YYYY-MM-DD") : null,
       labelIds: values.labelIds,
+      assigneeIds: values.assigneeIds,
     };
 
     try {
@@ -108,6 +110,7 @@ const CardDetailPane = ({
             rows={6}
           />
           <DueDateField />
+          <AssigneeField boardSlug={boardSlug} />
           <LabelsField boardSlug={boardSlug} />
           {!isCreateMode && (
             <ChecklistField

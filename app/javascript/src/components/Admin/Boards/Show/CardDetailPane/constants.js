@@ -6,6 +6,7 @@ const buildCardDetailFormInitialValues = card => ({
   description: card?.description || "",
   dueDate: card?.dueDate || null,
   labelIds: card?.labels?.map(label => label.id) || [],
+  assigneeIds: card?.assignees?.map(assignee => assignee.id) || [],
 });
 
 const CARD_DETAIL_FORM_VALIDATION_SCHEMA = Yup.object({
@@ -13,6 +14,7 @@ const CARD_DETAIL_FORM_VALIDATION_SCHEMA = Yup.object({
   description: Yup.string(),
   dueDate: Yup.mixed().nullable(),
   labelIds: Yup.array().of(Yup.string()),
+  assigneeIds: Yup.array().of(Yup.string()),
 });
 
 export { buildCardDetailFormInitialValues, CARD_DETAIL_FORM_VALIDATION_SCHEMA };

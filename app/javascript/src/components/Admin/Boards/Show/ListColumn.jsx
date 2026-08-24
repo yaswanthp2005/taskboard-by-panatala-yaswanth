@@ -70,6 +70,7 @@ const ListColumn = ({
         section={section}
         renderItem={({ item }) => (
           <TaskCard
+            boardSlug={boardSlug}
             item={item}
             onClick={() => onCardClick?.(item)}
             onDelete={onCardDelete}

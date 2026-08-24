@@ -63,3 +63,5 @@ en:
       invalid_position: "must be a positive integer"
     labels:
       must_belong_to_board: "must belong to the same board as the card"
+    assignee:
+      must_be_board_member: "must be a member of the board"

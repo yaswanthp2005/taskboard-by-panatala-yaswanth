@@ -105,4 +105,49 @@ class CardTest < ActiveSupport::TestCase
 
     assert_empty card.reload.labels
   end
+
+  def test_can_assign_board_member_as_assignee
+    member = create(:user)
+    create(:board_member, board: @board, user: member)
+    card = create(:card, list: @list)
+
+    card.update!(assignee_ids: [member.id])
+
+    assert_equal [member], card.reload.assignees.to_a
+  end
+
+  def test_can_assign_multiple_board_members
+    member = create(:user)
+    second_member = create(:user)
+    create(:board_member, board: @board, user: member)
+    create(:board_member, board: @board, user: second_member)
+    card = create(:card, list: @list)
+
+    card.update!(assignee_ids: [member.id, second_member.id])
+
+    assert_equal [member.id, second_member.id].sort, card.reload.assignee_ids.sort
+  end
+
+  def test_can_assign_board_owner_as_assignee
+    card = create(:card, list: @list)
+
+    card.update!(assignee_ids: [@owner.id])
+
+    assert_equal [@owner], card.reload.assignees.to_a
+  end
+
+  def test_rejects_non_board_member_as_assignee
+    other_user = create(:user)
+    card = build(:card, list: @list)
+    card.assignee_ids = [other_user.id]
+
+    assert_not card.valid?
+    assert_includes card.errors[:assignees], I18n.t("card.assignee.must_be_board_member")
+  end
+
+  def test_allows_blank_assignees
+    card = build(:card, list: @list)
+
+    assert card.valid?
+  end
 end

@@ -84,7 +84,8 @@
       "lists": "Lists",
       "labels": "Labels",
       "activities": "Activities",
-      "members": "Members"
+      "members": "Members",
+      "settings": "Settings"
     },
     "addList": "Add list",
     "addListPlaceholder": "Name this list…",
@@ -136,6 +137,31 @@
       "listUpdated": "{{actorName}} updated the list {{listTitle}}",
       "listDeleted": "{{actorName}} deleted the list {{listTitle}}",
       "default": "{{actorName}} performed an action"
+    }
+  },
+  "boardSettings": {
+    "pageTitle": "Board settings",
+    "title": "Board settings",
+    "subtitle": "Update your board details and manage related settings.",
+    "general": {
+      "title": "General",
+      "subtitle": "Rename your board and change its color."
+    },
+    "manage": {
+      "title": "Manage",
+      "subtitle": "Configure members and labels for this board.",
+      "members": "Manage members",
+      "membersDescription": "Invite and manage who has access to this board.",
+      "labels": "Manage labels",
+      "labelsDescription": "Create and organize labels for cards on this board."
+    },
+    "dangerZone": {
+      "title": "Danger zone",
+      "subtitle": "Permanently delete this board and all of its lists and cards.",
+      "deleteBoard": "Delete board"
+    },
+    "form": {
+      "saveChanges": "Save changes"
     }
   },
   "members": {

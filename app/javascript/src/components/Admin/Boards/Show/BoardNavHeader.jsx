@@ -63,6 +63,14 @@ const BoardNavHeader = ({ board }) => {
       return;
     }
 
+    if (tab === BOARD_TAB_KEYS.SETTINGS) {
+      history.push(
+        buildURL({ path: routes.boards.settings, slug: board.slug })
+      );
+
+      return;
+    }
+
     history.push(buildURL({ path: routes.boards.show, slug: board.slug }));
   };
 
@@ -101,6 +109,13 @@ const BoardNavHeader = ({ board }) => {
             onClick={() => handleTabChange(BOARD_TAB_KEYS.MEMBERS)}
           >
             {t("boardView.tabs.members")}
+          </Tab.Item>
+          <Tab.Item
+            active={activeTab === BOARD_TAB_KEYS.SETTINGS}
+            data-cy="settings-tab"
+            onClick={() => handleTabChange(BOARD_TAB_KEYS.SETTINGS)}
+          >
+            {t("boardView.tabs.settings")}
           </Tab.Item>
         </Tab>
         <span />

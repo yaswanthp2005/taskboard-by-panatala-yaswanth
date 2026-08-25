@@ -10,6 +10,7 @@ const routes = {
     labels: `${BASE_URL}:slug/labels`,
     activities: `${BASE_URL}:slug/activities`,
     members: `${BASE_URL}:slug/members`,
+    settings: `${BASE_URL}:slug/settings`,
   },
 };
 

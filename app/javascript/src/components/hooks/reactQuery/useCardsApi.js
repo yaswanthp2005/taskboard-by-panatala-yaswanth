@@ -17,6 +17,7 @@ const useCreateCard = boardSlug => {
   return useMutation(payload => cardsApi.create({ boardSlug, ...payload }), {
     onSuccess: () => {
       queryClient.invalidateQueries([QUERY_KEYS.BOARDS, boardSlug]);
+      queryClient.invalidateQueries([QUERY_KEYS.CARDS, boardSlug]);
       invalidateActivityQueries(queryClient, boardSlug);
     },
   });
@@ -33,12 +34,27 @@ const useFetchCard = (id, { enabled = true } = {}) =>
     { enabled: Boolean(id) && enabled }
   );
 
+const useFetchCards = (boardSlug, params = {}) =>
+  useQuery(
+    [QUERY_KEYS.CARDS, boardSlug, params],
+    async () => {
+      const { data } = await cardsApi.fetch({ boardSlug, ...params });
+
+      return data.lists;
+    },
+    {
+      enabled: Boolean(boardSlug),
+      keepPreviousData: true,
+    }
+  );
+
 const useUpdateCard = boardSlug => {
   const queryClient = useQueryClient();
 
   return useMutation(payload => cardsApi.update(payload), {
     onSuccess: (_data, variables) => {
       queryClient.invalidateQueries([QUERY_KEYS.BOARDS, boardSlug]);
+      queryClient.invalidateQueries([QUERY_KEYS.CARDS, boardSlug]);
       queryClient.invalidateQueries([QUERY_KEYS.CARDS, variables.id]);
       invalidateActivityQueries(queryClient, boardSlug, variables.id);
     },
@@ -51,6 +67,7 @@ const useDeleteCard = boardSlug => {
   return useMutation(({ id }) => cardsApi.destroy({ id }), {
     onSuccess: (_data, variables) => {
       queryClient.invalidateQueries([QUERY_KEYS.BOARDS, boardSlug]);
+      queryClient.invalidateQueries([QUERY_KEYS.CARDS, boardSlug]);
       queryClient.removeQueries([QUERY_KEYS.CARDS, variables.id]);
       invalidateActivityQueries(queryClient, boardSlug, variables.id);
     },
@@ -63,6 +80,7 @@ const useMoveCard = boardSlug => {
   return useMutation(payload => cardsApi.move(payload), {
     onSuccess: (_data, variables) => {
       queryClient.invalidateQueries([QUERY_KEYS.BOARDS, boardSlug]);
+      queryClient.invalidateQueries([QUERY_KEYS.CARDS, boardSlug]);
       invalidateActivityQueries(queryClient, boardSlug, variables.id);
     },
   });
@@ -72,6 +90,7 @@ export {
   useCreateCard,
   useDeleteCard,
   useFetchCard,
+  useFetchCards,
   useMoveCard,
   useUpdateCard,
 };

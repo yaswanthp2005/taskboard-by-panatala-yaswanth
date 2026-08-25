@@ -63,6 +63,53 @@ class Api::V1::CardsControllerTest < ActionDispatch::IntegrationTest
     assert_response :not_found
   end
 
+  def test_index_filters_cards_by_search
+    matching_card = @card
+    create(:card, list: @list, title: "Write documentation")
+    done_list = create(:list, board: @board, title: "Done")
+    create(:card, list: done_list, title: "Deploy release")
+
+    get api_v1_board_cards_path(@board.slug),
+      params: { search: "login" },
+      headers: headers(@owner),
+      as: :json
+
+    assert_response :success
+    response_lists = response_body["lists"]
+    assert_equal 2, response_lists.size
+
+    todo_cards = response_lists.find { |list| list["id"] == @list.id }["cards"]
+    done_cards = response_lists.find { |list| list["id"] == done_list.id }["cards"]
+
+    assert_equal 1, todo_cards.size
+    assert_equal matching_card.id, todo_cards.first["id"]
+    assert_equal "Fix login bug", todo_cards.first["title"]
+    assert_empty done_cards
+  end
+
+  def test_index_search_is_case_insensitive
+    create(:card, list: @list, title: "Write documentation")
+
+    get api_v1_board_cards_path(@board.slug),
+      params: { search: "LOGIN" },
+      headers: headers(@owner),
+      as: :json
+
+    assert_response :success
+    cards = response_body.dig("lists", 0, "cards")
+    assert_equal 1, cards.size
+    assert_equal @card.id, cards.first["id"]
+  end
+
+  def test_index_rejects_non_member
+    get api_v1_board_cards_path(@board.slug),
+      params: { search: "login" },
+      headers: headers(@other_user),
+      as: :json
+
+    assert_response :not_found
+  end
+
   def test_show_allows_board_owner
     @card.update!(description: "Login is broken on Safari", due_date: Date.new(2026, 8, 25))
 

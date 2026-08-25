@@ -11,6 +11,7 @@ Rails.application.routes.draw do
           resources :members, only: %i[index create], controller: "board_members"
           resources :activities, only: :index
           resources :labels, only: %i[index create update destroy]
+          resources :cards, only: :index
           resources :lists, only: %i[create update destroy] do
             member do
               patch :move

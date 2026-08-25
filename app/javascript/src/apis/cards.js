@@ -23,6 +23,9 @@ const move = ({ id, ...payload }) =>
 
 const destroy = ({ id }) => axios.delete(`${ADMIN_API_BASE_URL}/cards/${id}`);
 
-const cardsApi = { create, destroy, move, show, update };
+const fetch = ({ boardSlug, ...params }) =>
+  axios.get(`${ADMIN_API_BASE_URL}/boards/${boardSlug}/cards`, { params });
+
+const cardsApi = { create, destroy, fetch, move, show, update };
 
 export default cardsApi;

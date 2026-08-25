@@ -5,7 +5,13 @@ import { Button, Input, Typography } from "neetoui";
 import PropTypes from "prop-types";
 import { useTranslation } from "react-i18next";
 
-const BoardSubHeader = ({ isAddingList, onAddList, totalCards }) => {
+const BoardSubHeader = ({
+  isAddingList,
+  onAddList,
+  onSearch,
+  search,
+  totalCards,
+}) => {
   const { t } = useTranslation();
   const subHeaderRef = useRef(null);
 
@@ -46,6 +52,8 @@ const BoardSubHeader = ({ isAddingList, onAddList, totalCards }) => {
           className="w-56"
           placeholder={t("boardView.searchPlaceholder")}
           prefix={<Search />}
+          value={search}
+          onChange={event => onSearch(event.target.value)}
         />
         <Button
           disabled={isAddingList}
@@ -70,11 +78,14 @@ const BoardSubHeader = ({ isAddingList, onAddList, totalCards }) => {
 BoardSubHeader.propTypes = {
   isAddingList: PropTypes.bool,
   onAddList: PropTypes.func.isRequired,
+  onSearch: PropTypes.func.isRequired,
+  search: PropTypes.string,
   totalCards: PropTypes.number.isRequired,
 };
 
 BoardSubHeader.defaultProps = {
   isAddingList: false,
+  search: "",
 };
 
 export default BoardSubHeader;

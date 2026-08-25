@@ -1,3 +1,8 @@
+import { filterNonNull, serializeKeysToSnakeCase } from "neetocist";
+
+import { formatMemberName } from "./CardDetailPane/utils";
+import { FILTER_FORM_INITIAL_VALUES } from "./filterConstants";
+
 const mapListsToSections = (lists = []) =>
   [...lists]
     .sort((first, second) => first.position - second.position)
@@ -56,17 +61,116 @@ const moveItem = (sections, source, destination) => {
   return nextSections;
 };
 
-const buildCardFetchParams = ({ search = "" } = {}) => ({
-  search: search.trim() || undefined,
+const extractSelectValue = value => {
+  if (value && typeof value === "object") {
+    return value.value ?? "";
+  }
+
+  return value ?? "";
+};
+
+const normalizeValues = value => {
+  if (!value) {
+    return [];
+  }
+
+  const splitValue = item =>
+    String(item)
+      .split(",")
+      .map(part => part.trim())
+      .filter(Boolean);
+
+  if (Array.isArray(value)) {
+    return value.flatMap(splitValue);
+  }
+
+  return splitValue(value);
+};
+
+const extractValues = value => {
+  if (!Array.isArray(value)) {
+    return normalizeValues(value);
+  }
+
+  return value.map(extractSelectValue).filter(Boolean).map(String);
+};
+
+const extractAssignees = assignees => extractValues(assignees);
+
+const extractLabels = labels => extractValues(labels);
+
+const memberFilterValue = member =>
+  formatMemberName(member) || member.email || "";
+
+const filtersFromQueryParams = ({
+  search = "",
+  assignees,
+  labels,
+  dueStatus = "",
+} = {}) => ({
+  search,
+  assignees: normalizeValues(assignees),
+  labels: normalizeValues(labels),
+  dueStatus: dueStatus || "",
+});
+
+const buildFiltersFromFormValues = values => ({
+  assignees: extractAssignees(values.assignees),
+  labels: extractLabels(values.labels),
+  dueStatus: extractSelectValue(values.dueStatus) || "",
 });
 
 const hasActiveCardFilters = (params = {}) =>
-  Object.values(params).some(Boolean);
+  Object.values(params).some(value => {
+    if (Array.isArray(value)) {
+      return value.length > 0;
+    }
+
+    return Boolean(value);
+  });
+
+const hasPaneFiltersApplied = (filters = FILTER_FORM_INITIAL_VALUES) =>
+  Boolean(
+    extractAssignees(filters.assignees).length ||
+      extractLabels(filters.labels).length ||
+      filters.dueStatus
+  );
+
+const buildCardFetchParams = ({
+  search = "",
+  assignees,
+  labels,
+  dueStatus = "",
+} = {}) => {
+  const filters = filtersFromQueryParams({
+    assignees,
+    dueStatus,
+    labels,
+    search,
+  });
+  const assigneeNames = extractAssignees(filters.assignees);
+  const labelNames = extractLabels(filters.labels);
+
+  return serializeKeysToSnakeCase(
+    filterNonNull({
+      assignees: assigneeNames.length ? assigneeNames : null,
+      dueStatus: filters.dueStatus || null,
+      labels: labelNames.length ? labelNames : null,
+      search: filters.search?.trim() || null,
+    })
+  );
+};
 
 export {
   buildCardFetchParams,
+  buildFiltersFromFormValues,
+  extractAssignees,
+  extractLabels,
+  filtersFromQueryParams,
   hasActiveCardFilters,
+  hasPaneFiltersApplied,
   mapListsToSections,
+  memberFilterValue,
   moveItem,
   moveSection,
 };

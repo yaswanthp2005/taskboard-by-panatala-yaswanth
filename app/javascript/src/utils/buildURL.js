@@ -28,7 +28,7 @@ const buildURL = ({ path, ...params }) => {
   }
 
   const queryString = stringify(filterNonNull(queryParams), {
-    arrayFormat: "repeat",
+    arrayFormat: "comma",
   });
 
   if (queryString) {
@@ -38,4 +38,9 @@ const buildURL = ({ path, ...params }) => {
   return url;
 };
 
-export { buildQueryParams, buildURL };
+const serializeQueryParams = (params = {}) =>
+  stringify(filterNonNull(params), {
+    arrayFormat: "comma",
+  });
+
+export { buildQueryParams, buildURL, serializeQueryParams };

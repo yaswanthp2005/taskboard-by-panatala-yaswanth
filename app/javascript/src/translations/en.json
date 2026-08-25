@@ -89,9 +89,30 @@
     "addList": "Add list",
     "addListPlaceholder": "Name this list…",
     "addCard": "Add card",
-    "todoCount": "{{count}} todos",
+    "todoCount_one": "{{count}} todo",
+    "todoCount_other": "{{count}} todos",
     "searchPlaceholder": "Search todos",
     "filter": "Filter",
+    "filters": {
+      "title": "Filter todos",
+      "assignee": "Assignee",
+      "assigneePlaceholder": "Select assignees",
+      "label": "Label",
+      "labelPlaceholder": "Select labels",
+      "dueStatus": {
+        "label": "Due status",
+        "placeholder": "Select due status",
+        "overdue": "Overdue",
+        "dueSoon": "Due soon",
+        "noDueDate": "No due date"
+      },
+      "done": "Done",
+      "clearFilters": "Clear filters",
+      "filtersApplied": "Filters applied",
+      "filtersCleared": "Filters cleared",
+      "resultsCount_one": "Showing {{count}} todo",
+      "resultsCount_other": "Showing {{count}} todos"
+    },
     "defaultCardTitle": "New card",
     "deleteList": {
       "action": "Delete list",

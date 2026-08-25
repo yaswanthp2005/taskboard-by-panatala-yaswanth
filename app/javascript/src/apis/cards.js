@@ -1,6 +1,7 @@
 import { ADMIN_API_BASE_URL } from "constants/apis";
 
 import axios from "axios";
+import { serializeQueryParams } from "utils/buildURL";
 import camelToSnake from "utils/camelToSnake";
 
 const create = ({ boardSlug, listId, ...payload }) =>
@@ -24,7 +25,10 @@ const move = ({ id, ...payload }) =>
 const destroy = ({ id }) => axios.delete(`${ADMIN_API_BASE_URL}/cards/${id}`);
 
 const fetch = ({ boardSlug, ...params }) =>
-  axios.get(`${ADMIN_API_BASE_URL}/boards/${boardSlug}/cards`, { params });
+  axios.get(`${ADMIN_API_BASE_URL}/boards/${boardSlug}/cards`, {
+    params,
+    paramsSerializer: serializeQueryParams,
+  });
 
 const cardsApi = { create, destroy, fetch, move, show, update };
 

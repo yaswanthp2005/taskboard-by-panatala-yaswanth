@@ -16,7 +16,16 @@ import withTitle from "utils/withTitle";
 
 import BoardHeader from "./BoardHeader";
 import BoardKanban from "./BoardKanban";
-import { buildCardFetchParams, hasActiveCardFilters } from "./utils";
+import AppliedFilters from "./Filters/AppliedFilters";
+import SearchFilters from "./Filters/SearchFilters";
+import {
+  buildCardFetchParams,
+  extractAssignees,
+  extractLabels,
+  filtersFromQueryParams,
+  hasActiveCardFilters,
+  hasPaneFiltersApplied,
+} from "./utils";
 
 const getTotalCards = lists =>
   (lists ?? []).reduce((total, list) => total + (list.cards?.length ?? 0), 0);
@@ -26,14 +35,37 @@ const Show = () => {
   const history = useHistory();
   const { slug } = useParams();
   const queryParams = useQueryParams();
-  const { search = "" } = queryParams;
+  const { search = "", assignees, labels, dueStatus = "" } = queryParams;
   const [isAddingList, setIsAddingList] = useState(false);
   const [searchKey, setSearchKey] = useState(search);
+  const [isSearchFiltersOpen, setIsSearchFiltersOpen] = useState(false);
+
+  const normalizedAssigneeNames = useMemo(
+    () => extractAssignees(assignees),
+    [assignees]
+  );
+  const normalizedLabelNames = useMemo(() => extractLabels(labels), [labels]);
 
   const trimmedSearch = search.trim();
   const cardFetchParams = useMemo(
-    () => buildCardFetchParams({ search: trimmedSearch }),
-    [trimmedSearch]
+    () =>
+      buildCardFetchParams({
+        assignees: normalizedAssigneeNames,
+        dueStatus,
+        labels: normalizedLabelNames,
+        search: trimmedSearch,
+      }),
+    [dueStatus, normalizedAssigneeNames, normalizedLabelNames, trimmedSearch]
+  );
+
+  const paneFilters = useMemo(
+    () =>
+      filtersFromQueryParams({
+        assignees: normalizedAssigneeNames,
+        dueStatus,
+        labels: normalizedLabelNames,
+      }),
+    [dueStatus, normalizedAssigneeNames, normalizedLabelNames]
   );
 
   const { data: board, isError, isLoading } = useFetchBoard(slug);
@@ -62,8 +94,72 @@ const Show = () => {
   );
 
   const debouncedSearch = useFuncDebounce(value => {
-    replaceQueryParams({ search: value || null });
+    replaceQueryParams({
+      assignees: normalizedAssigneeNames.length
+        ? normalizedAssigneeNames
+        : null,
+      dueStatus: dueStatus || null,
+      labels: normalizedLabelNames.length ? normalizedLabelNames : null,
+      search: value || null,
+    });
   });
+
+  const handleFiltersSubmit = filters => {
+    replaceQueryParams({
+      assignees: filters.assignees.length ? filters.assignees : null,
+      dueStatus: filters.dueStatus || null,
+      labels: filters.labels.length ? filters.labels : null,
+      search: trimmedSearch || null,
+    });
+  };
+
+  const handleRemoveAssignee = assigneeName => {
+    const remainingAssignees = normalizedAssigneeNames.filter(
+      name => name !== assigneeName
+    );
+
+    replaceQueryParams({
+      assignees: remainingAssignees.length ? remainingAssignees : null,
+      dueStatus: dueStatus || null,
+      labels: normalizedLabelNames.length ? normalizedLabelNames : null,
+      search: trimmedSearch || null,
+    });
+  };
+
+  const handleRemoveLabel = labelName => {
+    const remainingLabels = normalizedLabelNames.filter(
+      name => name !== labelName
+    );
+
+    replaceQueryParams({
+      assignees: normalizedAssigneeNames.length
+        ? normalizedAssigneeNames
+        : null,
+      dueStatus: dueStatus || null,
+      labels: remainingLabels.length ? remainingLabels : null,
+      search: trimmedSearch || null,
+    });
+  };
+
+  const handleRemoveDueStatus = () => {
+    replaceQueryParams({
+      assignees: normalizedAssigneeNames.length
+        ? normalizedAssigneeNames
+        : null,
+      dueStatus: null,
+      labels: normalizedLabelNames.length ? normalizedLabelNames : null,
+      search: trimmedSearch || null,
+    });
+  };
+
+  const handleClearFilters = () => {
+    replaceQueryParams({
+      assignees: null,
+      dueStatus: null,
+      labels: null,
+      search: trimmedSearch || null,
+    });
+  };
 
   if (isLoading && !board) {
     return (
@@ -82,22 +178,35 @@ const Show = () => {
   }
 
   const totalCards = getTotalCards(lists);
+  const arePaneFiltersApplied = hasPaneFiltersApplied(paneFilters);
 
   return (
     <div className="flex h-screen overflow-hidden bg-white">
       <Sidebar />
       <div className="flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden">
         <BoardHeader
+          arePaneFiltersApplied={arePaneFiltersApplied}
           board={board}
           isAddingList={isAddingList}
           search={searchKey}
           totalCards={totalCards}
           onAddList={() => setIsAddingList(true)}
+          onOpenFilters={() => setIsSearchFiltersOpen(true)}
           onSearch={value => {
             setSearchKey(value);
             debouncedSearch(value);
           }}
         />
+        {arePaneFiltersApplied && (
+          <AppliedFilters
+            appliedFilters={paneFilters}
+            totalCards={totalCards}
+            onClearFilters={handleClearFilters}
+            onRemoveAssignee={handleRemoveAssignee}
+            onRemoveDueStatus={handleRemoveDueStatus}
+            onRemoveLabel={handleRemoveLabel}
+          />
+        )}
         <Scrollable
           className="board-kanban-scroll flex !h-auto w-full flex-col overflow-y-hidden"
           size="small"
@@ -111,6 +220,13 @@ const Show = () => {
           />
         </Scrollable>
       </div>
+      <SearchFilters
+        boardSlug={board.slug}
+        filters={paneFilters}
+        isOpen={isSearchFiltersOpen}
+        onClose={() => setIsSearchFiltersOpen(false)}
+        onSubmit={handleFiltersSubmit}
+      />
     </div>
   );
 };

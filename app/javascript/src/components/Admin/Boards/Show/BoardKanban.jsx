@@ -22,6 +22,7 @@ import { mapListsToSections, moveItem, moveSection } from "./utils";
 const BoardKanban = ({
   boardSlug,
   isAddingList,
+  isFetching,
   lists = [],
   onCancelAddList,
 }) => {
@@ -132,7 +133,11 @@ const BoardKanban = ({
 
   return (
     <>
-      <div className="flex h-full min-h-0 w-full min-w-0 items-start gap-x-3 overflow-x-auto px-5 pb-4 pt-2 lg:px-10">
+      <div
+        className={`flex h-full min-h-0 w-full min-w-0 items-start gap-x-3 overflow-x-auto px-5 pb-4 pt-2 transition-opacity lg:px-10 ${
+          isFetching ? "opacity-60" : "opacity-100"
+        }`}
+      >
         <BoardView
           className="h-full items-start"
           sections={sections}
@@ -201,12 +206,14 @@ const BoardKanban = ({
 BoardKanban.propTypes = {
   boardSlug: PropTypes.string.isRequired,
   isAddingList: PropTypes.bool,
+  isFetching: PropTypes.bool,
   lists: PropTypes.array,
   onCancelAddList: PropTypes.func,
 };
 
 BoardKanban.defaultProps = {
   isAddingList: false,
+  isFetching: false,
   lists: [],
   onCancelAddList: undefined,
 };

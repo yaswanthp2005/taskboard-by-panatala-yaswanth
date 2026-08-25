@@ -3,9 +3,14 @@
 class Api::V1::CardsController < ApplicationController
   after_action :verify_authorized
 
-  before_action :load_board, only: :create
+  before_action :load_board, only: %i[index create]
   before_action :load_list, only: :create
   before_action :load_card, only: %i[show update move destroy]
+
+  def index
+    authorize @board, :show?
+    @filtered_card_ids = CardFilterService.new(@board.cards, params:).process.pluck(:id).to_set
+  end
 
   def create
     card = @list.cards.build(card_params)
@@ -77,7 +82,9 @@ class Api::V1::CardsController < ApplicationController
   private
 
     def load_board
-      @board = policy_scope(Board).find_by!(slug: params[:board_slug])
+      @board = policy_scope(Board)
+        .includes(lists: { cards: :assignees })
+        .find_by!(slug: params[:board_slug])
     end
 
     def load_list

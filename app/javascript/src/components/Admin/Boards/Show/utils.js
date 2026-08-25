@@ -56,4 +56,17 @@ const moveItem = (sections, source, destination) => {
   return nextSections;
 };
 
-export { mapListsToSections, moveItem, moveSection };
+const buildCardFetchParams = ({ search = "" } = {}) => ({
+  search: search.trim() || undefined,
+});
+
+const hasActiveCardFilters = (params = {}) =>
+  Object.values(params).some(Boolean);
+
+export {
+  buildCardFetchParams,
+  hasActiveCardFilters,
+  mapListsToSections,
+  moveItem,
+  moveSection,
+};

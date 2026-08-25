@@ -175,6 +175,34 @@ class Api::V1::BoardsControllerTest < ActionDispatch::IntegrationTest
     assert_equal "product-roadmap", board.slug
   end
 
+  def test_update_changes_board_color
+    board = create(:board, name: "Product Roadmap", color: "#4F46E5", owner: @owner)
+
+    patch api_v1_board_path(board),
+      params: { board: { color: "#EF4444" } },
+      headers: headers(@owner),
+      as: :json
+
+    assert_response :success
+    assert_equal I18n.t("successfully_updated", entity: "Board"), response_body["notice"]
+    assert_equal "#EF4444", board.reload.color
+    assert_equal "Product Roadmap", board.name
+  end
+
+  def test_update_changes_board_name_and_color
+    board = create(:board, name: "Product Roadmap", color: "#4F46E5", owner: @owner)
+
+    patch api_v1_board_path(board),
+      params: { board: { name: "Updated Roadmap", color: "#10B981" } },
+      headers: headers(@owner),
+      as: :json
+
+    assert_response :success
+    board.reload
+    assert_equal "Updated Roadmap", board.name
+    assert_equal "#10B981", board.color
+  end
+
   def test_update_rejects_blank_name
     board = create(:board, name: "Product Roadmap", owner: @owner)
 

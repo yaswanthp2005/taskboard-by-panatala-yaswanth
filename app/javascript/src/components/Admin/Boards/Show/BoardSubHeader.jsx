@@ -6,8 +6,10 @@ import PropTypes from "prop-types";
 import { useTranslation } from "react-i18next";
 
 const BoardSubHeader = ({
+  arePaneFiltersApplied,
   isAddingList,
   onAddList,
+  onOpenFilters,
   onSearch,
   search,
   totalCards,
@@ -64,11 +66,12 @@ const BoardSubHeader = ({
         />
         <Button
           icon={Filter}
-          style="text"
+          style={arePaneFiltersApplied ? "primary" : "text"}
           tooltipProps={{
             content: t("boardView.filter"),
             position: "bottom",
           }}
+          onClick={onOpenFilters}
         />
       </div>
     </div>
@@ -76,14 +79,17 @@ const BoardSubHeader = ({
 };
 
 BoardSubHeader.propTypes = {
+  arePaneFiltersApplied: PropTypes.bool,
   isAddingList: PropTypes.bool,
   onAddList: PropTypes.func.isRequired,
+  onOpenFilters: PropTypes.func.isRequired,
   onSearch: PropTypes.func.isRequired,
   search: PropTypes.string,
   totalCards: PropTypes.number.isRequired,
 };
 
 BoardSubHeader.defaultProps = {
+  arePaneFiltersApplied: false,
   isAddingList: false,
   search: "",
 };

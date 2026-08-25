@@ -101,6 +101,190 @@ class Api::V1::CardsControllerTest < ActionDispatch::IntegrationTest
     assert_equal @card.id, cards.first["id"]
   end
 
+  def test_index_filters_cards_by_assignee
+    create(:board_member, board: @board, user: @member)
+    assigned_card = create(:card, list: @list, title: "Assigned task")
+    assigned_card.update!(assignee_ids: [@member.id])
+    create(:card, list: @list, title: "Unassigned task")
+
+    get api_v1_board_cards_path(@board.slug),
+      params: { assignees: assignee_filter_name(@member) },
+      headers: headers(@owner),
+      as: :json
+
+    assert_response :success
+    cards = response_body.dig("lists", 0, "cards")
+    assert_equal 1, cards.size
+    assert_equal assigned_card.id, cards.first["id"]
+  end
+
+  def test_index_filters_cards_by_multiple_assignees
+    create(:board_member, board: @board, user: @member)
+    second_member = create(:user)
+    create(:board_member, board: @board, user: second_member)
+
+    member_card = create(:card, list: @list, title: "Member task")
+    member_card.update!(assignee_ids: [@member.id])
+    second_member_card = create(:card, list: @list, title: "Second member task")
+    second_member_card.update!(assignee_ids: [second_member.id])
+    create(:card, list: @list, title: "Unassigned task")
+
+    get api_v1_board_cards_path(@board.slug),
+      params: {
+        assignees: [
+          assignee_filter_name(@member),
+          assignee_filter_name(second_member)
+        ].join(",")
+      },
+      headers: headers(@owner),
+      as: :json
+
+    assert_response :success
+    cards = response_body.dig("lists", 0, "cards")
+    assert_equal 2, cards.size
+    assert_equal [member_card.id, second_member_card.id].sort, cards.pluck("id").sort
+  end
+
+  def test_index_assignee_filter_is_case_insensitive
+    create(:board_member, board: @board, user: @member)
+    assigned_card = create(:card, list: @list, title: "Assigned task")
+    assigned_card.update!(assignee_ids: [@member.id])
+
+    get api_v1_board_cards_path(@board.slug),
+      params: { assignees: assignee_filter_name(@member).upcase },
+      headers: headers(@owner),
+      as: :json
+
+    assert_response :success
+    cards = response_body.dig("lists", 0, "cards")
+    assert_equal 1, cards.size
+    assert_equal assigned_card.id, cards.first["id"]
+  end
+
+  def test_index_filters_cards_by_label
+    bug_label = create(:label, board: @board, name: "Bug")
+    feature_label = create(:label, board: @board, name: "Feature")
+    labeled_card = create(:card, list: @list, title: "Bug fix")
+    labeled_card.update!(label_ids: [bug_label.id])
+    create(:card, list: @list, title: "No label")
+
+    get api_v1_board_cards_path(@board.slug),
+      params: { labels: bug_label.name },
+      headers: headers(@owner),
+      as: :json
+
+    assert_response :success
+    cards = response_body.dig("lists", 0, "cards")
+    assert_equal 1, cards.size
+    assert_equal labeled_card.id, cards.first["id"]
+
+    get api_v1_board_cards_path(@board.slug),
+      params: { labels: [bug_label.name, feature_label.name].join(",") },
+      headers: headers(@owner),
+      as: :json
+
+    assert_response :success
+    cards = response_body.dig("lists", 0, "cards")
+    assert_equal 1, cards.size
+    assert_equal labeled_card.id, cards.first["id"]
+  end
+
+  def test_index_label_filter_is_case_insensitive
+    bug_label = create(:label, board: @board, name: "Bug")
+    labeled_card = create(:card, list: @list, title: "Bug fix")
+    labeled_card.update!(label_ids: [bug_label.id])
+
+    get api_v1_board_cards_path(@board.slug),
+      params: { labels: "BUG" },
+      headers: headers(@owner),
+      as: :json
+
+    assert_response :success
+    cards = response_body.dig("lists", 0, "cards")
+    assert_equal 1, cards.size
+    assert_equal labeled_card.id, cards.first["id"]
+  end
+
+  def test_index_filters_cards_by_overdue_due_status
+    overdue_card = create(:card, list: @list, title: "Overdue task", due_date: Date.current - 1.day)
+    create(:card, list: @list, title: "Future task", due_date: Date.current + 10.days)
+    create(:card, list: @list, title: "No due date")
+
+    get api_v1_board_cards_path(@board.slug),
+      params: { due_status: CardFilterService::DUE_STATUS_OVERDUE },
+      headers: headers(@owner),
+      as: :json
+
+    assert_response :success
+    cards = response_body.dig("lists", 0, "cards")
+    assert_equal 1, cards.size
+    assert_equal overdue_card.id, cards.first["id"]
+  end
+
+  def test_index_filters_cards_by_due_soon_due_status
+    due_soon_card = create(:card, list: @list, title: "Due soon task", due_date: Date.current + 3.days)
+    create(:card, list: @list, title: "Overdue task", due_date: Date.current - 1.day)
+    create(:card, list: @list, title: "Later task", due_date: Date.current + 10.days)
+    create(:card, list: @list, title: "No due date")
+
+    get api_v1_board_cards_path(@board.slug),
+      params: { due_status: CardFilterService::DUE_STATUS_DUE_SOON },
+      headers: headers(@owner),
+      as: :json
+
+    assert_response :success
+    cards = response_body.dig("lists", 0, "cards")
+    assert_equal 1, cards.size
+    assert_equal due_soon_card.id, cards.first["id"]
+  end
+
+  def test_index_filters_cards_by_no_due_date_due_status
+    create(:card, list: @list, title: "Overdue task", due_date: Date.current - 1.day)
+    create(:card, list: @list, title: "Due soon task", due_date: Date.current + 3.days)
+    @card.update!(due_date: nil)
+
+    get api_v1_board_cards_path(@board.slug),
+      params: { due_status: CardFilterService::DUE_STATUS_NO_DUE_DATE },
+      headers: headers(@owner),
+      as: :json
+
+    assert_response :success
+    cards = response_body.dig("lists", 0, "cards")
+    assert_equal 1, cards.size
+    assert_equal @card.id, cards.first["id"]
+  end
+
+  def test_index_filters_by_search_assignee_label_and_due_status_together
+    create(:board_member, board: @board, user: @member)
+    bug_label = create(:label, board: @board, name: "Bug")
+    matching_card = create(:card, list: @list, title: "Fix login bug soon", due_date: Date.current + 2.days)
+    matching_card.update!(assignee_ids: [@member.id], label_ids: [bug_label.id])
+
+    wrong_title_card = create(:card, list: @list, title: "Other task", due_date: Date.current + 2.days)
+    wrong_title_card.update!(assignee_ids: [@member.id], label_ids: [bug_label.id])
+
+    wrong_assignee_card = create(:card, list: @list, title: "Fix login bug soon", due_date: Date.current + 2.days)
+    wrong_assignee_card.update!(label_ids: [bug_label.id])
+
+    wrong_due_card = create(:card, list: @list, title: "Fix login bug soon", due_date: Date.current - 1.day)
+    wrong_due_card.update!(assignee_ids: [@member.id], label_ids: [bug_label.id])
+
+    get api_v1_board_cards_path(@board.slug),
+      params: {
+        search: "login",
+        assignees: assignee_filter_name(@member),
+        labels: bug_label.name,
+        due_status: CardFilterService::DUE_STATUS_DUE_SOON
+      },
+      headers: headers(@owner),
+      as: :json
+
+    assert_response :success
+    cards = response_body.dig("lists", 0, "cards")
+    assert_equal 1, cards.size
+    assert_equal matching_card.id, cards.first["id"]
+  end
+
   def test_index_rejects_non_member
     get api_v1_board_cards_path(@board.slug),
       params: { search: "login" },
@@ -442,4 +626,10 @@ class Api::V1::CardsControllerTest < ActionDispatch::IntegrationTest
     assert_response :success
     assert_empty @card.reload.assignees
   end
+
+  private
+
+    def assignee_filter_name(user)
+      [user.first_name, user.last_name].compact_blank.join(" ")
+    end
 end

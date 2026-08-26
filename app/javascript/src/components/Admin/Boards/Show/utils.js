@@ -1,7 +1,8 @@
 import { filterNonNull, serializeKeysToSnakeCase } from "neetocist";
+import { formatMemberName } from "utils/members";
 
-import { formatMemberName } from "./CardDetailPane/utils";
-import { FILTER_FORM_INITIAL_VALUES } from "./filterConstants";
+import { BOARD_TAB_KEYS } from "./constants";
+import { FILTER_FORM_INITIAL_VALUES } from "./Filters/constants";
 
 const mapListsToSections = (lists = []) =>
   [...lists]
@@ -162,14 +163,43 @@ const buildCardFetchParams = ({
   );
 };
 
+const isBoardLabelsPath = pathname => pathname.endsWith("/labels");
+
+const isBoardActivitiesPath = pathname => pathname.endsWith("/activities");
+
+const isBoardMembersPath = pathname => pathname.endsWith("/members");
+
+const isBoardSettingsPath = pathname => pathname.endsWith("/settings");
+
+const getActiveBoardTab = pathname => {
+  if (
+    isBoardLabelsPath(pathname) ||
+    isBoardMembersPath(pathname) ||
+    isBoardSettingsPath(pathname)
+  ) {
+    return BOARD_TAB_KEYS.SETTINGS;
+  }
+
+  if (isBoardActivitiesPath(pathname)) {
+    return BOARD_TAB_KEYS.ACTIVITIES;
+  }
+
+  return BOARD_TAB_KEYS.LISTS;
+};
+
 export {
   buildCardFetchParams,
   buildFiltersFromFormValues,
   extractAssignees,
   extractLabels,
   filtersFromQueryParams,
+  getActiveBoardTab,
   hasActiveCardFilters,
   hasPaneFiltersApplied,
+  isBoardActivitiesPath,
+  isBoardLabelsPath,
+  isBoardMembersPath,
+  isBoardSettingsPath,
   mapListsToSections,
   memberFilterValue,
   moveItem,

@@ -2,7 +2,6 @@ import React from "react";
 
 import DeleteAlert from "components/Admin/Boards/Dashboard/Alerts/DeleteAlert";
 import { Button, Typography } from "neetoui";
-import PropTypes from "prop-types";
 import { useTranslation } from "react-i18next";
 
 const DeleteBoardSection = ({
@@ -39,19 +38,6 @@ const DeleteBoardSection = ({
       />
     </>
   );
-};
-
-DeleteBoardSection.propTypes = {
-  board: PropTypes.shape({
-    id: PropTypes.string.isRequired,
-    name: PropTypes.string.isRequired,
-    slug: PropTypes.string.isRequired,
-  }).isRequired,
-  isDeleteAlertOpen: PropTypes.bool.isRequired,
-  isDeleting: PropTypes.bool.isRequired,
-  onCloseDeleteAlert: PropTypes.func.isRequired,
-  onDelete: PropTypes.func.isRequired,
-  onOpenDeleteAlert: PropTypes.func.isRequired,
 };
 
 export default DeleteBoardSection;

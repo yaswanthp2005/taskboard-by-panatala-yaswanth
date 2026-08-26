@@ -2,8 +2,8 @@ import React from "react";
 
 import Container from "@bigbinary/neeto-molecules/Container";
 import Scrollable from "@bigbinary/neeto-molecules/Scrollable";
-import ActivityFeed from "components/Admin/Boards/Show/ActivityFeed";
-import BoardNavHeader from "components/Admin/Boards/Show/BoardNavHeader";
+import { ActivityFeed } from "components/Admin/Boards/Show/Activity";
+import { BoardNavHeader } from "components/Admin/Boards/Show/Header";
 import { useFetchBoard } from "components/hooks/reactQuery/useBoardsApi";
 import Sidebar from "components/Sidebar";
 import { Spinner, Typography } from "neetoui";

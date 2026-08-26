@@ -14,10 +14,9 @@ import { useHistory, useParams } from "react-router-dom";
 import { buildURL } from "utils/buildURL";
 import withTitle from "utils/withTitle";
 
-import BoardHeader from "./BoardHeader";
-import BoardKanban from "./BoardKanban";
-import AppliedFilters from "./Filters/AppliedFilters";
-import SearchFilters from "./Filters/SearchFilters";
+import { AppliedFilters, SearchFilters } from "./Filters";
+import { BoardHeader } from "./Header";
+import { BoardKanban } from "./Kanban";
 import {
   buildCardFetchParams,
   extractAssignees,

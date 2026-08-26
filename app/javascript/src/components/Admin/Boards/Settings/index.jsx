@@ -4,7 +4,7 @@ import React, { useState } from "react";
 
 import Container from "@bigbinary/neeto-molecules/Container";
 import Scrollable from "@bigbinary/neeto-molecules/Scrollable";
-import BoardNavHeader from "components/Admin/Boards/Show/BoardNavHeader";
+import { BoardNavHeader } from "components/Admin/Boards/Show/Header";
 import { FormikColorPicker } from "components/commons";
 import {
   useDeleteBoard,

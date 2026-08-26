@@ -6,9 +6,12 @@ import {
   useUpdateCard,
 } from "components/hooks/reactQuery/useCardsApi";
 import dayjs from "dayjs";
-import { Checkbox, Pane, Spinner } from "neetoui";
-import { Form as NeetoUIForm, Textarea } from "neetoui/formik";
-import PropTypes from "prop-types";
+import { Pane, Spinner } from "neetoui";
+import {
+  Checkbox as FormikCheckbox,
+  Form as NeetoUIForm,
+  Textarea,
+} from "neetoui/formik";
 import { useTranslation } from "react-i18next";
 
 import CardDetailHeader from "./CardDetailHeader";
@@ -71,11 +74,12 @@ const CardDetailPane = ({
 
   const handleSubmit = async (values, { resetForm, setSubmitting }) => {
     const payload = {
-      title: values.title.trim(),
+      assigneeIds: values.assigneeIds,
       description: values.description.trim(),
       dueDate: values.dueDate ? values.dueDate.format("YYYY-MM-DD") : null,
+      isComplete: values.isComplete,
       labelIds: values.labelIds,
-      assigneeIds: values.assigneeIds,
+      title: values.title.trim(),
     };
 
     try {
@@ -112,10 +116,10 @@ const CardDetailPane = ({
         <div className="card-detail-pane__layout">
           <div className="card-detail-pane__main">
             <div className="card-detail-pane__title-row">
-              <Checkbox
-                checked={false}
+              <FormikCheckbox
                 className="card-detail-pane__title-checkbox shrink-0 !grow-0"
                 label=""
+                name="isComplete"
               />
               <CardTitleField />
             </div>
@@ -213,24 +217,6 @@ const CardDetailPane = ({
       {renderContent()}
     </Pane>
   );
-};
-
-CardDetailPane.propTypes = {
-  boardName: PropTypes.string.isRequired,
-  boardSlug: PropTypes.string.isRequired,
-  cardId: PropTypes.string,
-  initialEditing: PropTypes.bool,
-  isOpen: PropTypes.bool.isRequired,
-  listId: PropTypes.string,
-  onClose: PropTypes.func.isRequired,
-  onDelete: PropTypes.func,
-};
-
-CardDetailPane.defaultProps = {
-  cardId: null,
-  initialEditing: false,
-  listId: null,
-  onDelete: undefined,
 };
 
 export default CardDetailPane;

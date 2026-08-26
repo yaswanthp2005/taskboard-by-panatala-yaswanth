@@ -145,6 +145,18 @@ class CardTest < ActiveSupport::TestCase
     assert_includes card.errors[:assignees], I18n.t("card.assignee.must_be_board_member")
   end
 
+  def test_defaults_is_complete_to_false
+    card = create(:card, list: @list)
+
+    assert_not card.is_complete
+  end
+
+  def test_can_mark_is_complete
+    card = create(:card, list: @list, is_complete: true)
+
+    assert card.is_complete
+  end
+
   def test_allows_blank_assignees
     card = build(:card, list: @list)
 

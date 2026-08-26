@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-json.extract! card, :id, :title, :description, :due_date, :list_id, :position, :created_at, :updated_at
+json.extract! card, :id, :title, :description, :due_date, :is_complete, :list_id, :position, :created_at, :updated_at
 json.assignees card.assignees do |assignee|
   json.partial! "api/v1/users/user", user: assignee
 end

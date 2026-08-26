@@ -3,9 +3,8 @@ import React, { useState } from "react";
 import { InlineInput } from "@bigbinary/neeto-molecules/InlineInput";
 import { useUpdateCard } from "components/hooks/reactQuery/useCardsApi";
 import { Typography } from "neetoui";
-import PropTypes from "prop-types";
 
-const CardTitle = ({ boardSlug, cardId, title }) => {
+const CardTitle = ({ boardSlug, cardId, isComplete = false, title }) => {
   const [isEditing, setIsEditing] = useState(false);
   const { mutateAsync: updateCard, isLoading: isSaving } =
     useUpdateCard(boardSlug);
@@ -46,20 +45,16 @@ const CardTitle = ({ boardSlug, cardId, title }) => {
 
   return (
     <Typography
-      className="min-w-0 flex-1 cursor-pointer break-words"
       style="h3"
       weight="semibold"
+      className={`min-w-0 flex-1 cursor-pointer break-words ${
+        isComplete ? "text-gray-400 line-through" : ""
+      }`}
       onClick={() => setIsEditing(true)}
     >
       {title}
     </Typography>
   );
-};
-
-CardTitle.propTypes = {
-  boardSlug: PropTypes.string.isRequired,
-  cardId: PropTypes.string.isRequired,
-  title: PropTypes.string.isRequired,
 };
 
 export default CardTitle;

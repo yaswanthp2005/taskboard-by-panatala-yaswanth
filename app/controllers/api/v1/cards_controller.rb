@@ -97,7 +97,7 @@ class Api::V1::CardsController < ApplicationController
     end
 
     def card_params
-      params.require(:card).permit(:title, :description, :due_date, label_ids: [], assignee_ids: [])
+      params.require(:card).permit(:title, :description, :due_date, :is_complete, label_ids: [], assignee_ids: [])
     end
 
     def move_params

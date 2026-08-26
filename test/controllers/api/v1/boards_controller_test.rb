@@ -136,7 +136,7 @@ class Api::V1::BoardsControllerTest < ActionDispatch::IntegrationTest
     board = @owner.boards.find_by!(name: "New Board")
     assert_equal "#4F46E5", board.color
     assert_equal "new-board", board.slug
-    assert_equal I18n.t("successfully_created", entity: "Board"), response_body["notice"]
+    assert_equal I18n.t("successfully_created", entity: I18n.t("entities.board")), response_body["notice"]
   end
 
   def test_create_rejects_blank_name
@@ -170,7 +170,7 @@ class Api::V1::BoardsControllerTest < ActionDispatch::IntegrationTest
       as: :json
 
     assert_response :success
-    assert_equal I18n.t("successfully_updated", entity: "Board"), response_body["notice"]
+    assert_equal I18n.t("successfully_updated", entity: I18n.t("entities.board")), response_body["notice"]
     assert_equal "Updated Roadmap", board.reload.name
     assert_equal "product-roadmap", board.slug
   end
@@ -184,7 +184,7 @@ class Api::V1::BoardsControllerTest < ActionDispatch::IntegrationTest
       as: :json
 
     assert_response :success
-    assert_equal I18n.t("successfully_updated", entity: "Board"), response_body["notice"]
+    assert_equal I18n.t("successfully_updated", entity: I18n.t("entities.board")), response_body["notice"]
     assert_equal "#EF4444", board.reload.color
     assert_equal "Product Roadmap", board.name
   end
@@ -247,7 +247,7 @@ class Api::V1::BoardsControllerTest < ActionDispatch::IntegrationTest
     end
 
     assert_response :success
-    assert_equal I18n.t("successfully_deleted", count: 1, entity: "Board"), response_body["notice"]
+    assert_equal I18n.t("successfully_deleted", count: 1, entity: I18n.t("entities.board")), response_body["notice"]
   end
 
   def test_destroy_rejects_board_from_another_user

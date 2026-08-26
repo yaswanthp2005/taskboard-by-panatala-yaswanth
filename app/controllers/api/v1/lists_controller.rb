@@ -3,38 +3,41 @@
 class Api::V1::ListsController < ApplicationController
   after_action :verify_authorized
 
-  before_action :load_board
-  before_action :load_list, only: %i[update destroy move]
+  before_action :load_board!
+  before_action :load_list!, only: %i[update destroy move]
 
   def create
     list = @board.lists.build(list_params)
     authorize list
     list.save!
-    record_activity(
+    record_activity!(
+      board: @board,
       action: Constants::Activity::LIST_CREATED,
       metadata: { list_title: list.title }
     )
-    render_notice(t("successfully_created", entity: "List"), :ok)
+    render_notice(t("successfully_created", entity: t("entities.list")), :ok)
   end
 
   def update
     authorize @list
     @list.update!(list_params)
-    record_activity(
+    record_activity!(
+      board: @board,
       action: Constants::Activity::LIST_UPDATED,
       metadata: { list_title: @list.title }
     )
-    render_notice(t("successfully_updated", entity: "List"), :ok)
+    render_notice(t("successfully_updated", entity: t("entities.list")), :ok)
   end
 
   def destroy
     authorize @list
-    record_activity(
+    record_activity!(
+      board: @board,
       action: Constants::Activity::LIST_DELETED,
       metadata: { list_title: @list.title }
     )
     @list.destroy!
-    render_notice(t("successfully_deleted", count: 1, entity: "List"))
+    render_notice(t("successfully_deleted", count: 1, entity: t("entities.list")))
   end
 
   def move
@@ -43,18 +46,18 @@ class Api::V1::ListsController < ApplicationController
     ListMoveService.new(
       list: @list,
       position: move_params[:position]
-    ).process
+    ).process!
 
-    render_notice(t("successfully_updated", entity: "List"), :ok)
+    render_notice(t("successfully_updated", entity: t("entities.list")), :ok)
   end
 
   private
 
-    def load_board
+    def load_board!
       @board = policy_scope(Board).find_by!(slug: params[:board_slug])
     end
 
-    def load_list
+    def load_list!
       @list = @board.lists.find(params[:id])
     end
 
@@ -64,14 +67,5 @@ class Api::V1::ListsController < ApplicationController
 
     def move_params
       params.permit(:position)
-    end
-
-    def record_activity(action:, metadata: {})
-      ActivityRecorderService.new(
-        board: @board,
-        actor: current_user,
-        action:,
-        metadata:
-      ).process
     end
 end

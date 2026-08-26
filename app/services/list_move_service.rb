@@ -6,7 +6,7 @@ class ListMoveService
     @position = position.to_i
   end
 
-  def process
+  def process!
     validate_position!
     @list.insert_at(@position)
   end

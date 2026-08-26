@@ -8,6 +8,14 @@
     "somethingWentWrong": "Something went wrong!",
     "user": "User"
   },
+  "entities": {
+    "board": "Board",
+    "card": "Card",
+    "list": "List",
+    "label": "Label",
+    "checklistItem": "Checklist item",
+    "user": "User"
+  },
   "sidebar": {
     "boards": "Boards",
     "logout": "Logout",
@@ -91,7 +99,7 @@
     },
     "addList": "Add list",
     "addListPlaceholder": "Name this list…",
-    "addCard": "Add card",
+    "addCard": "Add todo",
     "todoCount_one": "{{count}} todo",
     "todoCount_other": "{{count}} todos",
     "searchPlaceholder": "Search todos",

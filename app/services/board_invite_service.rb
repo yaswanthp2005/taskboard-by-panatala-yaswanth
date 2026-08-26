@@ -11,7 +11,7 @@ class BoardInviteService
     @email = email.to_s.strip.downcase
   end
 
-  def process
+  def process!
     validate_inviter_is_owner!
     validate_email_present!
 

@@ -130,7 +130,6 @@ const CardDetailPane = ({
               placeholder={t("cardDetail.descriptionPlaceholder")}
               rows={4}
             />
-            {!isCreateMode && <ActivityFeed cardId={cardId} />}
             {!isCreateMode && showChecklist && (
               <ChecklistField
                 boardSlug={boardSlug}
@@ -139,6 +138,7 @@ const CardDetailPane = ({
                 onCloseWhenEmpty={() => setShowChecklist(false)}
               />
             )}
+            {!isCreateMode && <ActivityFeed cardId={cardId} />}
           </div>
           <CardDetailSidebarEdit
             boardSlug={boardSlug}

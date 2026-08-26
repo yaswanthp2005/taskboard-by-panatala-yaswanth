@@ -24,7 +24,7 @@ class Api::V1::ChecklistItemsControllerTest < ActionDispatch::IntegrationTest
     assert_response :success
     item = @card.checklist_items.find_by!(text: "Review pull request")
     assert_not item.is_complete
-    assert_equal I18n.t("successfully_created", entity: "Checklist item"), response_body["notice"]
+    assert_equal I18n.t("successfully_created", entity: I18n.t("entities.checklist_item")), response_body["notice"]
   end
 
   def test_create_allows_board_member
@@ -71,7 +71,7 @@ class Api::V1::ChecklistItemsControllerTest < ActionDispatch::IntegrationTest
 
     assert_response :success
     assert @checklist_item.reload.is_complete
-    assert_equal I18n.t("successfully_updated", entity: "Checklist item"), response_body["notice"]
+    assert_equal I18n.t("successfully_updated", entity: I18n.t("entities.checklist_item")), response_body["notice"]
   end
 
   def test_update_allows_board_member
@@ -119,7 +119,8 @@ class Api::V1::ChecklistItemsControllerTest < ActionDispatch::IntegrationTest
     end
 
     assert_response :success
-    assert_equal I18n.t("successfully_deleted", count: 1, entity: "Checklist item"), response_body["notice"]
+    assert_equal I18n.t("successfully_deleted", count: 1, entity: I18n.t("entities.checklist_item")),
+      response_body["notice"]
   end
 
   def test_destroy_allows_board_member
@@ -155,7 +156,8 @@ class Api::V1::ChecklistItemsControllerTest < ActionDispatch::IntegrationTest
     end
 
     assert_response :success
-    assert_equal I18n.t("successfully_deleted", count: 2, entity: "Checklist item"), response_body["notice"]
+    assert_equal I18n.t("successfully_deleted", count: 2, entity: I18n.t("entities.checklist_item")),
+      response_body["notice"]
   end
 
   def test_bulk_delete_allows_board_member

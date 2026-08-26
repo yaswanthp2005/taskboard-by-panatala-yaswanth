@@ -30,6 +30,13 @@
 # available at http://guides.rubyonrails.org/i18n.html.
 
 en:
+  entities:
+    board: "Board"
+    card: "Card"
+    list: "List"
+    label: "Label"
+    checklist_item: "Checklist item"
+    user: "User"
   not_found: "%{entity} not found!"
   invalid_credentials: "Incorrect email or password!"
   successfully_created: "%{entity} was successfully created!"

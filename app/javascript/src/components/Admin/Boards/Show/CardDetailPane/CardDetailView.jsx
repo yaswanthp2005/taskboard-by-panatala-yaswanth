@@ -46,7 +46,6 @@ const CardDetailView = ({
         >
           {card.description || t("cardDetail.noDescription")}
         </Typography>
-        <ActivityFeed cardId={cardId} />
         {showChecklist && (
           <ChecklistField
             boardSlug={boardSlug}
@@ -55,6 +54,7 @@ const CardDetailView = ({
             onCloseWhenEmpty={onHideChecklist}
           />
         )}
+        <ActivityFeed cardId={cardId} />
       </div>
       <CardDetailSidebarView
         card={card}

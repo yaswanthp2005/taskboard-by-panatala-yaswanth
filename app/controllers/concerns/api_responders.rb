@@ -3,22 +3,7 @@
 module ApiResponders
   extend ActiveSupport::Concern
 
-  PAGY_METADATA_KEYS = %i[
-    count
-    page
-    limit
-    last
-    previous
-    next
-    previous_url
-    next_url
-  ].freeze
-
   private
-
-    def pagy_metadata(pagy)
-      pagy.data_hash(data_keys: PAGY_METADATA_KEYS)
-    end
 
     def render_error(message, status = :unprocessable_entity, context = {})
       is_exception = message.is_a?(StandardError)

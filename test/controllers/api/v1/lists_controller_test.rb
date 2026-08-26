@@ -24,7 +24,7 @@ class Api::V1::ListsControllerTest < ActionDispatch::IntegrationTest
     assert_response :success
     list = @board.lists.find_by!(title: "Backlog")
     assert_equal 4, list.position
-    assert_equal I18n.t("successfully_created", entity: "List"), response_body["notice"]
+    assert_equal I18n.t("successfully_created", entity: I18n.t("entities.list")), response_body["notice"]
   end
 
   def test_create_allows_board_member
@@ -71,7 +71,7 @@ class Api::V1::ListsControllerTest < ActionDispatch::IntegrationTest
     assert_response :success
     assert_equal [1, 2, 3], @board.lists.order(:position).pluck(:position)
     assert_equal [@third_list, @first_list, @second_list], @board.lists.to_a
-    assert_equal I18n.t("successfully_updated", entity: "List"), response_body["notice"]
+    assert_equal I18n.t("successfully_updated", entity: I18n.t("entities.list")), response_body["notice"]
   end
 
   def test_move_allows_board_member
@@ -118,7 +118,7 @@ class Api::V1::ListsControllerTest < ActionDispatch::IntegrationTest
 
     assert_response :success
     assert_not List.exists?(card.list_id)
-    assert_equal I18n.t("successfully_deleted", count: 1, entity: "List"), response_body["notice"]
+    assert_equal I18n.t("successfully_deleted", count: 1, entity: I18n.t("entities.list")), response_body["notice"]
   end
 
   def test_destroy_allows_board_member

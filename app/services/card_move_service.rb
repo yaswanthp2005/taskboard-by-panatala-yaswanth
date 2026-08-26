@@ -7,7 +7,7 @@ class CardMoveService
     @position = position.to_i
   end
 
-  def process
+  def process!
     validate_destination_list!
     validate_position!
 

@@ -14,19 +14,18 @@ import {
 } from "neetoui/formik";
 import { useTranslation } from "react-i18next";
 
-import CardDetailHeader from "./CardDetailHeader";
-import { CardDetailSidebarEdit } from "./CardDetailSidebar";
-import CardDetailView from "./CardDetailView";
-import CardTitleField from "./CardTitleField";
-import ChecklistField from "./ChecklistField";
+import { ChecklistField } from "./Checklist";
 import {
   buildCardDetailFormInitialValues,
   CARD_DETAIL_FORM_VALIDATION_SCHEMA,
 } from "./constants";
+import CardTitleField from "./Fields";
 import Footer from "./Footer";
-import HeaderActions from "./HeaderActions";
+import { CardDetailHeader, HeaderActions } from "./Header";
+import { CardDetailSidebarEdit } from "./Sidebar";
+import { CardDetailView } from "./View";
 
-import ActivityFeed from "../ActivityFeed";
+import { ActivityFeed } from "../Activity";
 
 const CardDetailPane = ({
   boardName,

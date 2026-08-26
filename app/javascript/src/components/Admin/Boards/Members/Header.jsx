@@ -2,7 +2,6 @@ import React from "react";
 
 import { Plus } from "neetoicons";
 import { Button, Typography } from "neetoui";
-import PropTypes from "prop-types";
 import { useTranslation } from "react-i18next";
 
 const MembersHeader = ({ canAddMember, isAddDisabled, onAddMember }) => {
@@ -29,17 +28,6 @@ const MembersHeader = ({ canAddMember, isAddDisabled, onAddMember }) => {
       )}
     </div>
   );
-};
-
-MembersHeader.propTypes = {
-  canAddMember: PropTypes.bool,
-  isAddDisabled: PropTypes.bool,
-  onAddMember: PropTypes.func.isRequired,
-};
-
-MembersHeader.defaultProps = {
-  canAddMember: false,
-  isAddDisabled: false,
 };
 
 export default MembersHeader;

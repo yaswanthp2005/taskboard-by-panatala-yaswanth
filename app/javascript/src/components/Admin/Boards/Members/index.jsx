@@ -2,7 +2,7 @@ import React, { useState } from "react";
 
 import Container from "@bigbinary/neeto-molecules/Container";
 import Scrollable from "@bigbinary/neeto-molecules/Scrollable";
-import BoardNavHeader from "components/Admin/Boards/Show/BoardNavHeader";
+import { BoardNavHeader } from "components/Admin/Boards/Show/Header";
 import { useFetchBoard } from "components/hooks/reactQuery/useBoardsApi";
 import Sidebar from "components/Sidebar";
 import { Spinner, Typography } from "neetoui";

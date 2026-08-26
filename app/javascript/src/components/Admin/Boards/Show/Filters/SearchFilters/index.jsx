@@ -4,17 +4,16 @@ import { useFetchLabels } from "components/hooks/reactQuery/useLabelsApi";
 import { useFetchBoardMembers } from "components/hooks/reactQuery/useMembersApi";
 import { Pane, Spinner, Toastr, Typography } from "neetoui";
 import { Form as NeetoUIForm } from "neetoui/formik";
-import PropTypes from "prop-types";
 import { useTranslation } from "react-i18next";
 
 import Footer from "./Footer";
 import Form from "./Form";
 
+import { buildFiltersFromFormValues, memberFilterValue } from "../../utils";
 import {
   DUE_STATUS_FILTER_OPTIONS,
   FILTER_FORM_INITIAL_VALUES,
-} from "../../filterConstants";
-import { buildFiltersFromFormValues, memberFilterValue } from "../../utils";
+} from "../constants";
 
 const SearchFilters = ({ boardSlug, filters, isOpen, onClose, onSubmit }) => {
   const { t } = useTranslation();
@@ -124,22 +123,6 @@ const SearchFilters = ({ boardSlug, filters, isOpen, onClose, onSubmit }) => {
       </NeetoUIForm>
     </Pane>
   );
-};
-
-SearchFilters.propTypes = {
-  boardSlug: PropTypes.string.isRequired,
-  filters: PropTypes.shape({
-    assignees: PropTypes.arrayOf(PropTypes.string),
-    dueStatus: PropTypes.string,
-    labels: PropTypes.arrayOf(PropTypes.string),
-  }),
-  isOpen: PropTypes.bool.isRequired,
-  onClose: PropTypes.func.isRequired,
-  onSubmit: PropTypes.func.isRequired,
-};
-
-SearchFilters.defaultProps = {
-  filters: FILTER_FORM_INITIAL_VALUES,
 };
 
 export default SearchFilters;

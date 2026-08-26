@@ -1,10 +1,9 @@
 import React from "react";
 
 import { Button, Tag, Typography } from "neetoui";
-import PropTypes from "prop-types";
 import { useTranslation } from "react-i18next";
 
-import { DUE_STATUS_FILTER_OPTIONS } from "../filterConstants";
+import { DUE_STATUS_FILTER_OPTIONS } from "./constants";
 
 const AppliedFilters = ({
   appliedFilters,
@@ -59,19 +58,6 @@ const AppliedFilters = ({
       />
     </div>
   );
-};
-
-AppliedFilters.propTypes = {
-  appliedFilters: PropTypes.shape({
-    assignees: PropTypes.arrayOf(PropTypes.string),
-    dueStatus: PropTypes.string,
-    labels: PropTypes.arrayOf(PropTypes.string),
-  }).isRequired,
-  onClearFilters: PropTypes.func.isRequired,
-  onRemoveAssignee: PropTypes.func.isRequired,
-  onRemoveDueStatus: PropTypes.func.isRequired,
-  onRemoveLabel: PropTypes.func.isRequired,
-  totalCards: PropTypes.number.isRequired,
 };
 
 export default AppliedFilters;

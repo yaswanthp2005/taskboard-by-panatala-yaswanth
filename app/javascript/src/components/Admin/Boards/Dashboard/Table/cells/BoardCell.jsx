@@ -1,7 +1,6 @@
 import React from "react";
 
 import { Tooltip, Typography } from "neetoui";
-import PropTypes from "prop-types";
 
 import { formatBoardUpdatedAt, getTruncatedText } from "../../utils";
 
@@ -31,14 +30,6 @@ const BoardCell = ({ board }) => {
       </Typography>
     </div>
   );
-};
-
-BoardCell.propTypes = {
-  board: PropTypes.shape({
-    description: PropTypes.string,
-    name: PropTypes.string.isRequired,
-    updatedAt: PropTypes.string,
-  }).isRequired,
 };
 
 export default BoardCell;

@@ -1,12 +1,8 @@
 import React from "react";
 
-import {
-  formatMemberName,
-  getInitials,
-} from "components/Admin/Boards/Show/CardDetailPane/utils";
 import { Typography } from "neetoui";
-import PropTypes from "prop-types";
 import { useTranslation } from "react-i18next";
+import { formatMemberName, getInitials } from "utils/members";
 
 const NameCell = ({ member }) => {
   const { t } = useTranslation();
@@ -24,14 +20,6 @@ const NameCell = ({ member }) => {
       </Typography>
     </div>
   );
-};
-
-NameCell.propTypes = {
-  member: PropTypes.shape({
-    email: PropTypes.string.isRequired,
-    firstName: PropTypes.string,
-    lastName: PropTypes.string,
-  }).isRequired,
 };
 
 export default NameCell;

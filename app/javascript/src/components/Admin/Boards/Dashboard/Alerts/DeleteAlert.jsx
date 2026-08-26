@@ -1,7 +1,6 @@
 import React from "react";
 
 import { Alert } from "neetoui";
-import PropTypes from "prop-types";
 import { Trans, useTranslation } from "react-i18next";
 
 const DeleteAlert = ({ boardToDelete, isDeleting, onClose, onSubmit }) => {
@@ -24,20 +23,6 @@ const DeleteAlert = ({ boardToDelete, isDeleting, onClose, onSubmit }) => {
       onSubmit={onSubmit}
     />
   );
-};
-
-DeleteAlert.propTypes = {
-  boardToDelete: PropTypes.shape({
-    id: PropTypes.string.isRequired,
-    name: PropTypes.string.isRequired,
-  }),
-  isDeleting: PropTypes.bool.isRequired,
-  onClose: PropTypes.func.isRequired,
-  onSubmit: PropTypes.func.isRequired,
-};
-
-DeleteAlert.defaultProps = {
-  boardToDelete: null,
 };
 
 export default DeleteAlert;

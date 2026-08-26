@@ -1,21 +1,10 @@
 import React from "react";
 
-import { Typography } from "neetoui";
-
 import ActionsDropdown from "./ActionsDropdown";
 import BoardCell from "./cells/BoardCell";
+import ColorCell from "./cells/ColorCell";
 
 import { COLUMN_KEYS } from "../constants";
-
-const ColorCell = ({ color }) => (
-  <div className="flex items-center gap-x-2">
-    <span
-      className="inline-block h-4 w-4 rounded-full border border-gray-200"
-      style={{ backgroundColor: color || "#E5E7EB" }}
-    />
-    <Typography style="body2">{color || "-"}</Typography>
-  </div>
-);
 
 const buildColumnData = ({ onDelete, onRename, t }) => [
   {

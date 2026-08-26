@@ -38,4 +38,4 @@ const handleLoginSubmit = async (values, { setSubmitting }) => {
   }
 };
 
-export { handleSignupSubmit, handleLoginSubmit };
+export { handleLoginSubmit, handleSignupSubmit };

@@ -1,7 +1,6 @@
 import React from "react";
 
 import { Tag } from "neetoui";
-import PropTypes from "prop-types";
 import { useTranslation } from "react-i18next";
 
 import { MEMBER_ROLES } from "../../constants";
@@ -16,10 +15,6 @@ const RoleCell = ({ role }) => {
       style={isOwner ? "primary" : "secondary"}
     />
   );
-};
-
-RoleCell.propTypes = {
-  role: PropTypes.oneOf([MEMBER_ROLES.OWNER, MEMBER_ROLES.MEMBER]).isRequired,
 };
 
 export default RoleCell;

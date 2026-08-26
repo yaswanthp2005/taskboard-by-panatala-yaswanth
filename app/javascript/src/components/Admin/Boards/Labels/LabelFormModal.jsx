@@ -1,5 +1,6 @@
 import React from "react";
 
+import { FormikColorPicker } from "components/commons";
 import {
   useCreateLabel,
   useUpdateLabel,
@@ -75,10 +76,10 @@ const LabelFormModal = ({ boardSlug, isOpen, label = null, onClose }) => {
               name="name"
               placeholder={t("labels.form.namePlaceholder")}
             />
-            <Input
+            <FormikColorPicker
+              required
               label={t("labels.form.colorLabel")}
               name="color"
-              placeholder={t("labels.form.colorPlaceholder")}
             />
           </div>
         </Modal.Body>

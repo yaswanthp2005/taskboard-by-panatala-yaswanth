@@ -55,12 +55,7 @@ const BoardTile = ({ board, onDelete, onOpen, onRename }) => {
                 dropdownProps={{ appendTo: () => document.body }}
                 strategy="fixed"
                 customTarget={
-                  <Button
-                    icon={MenuHorizontal}
-                    iconSize={20}
-                    style="text"
-                    tooltipProps={{ content: t("boards.actions.menu") }}
-                  />
+                  <Button icon={MenuHorizontal} iconSize={20} style="text" />
                 }
               >
                 <Dropdown.Menu>

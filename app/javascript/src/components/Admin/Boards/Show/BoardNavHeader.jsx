@@ -2,14 +2,20 @@ import routes from "constants/routes";
 
 import React, { useLayoutEffect, useRef } from "react";
 
-import { Tab } from "neetoui";
+import { LeftArrow } from "neetoicons";
+import { Tab, Button } from "neetoui";
 import PropTypes from "prop-types";
 import { useTranslation } from "react-i18next";
 import { useHistory, useLocation } from "react-router-dom";
 import { buildURL } from "utils/buildURL";
 
 import BoardTitle from "./BoardTitle";
-import { BOARD_TAB_KEYS, getActiveBoardTab } from "./constants";
+import {
+  BOARD_TAB_KEYS,
+  getActiveBoardTab,
+  isBoardLabelsPath,
+  isBoardMembersPath,
+} from "./constants";
 
 const BoardNavHeader = ({ board }) => {
   const { t } = useTranslation();
@@ -17,6 +23,25 @@ const BoardNavHeader = ({ board }) => {
   const location = useLocation();
   const headerRef = useRef(null);
   const activeTab = getActiveBoardTab(location.pathname);
+  const isManagePage =
+    isBoardMembersPath(location.pathname) ||
+    isBoardLabelsPath(location.pathname);
+
+  const backLabel = isManagePage
+    ? t("boardView.backToSettings")
+    : t("boardView.backToHome");
+
+  const handleBack = () => {
+    if (isManagePage) {
+      history.push(
+        buildURL({ path: routes.boards.settings, slug: board.slug })
+      );
+
+      return;
+    }
+
+    history.push(routes.boards.index);
+  };
 
   useLayoutEffect(() => {
     const updateHeaderHeight = () => {
@@ -43,22 +68,10 @@ const BoardNavHeader = ({ board }) => {
   }, []);
 
   const handleTabChange = tab => {
-    if (tab === BOARD_TAB_KEYS.LABELS) {
-      history.push(buildURL({ path: routes.boards.labels, slug: board.slug }));
-
-      return;
-    }
-
     if (tab === BOARD_TAB_KEYS.ACTIVITIES) {
       history.push(
         buildURL({ path: routes.boards.activities, slug: board.slug })
       );
-
-      return;
-    }
-
-    if (tab === BOARD_TAB_KEYS.MEMBERS) {
-      history.push(buildURL({ path: routes.boards.members, slug: board.slug }));
 
       return;
     }
@@ -80,7 +93,17 @@ const BoardNavHeader = ({ board }) => {
       ref={headerRef}
     >
       <div className="grid w-full grid-cols-[1fr_auto_1fr] items-center gap-4">
-        <BoardTitle boardSlug={board.slug} name={board.name} />
+        <div className="flex min-w-0 items-center gap-x-2">
+          <Button
+            aria-label={backLabel}
+            icon={LeftArrow}
+            style="text"
+            onClick={handleBack}
+          />
+          <div className="min-w-0 flex-1">
+            <BoardTitle boardSlug={board.slug} name={board.name} />
+          </div>
+        </div>
         <Tab>
           <Tab.Item
             active={activeTab === BOARD_TAB_KEYS.LISTS}
@@ -90,25 +113,11 @@ const BoardNavHeader = ({ board }) => {
             {t("boardView.tabs.lists")}
           </Tab.Item>
           <Tab.Item
-            active={activeTab === BOARD_TAB_KEYS.LABELS}
-            data-cy="labels-tab"
-            onClick={() => handleTabChange(BOARD_TAB_KEYS.LABELS)}
-          >
-            {t("boardView.tabs.labels")}
-          </Tab.Item>
-          <Tab.Item
             active={activeTab === BOARD_TAB_KEYS.ACTIVITIES}
             data-cy="activities-tab"
             onClick={() => handleTabChange(BOARD_TAB_KEYS.ACTIVITIES)}
           >
             {t("boardView.tabs.activities")}
-          </Tab.Item>
-          <Tab.Item
-            active={activeTab === BOARD_TAB_KEYS.MEMBERS}
-            data-cy="members-tab"
-            onClick={() => handleTabChange(BOARD_TAB_KEYS.MEMBERS)}
-          >
-            {t("boardView.tabs.members")}
           </Tab.Item>
           <Tab.Item
             active={activeTab === BOARD_TAB_KEYS.SETTINGS}

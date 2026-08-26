@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useMemo } from "react";
 
 import {
   useFetchBoardActivities,
@@ -8,9 +8,11 @@ import { Spinner, Typography } from "neetoui";
 import PropTypes from "prop-types";
 import { useTranslation } from "react-i18next";
 
+import ActivityItemContent from "./ActivityItemContent";
+import { ActivityTimeline, ActivityTimelineItem } from "./ActivityTimeline";
 import {
-  formatActivityMessage,
   formatActivityTimestamp,
+  mapActivitiesToTimelineItems,
 } from "./activityUtils";
 
 const ActivityFeed = ({
@@ -33,6 +35,11 @@ const ActivityFeed = ({
   const activities = isCardFeed ? cardActivities : boardActivities;
   const isLoading = isCardFeed ? isCardLoading : isBoardLoading;
 
+  const timelineItems = useMemo(
+    () => mapActivitiesToTimelineItems(activities),
+    [activities]
+  );
+
   if (isLoading) {
     return (
       <div className="flex w-full items-center justify-center py-4">
@@ -42,9 +49,13 @@ const ActivityFeed = ({
   }
 
   return (
-    <div className="flex w-full flex-col gap-y-3">
+    <div className="activity-feed w-full">
       {showTitle && (
-        <Typography className="text-gray-500" style="body3" weight="semibold">
+        <Typography
+          className="mb-4 text-gray-800"
+          style="body2"
+          weight="semibold"
+        >
           {t(titleKey)}
         </Typography>
       )}
@@ -53,20 +64,21 @@ const ActivityFeed = ({
           {t("activity.empty")}
         </Typography>
       ) : (
-        <ul className="flex w-full flex-col gap-y-3">
-          {activities.map(activity => (
-            <li className="flex w-full flex-col gap-y-0.5" key={activity.id}>
-              <Typography className="text-gray-800" style="body2">
-                {formatActivityMessage(activity, t, {
-                  cardContext: isCardFeed,
-                })}
-              </Typography>
-              <Typography className="text-gray-500" style="body3">
-                {formatActivityTimestamp(activity.createdAt)}
-              </Typography>
-            </li>
+        <ActivityTimeline>
+          {timelineItems.map(item => (
+            <ActivityTimelineItem key={item.id} user={item.user}>
+              <div className="flex w-full flex-col gap-y-0.5">
+                <ActivityItemContent
+                  activity={item.activity}
+                  cardContext={isCardFeed}
+                />
+                <Typography className="text-gray-500" style="body3">
+                  {formatActivityTimestamp(item.activity.createdAt)}
+                </Typography>
+              </div>
+            </ActivityTimelineItem>
           ))}
-        </ul>
+        </ActivityTimeline>
       )}
     </div>
   );

@@ -18,10 +18,13 @@ LabelColorIcon.propTypes = {
   color: PropTypes.string.isRequired,
 };
 
-const LabelsField = ({ boardSlug }) => {
+const LabelsField = ({ boardSlug, variant = "default" }) => {
   const { t } = useTranslation();
   const { setFieldValue, values } = useFormikContext();
-  const { data: labels = [], isLoading } = useFetchLabels(boardSlug);
+  const isSidebar = variant === "sidebar";
+  const labelsLabel = t(isSidebar ? "cardDetail.tags" : "cardDetail.labels");
+  const { data, isLoading } = useFetchLabels(boardSlug);
+  const labels = data?.labels ?? [];
 
   const selectedLabelIds = useMemo(
     () => new Set(values.labelIds || []),
@@ -63,9 +66,13 @@ const LabelsField = ({ boardSlug }) => {
 
   if (!labels.length) {
     return (
-      <div className="flex w-full flex-col gap-y-2">
+      <div
+        className={`flex w-full flex-col ${
+          isSidebar ? "card-detail-pane__sidebar-field" : "gap-y-2"
+        }`}
+      >
         <Typography style="body2" weight="semibold">
-          {t("cardDetail.labels")}
+          {labelsLabel}
         </Typography>
         <Typography className="text-gray-500" style="body3">
           {t("cardDetail.labelsEmpty")}
@@ -75,10 +82,14 @@ const LabelsField = ({ boardSlug }) => {
   }
 
   return (
-    <div className="flex w-full flex-col gap-y-2">
+    <div
+      className={`flex w-full flex-col ${
+        isSidebar ? "card-detail-pane__sidebar-field" : "gap-y-2"
+      }`}
+    >
       <div className="flex items-center justify-between gap-x-3">
         <Typography className="shrink-0" style="body2" weight="semibold">
-          {t("cardDetail.labels")}
+          {labelsLabel}
         </Typography>
         {availableLabels.length > 0 && (
           <Dropdown
@@ -126,6 +137,7 @@ const LabelsField = ({ boardSlug }) => {
 
 LabelsField.propTypes = {
   boardSlug: PropTypes.string.isRequired,
+  variant: PropTypes.oneOf(["default", "sidebar"]),
 };
 
 export default LabelsField;

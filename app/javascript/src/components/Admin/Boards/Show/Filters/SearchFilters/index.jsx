@@ -18,11 +18,14 @@ import { buildFiltersFromFormValues, memberFilterValue } from "../../utils";
 
 const SearchFilters = ({ boardSlug, filters, isOpen, onClose, onSubmit }) => {
   const { t } = useTranslation();
-  const { data: members = [], isLoading: isMembersLoading } =
+  const { data: membersData, isLoading: isMembersLoading } =
     useFetchBoardMembers(boardSlug);
 
-  const { data: labels = [], isLoading: isLabelsLoading } =
+  const { data: labelsData, isLoading: isLabelsLoading } =
     useFetchLabels(boardSlug);
+
+  const members = membersData?.members ?? [];
+  const labels = labelsData?.labels ?? [];
 
   const appliedFilters = filters ?? FILTER_FORM_INITIAL_VALUES;
   const isLoading = isMembersLoading || isLabelsLoading;

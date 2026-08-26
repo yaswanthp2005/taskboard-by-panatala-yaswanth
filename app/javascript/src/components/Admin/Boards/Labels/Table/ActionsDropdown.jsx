@@ -9,19 +9,11 @@ const ActionsDropdown = ({ label, onDelete, onEdit }) => {
 
   return (
     <Dropdown
+      appendTo={() => document.body}
       buttonStyle="text"
-      dropdownProps={{ appendTo: () => document.body }}
+      customTarget={<Button icon={MenuHorizontal} iconSize={20} style="text" />}
       strategy="fixed"
-      customTarget={
-        <Button
-          icon={MenuHorizontal}
-          iconSize={20}
-          style="text"
-          tooltipProps={{
-            content: t("labels.actions.menu"),
-          }}
-        />
-      }
+      zIndex={100001}
     >
       <Dropdown.Menu>
         <Dropdown.MenuItem.Button onClick={() => onEdit(label)}>

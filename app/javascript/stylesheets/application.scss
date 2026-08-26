@@ -25,3 +25,126 @@
   align-items: center;
   gap: 0.25rem;
 }
+
+.card-detail-pane__header {
+  padding-bottom: 1.25rem !important;
+}
+
+.card-detail-pane .neeto-ui-pane__body {
+  padding-top: 0.75rem;
+}
+
+.card-detail-pane__layout {
+  display: flex;
+  width: 100%;
+  align-items: flex-start;
+  gap: 2.5rem;
+}
+
+.card-detail-pane__main {
+  display: flex;
+  min-width: 0;
+  flex: 1;
+  flex-direction: column;
+  gap: 1.25rem;
+  padding-top: 0.25rem;
+}
+
+.card-detail-pane__sidebar {
+  display: flex;
+  width: 220px;
+  shrink: 0;
+  flex-direction: column;
+  gap: 1.25rem;
+  padding-top: 2.5rem;
+}
+
+.card-detail-pane__title-row {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.card-detail-pane__title-checkbox {
+  margin-bottom: 0;
+}
+
+.card-detail-pane__title-inline-input .neeto-ui-input__wrapper {
+  font-size: 1.25rem;
+  font-weight: 600;
+}
+
+.card-detail-pane__sidebar-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.625rem;
+}
+
+.card-detail-pane__sidebar-field-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+}
+
+.card-detail-pane__sidebar-field-value {
+  min-width: 0;
+}
+
+.activity-timeline__item {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 1rem 0;
+}
+
+.activity-timeline__item:not(:first-child) {
+  margin-top: -1rem;
+}
+
+.activity-timeline__item::before {
+  content: "";
+  position: absolute;
+  left: 14px;
+  top: 0;
+  z-index: 0;
+  height: 100%;
+  width: 2px;
+  background-color: rgb(229 231 235);
+  transform: translateX(-50%);
+}
+
+.activity-timeline__icon {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  height: 1.75rem;
+  width: 1.75rem;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  border-radius: 9999px;
+  background-color: rgb(243 244 246);
+  color: rgb(75 85 99);
+}
+
+.activity-timeline__item .neeto-ui-avatar__container {
+  --neeto-ui-avatar-container-width: 1.125rem;
+  --neeto-ui-avatar-container-height: 1.125rem;
+  --neeto-ui-avatar-width: 1.125rem;
+  --neeto-ui-avatar-height: 1.125rem;
+  position: relative;
+  z-index: 1;
+  flex-shrink: 0;
+}
+
+.activity-timeline__item .neeto-ui-avatar__container > div {
+  height: 1.125rem;
+  width: 1.125rem;
+}
+
+.activity-timeline__content {
+  position: relative;
+  z-index: 1;
+}

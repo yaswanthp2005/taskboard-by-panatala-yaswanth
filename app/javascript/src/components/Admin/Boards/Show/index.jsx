@@ -212,6 +212,7 @@ const Show = () => {
           size="small"
         >
           <BoardKanban
+            boardName={board.name}
             boardSlug={board.slug}
             isAddingList={isAddingList}
             isFetching={isFetchingCards}

@@ -2,7 +2,7 @@ import { t } from "i18next";
 import * as Yup from "yup";
 
 const ADD_BOARD_FORM_INITIAL_VALUES = {
-  color: "",
+  color: "#4F46E5",
   name: "",
   description: "",
 };

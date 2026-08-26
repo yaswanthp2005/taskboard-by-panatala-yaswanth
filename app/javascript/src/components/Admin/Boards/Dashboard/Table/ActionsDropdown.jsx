@@ -14,18 +14,9 @@ const ActionsDropdown = ({ board, onDelete, onRename }) => {
   return (
     <Dropdown
       buttonStyle="text"
+      customTarget={<Button icon={MenuHorizontal} iconSize={20} style="text" />}
       dropdownProps={{ appendTo: () => document.body }}
       strategy="fixed"
-      customTarget={
-        <Button
-          icon={MenuHorizontal}
-          iconSize={20}
-          style="text"
-          tooltipProps={{
-            content: t("boards.actions.menu"),
-          }}
-        />
-      }
     >
       <Dropdown.Menu>
         <Dropdown.MenuItem.Button onClick={() => onRename(board)}>

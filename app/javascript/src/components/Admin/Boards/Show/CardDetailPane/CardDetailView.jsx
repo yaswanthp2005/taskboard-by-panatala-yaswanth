@@ -1,110 +1,61 @@
 import React from "react";
 
-import dayjs from "dayjs";
-import { Typography } from "neetoui";
+import { Checkbox, Typography } from "neetoui";
 import PropTypes from "prop-types";
 import { useTranslation } from "react-i18next";
 
+import { CardDetailSidebarView } from "./CardDetailSidebar";
+import CardTitle from "./CardTitle";
 import ChecklistField from "./ChecklistField";
-import { formatMemberName, getInitials } from "./utils";
 
 import ActivityFeed from "../ActivityFeed";
 
-const CardDetailView = ({ boardSlug, card, cardId }) => {
+const CardDetailView = ({
+  boardSlug,
+  card,
+  cardId,
+  onEdit,
+  onHideChecklist,
+  onShowChecklist,
+  showChecklist,
+}) => {
   const { t } = useTranslation();
-  const formattedDueDate = card.dueDate
-    ? dayjs(card.dueDate).format("MMM D, YYYY")
-    : null;
 
   return (
-    <div className="flex w-full flex-col gap-y-6">
-      <div className="flex w-full flex-col gap-y-1">
-        <Typography className="text-gray-500" style="body3" weight="semibold">
-          {t("cardDetail.titleLabel")}
-        </Typography>
+    <div className="card-detail-pane__layout">
+      <div className="card-detail-pane__main">
+        <div className="card-detail-pane__title-row">
+          <Checkbox
+            checked={false}
+            className="card-detail-pane__title-checkbox shrink-0 !grow-0"
+            label=""
+          />
+          <CardTitle boardSlug={boardSlug} cardId={cardId} title={card.title} />
+        </div>
         <Typography
-          className="w-full whitespace-pre-wrap break-words"
-          style="h4"
-          weight="semibold"
-        >
-          {card.title}
-        </Typography>
-      </div>
-      <div className="flex w-full flex-col gap-y-1">
-        <Typography className="text-gray-500" style="body3" weight="semibold">
-          {t("cardDetail.description")}
-        </Typography>
-        <Typography
-          className="w-full whitespace-pre-wrap break-words text-gray-800"
           style="body2"
+          className={`w-full whitespace-pre-wrap break-words ${
+            card.description ? "text-gray-800" : "text-gray-500"
+          }`}
         >
           {card.description || t("cardDetail.noDescription")}
         </Typography>
-      </div>
-      <div className="flex w-full flex-col gap-y-1">
-        <Typography className="text-gray-500" style="body3" weight="semibold">
-          {t("cardDetail.dueDate")}
-        </Typography>
-        <Typography className="text-gray-800" style="body2">
-          {formattedDueDate || t("cardDetail.noDueDate")}
-        </Typography>
-      </div>
-      <div className="flex w-full flex-col gap-y-1">
-        <Typography className="text-gray-500" style="body3" weight="semibold">
-          {t("cardDetail.assignee")}
-        </Typography>
-        {card.assignees?.length ? (
-          <div className="flex flex-wrap gap-2">
-            {card.assignees.map(assignee => (
-              <span
-                className="flex items-center gap-x-2 rounded-full bg-indigo-50 px-3 py-1 text-xs font-medium text-indigo-700"
-                key={assignee.id}
-              >
-                <span className="flex h-5 w-5 items-center justify-center rounded-full bg-indigo-100 text-[10px]">
-                  {getInitials(assignee)}
-                </span>
-                {formatMemberName(assignee)}
-              </span>
-            ))}
-          </div>
-        ) : (
-          <Typography className="text-gray-500" style="body3">
-            {t("cardDetail.noAssignee")}
-          </Typography>
+        <ActivityFeed cardId={cardId} />
+        {showChecklist && (
+          <ChecklistField
+            boardSlug={boardSlug}
+            cardId={cardId}
+            items={card.checklistItems ?? []}
+            onCloseWhenEmpty={onHideChecklist}
+          />
         )}
       </div>
-      <div className="flex w-full flex-col gap-y-2">
-        <Typography className="text-gray-500" style="body3" weight="semibold">
-          {t("cardDetail.labels")}
-        </Typography>
-        {card.labels?.length ? (
-          <div className="flex flex-wrap gap-2">
-            {card.labels.map(label => (
-              <span
-                className="rounded-full px-3 py-1 text-xs font-medium text-white"
-                key={label.id}
-                style={{ backgroundColor: label.color }}
-              >
-                {label.name}
-              </span>
-            ))}
-          </div>
-        ) : (
-          <Typography className="text-gray-500" style="body3">
-            {t("cardDetail.noLabels")}
-          </Typography>
-        )}
-      </div>
-      {(card.checklistItems ?? []).length > 0 && (
-        <ChecklistField
-          boardSlug={boardSlug}
-          cardId={cardId}
-          items={card.checklistItems ?? []}
-          showInput={false}
-          showItemActions={false}
-        />
-      )}
-      <ActivityFeed cardId={cardId} />
+      <CardDetailSidebarView
+        card={card}
+        showChecklist={showChecklist}
+        onConfigure={onEdit}
+        onShowChecklist={onShowChecklist}
+      />
     </div>
   );
 };
@@ -115,17 +66,15 @@ CardDetailView.propTypes = {
     title: PropTypes.string.isRequired,
     description: PropTypes.string,
     dueDate: PropTypes.string,
-    assignees: PropTypes.arrayOf(
-      PropTypes.shape({
-        id: PropTypes.string.isRequired,
-        firstName: PropTypes.string,
-        lastName: PropTypes.string,
-      })
-    ),
+    assignees: PropTypes.array,
     labels: PropTypes.array,
     checklistItems: PropTypes.array,
   }).isRequired,
   cardId: PropTypes.string.isRequired,
+  onEdit: PropTypes.func.isRequired,
+  onHideChecklist: PropTypes.func.isRequired,
+  onShowChecklist: PropTypes.func.isRequired,
+  showChecklist: PropTypes.bool.isRequired,
 };
 
 export default CardDetailView;

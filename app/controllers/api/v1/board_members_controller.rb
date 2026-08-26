@@ -7,8 +7,10 @@ class Api::V1::BoardMembersController < ApplicationController
 
   def index
     authorize BoardMember
-    @members = User.where(id: [@board.owner_id] + @board.member_ids)
-      .order(:first_name, :last_name)
+    member_ids = [@board.owner_id] + @board.member_ids
+    members = User.where(id: member_ids).in_order_of(:id, member_ids)
+    @pagy, @members = pagy(members)
+    @pagination = pagy_metadata(@pagy)
   end
 
   def create

@@ -3,8 +3,8 @@ import { ADMIN_API_BASE_URL } from "constants/apis";
 import axios from "axios";
 import camelToSnake from "utils/camelToSnake";
 
-const fetch = ({ boardSlug }) =>
-  axios.get(`${ADMIN_API_BASE_URL}/boards/${boardSlug}/labels`);
+const fetch = ({ boardSlug, params = {} }) =>
+  axios.get(`${ADMIN_API_BASE_URL}/boards/${boardSlug}/labels`, { params });
 
 const create = ({ boardSlug, ...payload }) =>
   axios.post(`${ADMIN_API_BASE_URL}/boards/${boardSlug}/labels`, {

@@ -61,7 +61,7 @@ const BoardSubHeader = ({
           disabled={isAddingList}
           icon={Plus}
           label={t("boardView.addList")}
-          style="secondary"
+          style="primary"
           onClick={onAddList}
         />
         <Button

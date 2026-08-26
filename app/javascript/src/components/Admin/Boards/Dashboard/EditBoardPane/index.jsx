@@ -1,5 +1,6 @@
 import React from "react";
 
+import { FormikColorPicker } from "components/commons";
 import { useUpdateBoard } from "components/hooks/reactQuery/useBoardsApi";
 import { Pane, Typography } from "neetoui";
 import { Form as NeetoUIForm, Input } from "neetoui/formik";
@@ -20,6 +21,7 @@ const EditBoardPane = ({ board, isOpen, onClose }) => {
       await updateBoard({
         slug: board.slug,
         name: values.name.trim(),
+        color: values.color.trim(),
       });
       resetForm();
       onClose();
@@ -52,14 +54,21 @@ const EditBoardPane = ({ board, isOpen, onClose }) => {
         }}
       >
         <Pane.Body>
-          <Input
-            autoFocus
-            required
-            className="w-full"
-            label={t("boards.form.name")}
-            name="name"
-            placeholder={t("boards.form.namePlaceholder")}
-          />
+          <div className="flex w-full flex-col gap-y-4">
+            <Input
+              autoFocus
+              required
+              className="w-full"
+              label={t("boards.form.name")}
+              name="name"
+              placeholder={t("boards.form.namePlaceholder")}
+            />
+            <FormikColorPicker
+              className="w-full"
+              label={t("boards.form.color")}
+              name="color"
+            />
+          </div>
         </Pane.Body>
         <Pane.Footer>
           <Footer onClose={onClose} />

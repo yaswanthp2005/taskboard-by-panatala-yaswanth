@@ -23,7 +23,7 @@ const MembersHeader = ({ canAddMember, isAddDisabled, onAddMember }) => {
           disabled={isAddDisabled}
           icon={Plus}
           label={t("members.addMember")}
-          style="secondary"
+          style="primary"
           onClick={onAddMember}
         />
       )}

@@ -20,6 +20,7 @@ import TaskCard from "./TaskCard";
 import { mapListsToSections, moveItem, moveSection } from "./utils";
 
 const BoardKanban = ({
+  boardName,
   boardSlug,
   isAddingList,
   isFetching,
@@ -191,6 +192,7 @@ const BoardKanban = ({
         onSubmit={handleDeleteCard}
       />
       <CardDetailPane
+        boardName={boardName}
         boardSlug={boardSlug}
         cardId={cardPane?.type === "show" ? cardPane.cardId : null}
         initialEditing={cardPane?.isEditing ?? false}
@@ -204,6 +206,7 @@ const BoardKanban = ({
 };
 
 BoardKanban.propTypes = {
+  boardName: PropTypes.string.isRequired,
   boardSlug: PropTypes.string.isRequired,
   isAddingList: PropTypes.bool,
   isFetching: PropTypes.bool,

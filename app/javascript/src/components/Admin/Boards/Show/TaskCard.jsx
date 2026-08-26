@@ -33,7 +33,7 @@ const TaskCard = ({ boardSlug, item, onClick, onDelete, onEdit }) => {
     >
       <div className="flex items-start justify-between gap-x-2">
         <Typography
-          className="min-w-0 flex-1 truncate"
+          className="min-w-0 flex-1 break-words"
           style="body2"
           weight="medium"
         >
@@ -66,6 +66,20 @@ const TaskCard = ({ boardSlug, item, onClick, onDelete, onEdit }) => {
           </Dropdown>
         </span>
       </div>
+      {item.labels?.length > 0 && (
+        <div className="mt-2 flex w-full flex-wrap gap-1.5">
+          {item.labels.map(label => (
+            <span
+              className="max-w-full truncate rounded px-2 py-0.5 text-xs font-medium text-white"
+              key={label.id}
+              style={{ backgroundColor: label.color }}
+              title={label.name}
+            >
+              {label.name}
+            </span>
+          ))}
+        </div>
+      )}
       <div className="mt-auto flex items-center justify-between gap-x-2 pt-3">
         {formattedDueDate ? (
           <div className="flex items-center gap-x-1 text-gray-500">
@@ -96,6 +110,13 @@ TaskCard.propTypes = {
         id: PropTypes.string.isRequired,
         firstName: PropTypes.string,
         lastName: PropTypes.string,
+      })
+    ),
+    labels: PropTypes.arrayOf(
+      PropTypes.shape({
+        id: PropTypes.string.isRequired,
+        name: PropTypes.string.isRequired,
+        color: PropTypes.string.isRequired,
       })
     ),
   }).isRequired,

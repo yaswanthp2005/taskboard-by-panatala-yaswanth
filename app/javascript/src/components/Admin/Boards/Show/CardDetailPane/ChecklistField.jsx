@@ -7,10 +7,13 @@ import {
   useDeleteChecklistItem,
   useUpdateChecklistItem,
 } from "components/hooks/reactQuery/useChecklistItemsApi";
-import { Clock, MenuHorizontal, UserAdd } from "neetoicons";
-import { Button, Checkbox, Dropdown, Typography } from "neetoui";
+import { MenuHorizontal } from "neetoicons";
+import { Checkbox, Dropdown, Typography } from "neetoui";
 import PropTypes from "prop-types";
 import { useTranslation } from "react-i18next";
+
+import DeleteAllChecklistItemsAlert from "./DeleteAllChecklistItemsAlert";
+import DeleteChecklistItemAlert from "./DeleteChecklistItemAlert";
 
 const ChecklistProgressRing = ({ percent }) => {
   const radius = 7;
@@ -55,7 +58,7 @@ ChecklistProgressRing.propTypes = {
 
 const ChecklistItemRow = ({
   item,
-  onDeleteItem,
+  onRequestDeleteItem,
   onToggleCompleted,
   showItemActions,
 }) => {
@@ -79,22 +82,6 @@ const ChecklistItemRow = ({
       </Typography>
       {showItemActions && (
         <div className="ml-auto flex shrink-0 items-center gap-x-0.5">
-          <Button
-            aria-label={t("cardDetail.checklist.assignMember")}
-            className="text-gray-400"
-            icon={UserAdd}
-            size="small"
-            style="text"
-            type="button"
-          />
-          <Button
-            aria-label={t("cardDetail.checklist.setDueDate")}
-            className="text-gray-400"
-            icon={Clock}
-            size="small"
-            style="text"
-            type="button"
-          />
           <Dropdown
             dropdownProps={{ appendTo: () => document.body }}
             icon={MenuHorizontal}
@@ -111,7 +98,7 @@ const ChecklistItemRow = ({
             <Dropdown.Menu>
               <Dropdown.MenuItem.Button
                 style="danger"
-                onClick={() => onDeleteItem(item.id)}
+                onClick={() => onRequestDeleteItem(item)}
               >
                 {t("cardDetail.checklist.removeItem")}
               </Dropdown.MenuItem.Button>
@@ -129,7 +116,7 @@ ChecklistItemRow.propTypes = {
     text: PropTypes.string.isRequired,
     isComplete: PropTypes.bool.isRequired,
   }).isRequired,
-  onDeleteItem: PropTypes.func.isRequired,
+  onRequestDeleteItem: PropTypes.func.isRequired,
   onToggleCompleted: PropTypes.func.isRequired,
   showItemActions: PropTypes.bool.isRequired,
 };
@@ -140,8 +127,8 @@ const ChecklistLayout = ({
   isSaving,
   items,
   onCancelInput,
-  onDeleteAllItems,
-  onDeleteItem,
+  onRequestDeleteAllItems,
+  onRequestDeleteItem,
   onSubmitItem,
   onToggleCompleted,
   showInput,
@@ -186,7 +173,7 @@ const ChecklistLayout = ({
               <Dropdown.Menu>
                 <Dropdown.MenuItem.Button
                   style="danger"
-                  onClick={onDeleteAllItems}
+                  onClick={onRequestDeleteAllItems}
                 >
                   {t("cardDetail.checklist.deleteAll")}
                 </Dropdown.MenuItem.Button>
@@ -202,7 +189,7 @@ const ChecklistLayout = ({
               item={item}
               key={item.id}
               showItemActions={showItemActions}
-              onDeleteItem={onDeleteItem}
+              onRequestDeleteItem={onRequestDeleteItem}
               onToggleCompleted={onToggleCompleted}
             />
           ))}
@@ -242,8 +229,8 @@ ChecklistLayout.propTypes = {
     })
   ).isRequired,
   onCancelInput: PropTypes.func.isRequired,
-  onDeleteAllItems: PropTypes.func.isRequired,
-  onDeleteItem: PropTypes.func.isRequired,
+  onRequestDeleteAllItems: PropTypes.func.isRequired,
+  onRequestDeleteItem: PropTypes.func.isRequired,
   onSubmitItem: PropTypes.func.isRequired,
   onToggleCompleted: PropTypes.func.isRequired,
   showInput: PropTypes.bool.isRequired,
@@ -254,22 +241,23 @@ const PersistedChecklistField = ({
   boardSlug,
   cardId,
   items = [],
+  onCloseWhenEmpty,
   showInput = true,
   showItemActions = true,
 }) => {
   const [inputKey, setInputKey] = useState(0);
+  const [itemToDelete, setItemToDelete] = useState(null);
+  const [isDeleteAllOpen, setIsDeleteAllOpen] = useState(false);
   const { mutateAsync: createChecklistItem, isLoading: isCreating } =
     useCreateChecklistItem(boardSlug, cardId);
 
-  const { mutateAsync: deleteChecklistItem } = useDeleteChecklistItem(
-    boardSlug,
-    cardId
-  );
+  const { mutateAsync: deleteChecklistItem, isLoading: isDeletingItem } =
+    useDeleteChecklistItem(boardSlug, cardId);
 
-  const { mutateAsync: bulkDeleteChecklistItems } = useBulkDeleteChecklistItems(
-    boardSlug,
-    cardId
-  );
+  const {
+    mutateAsync: bulkDeleteChecklistItems,
+    isLoading: isDeletingAllItems,
+  } = useBulkDeleteChecklistItems(boardSlug, cardId);
 
   const { mutateAsync: updateChecklistItem } = useUpdateChecklistItem(
     boardSlug,
@@ -298,6 +286,10 @@ const PersistedChecklistField = ({
 
   const handleCancelInput = () => {
     setInputKey(currentKey => currentKey + 1);
+
+    if (items.length === 0) {
+      onCloseWhenEmpty?.();
+    }
   };
 
   const handleToggleCompleted = async item => {
@@ -311,9 +303,14 @@ const PersistedChecklistField = ({
     }
   };
 
-  const handleDeleteItem = async itemId => {
+  const handleDeleteItem = async () => {
+    if (!itemToDelete) {
+      return;
+    }
+
     try {
-      await deleteChecklistItem({ id: itemId });
+      await deleteChecklistItem({ id: itemToDelete.id });
+      setItemToDelete(null);
     } catch (error) {
       logger.error(error);
     }
@@ -322,25 +319,41 @@ const PersistedChecklistField = ({
   const handleDeleteAllItems = async () => {
     try {
       await bulkDeleteChecklistItems();
+      setIsDeleteAllOpen(false);
+      onCloseWhenEmpty?.();
     } catch (error) {
       logger.error(error);
     }
   };
 
   return (
-    <ChecklistLayout
-      completedCount={completedCount}
-      inputKey={inputKey}
-      isSaving={isCreating}
-      items={items}
-      showInput={showInput}
-      showItemActions={showItemActions}
-      onCancelInput={handleCancelInput}
-      onDeleteAllItems={handleDeleteAllItems}
-      onDeleteItem={handleDeleteItem}
-      onSubmitItem={handleSubmitItem}
-      onToggleCompleted={handleToggleCompleted}
-    />
+    <>
+      <ChecklistLayout
+        completedCount={completedCount}
+        inputKey={inputKey}
+        isSaving={isCreating}
+        items={items}
+        showInput={showInput}
+        showItemActions={showItemActions}
+        onCancelInput={handleCancelInput}
+        onRequestDeleteAllItems={() => setIsDeleteAllOpen(true)}
+        onRequestDeleteItem={setItemToDelete}
+        onSubmitItem={handleSubmitItem}
+        onToggleCompleted={handleToggleCompleted}
+      />
+      <DeleteChecklistItemAlert
+        isDeleting={isDeletingItem}
+        itemToDelete={itemToDelete}
+        onClose={() => setItemToDelete(null)}
+        onSubmit={handleDeleteItem}
+      />
+      <DeleteAllChecklistItemsAlert
+        isDeleting={isDeletingAllItems}
+        isOpen={isDeleteAllOpen}
+        onClose={() => setIsDeleteAllOpen(false)}
+        onSubmit={handleDeleteAllItems}
+      />
+    </>
   );
 };
 
@@ -354,12 +367,14 @@ PersistedChecklistField.propTypes = {
       isComplete: PropTypes.bool.isRequired,
     })
   ),
+  onCloseWhenEmpty: PropTypes.func,
   showInput: PropTypes.bool,
   showItemActions: PropTypes.bool,
 };
 
 PersistedChecklistField.defaultProps = {
   items: [],
+  onCloseWhenEmpty: undefined,
   showInput: true,
   showItemActions: true,
 };
@@ -368,6 +383,7 @@ const ChecklistField = ({
   boardSlug,
   cardId,
   items = [],
+  onCloseWhenEmpty,
   showInput = true,
   showItemActions = true,
 }) => (
@@ -377,6 +393,7 @@ const ChecklistField = ({
     items={items}
     showInput={showInput}
     showItemActions={showItemActions}
+    onCloseWhenEmpty={onCloseWhenEmpty}
   />
 );
 
@@ -390,12 +407,14 @@ ChecklistField.propTypes = {
       isComplete: PropTypes.bool.isRequired,
     })
   ),
+  onCloseWhenEmpty: PropTypes.func,
   showInput: PropTypes.bool,
   showItemActions: PropTypes.bool,
 };
 
 ChecklistField.defaultProps = {
   items: [],
+  onCloseWhenEmpty: undefined,
   showInput: true,
   showItemActions: true,
 };

@@ -7,9 +7,10 @@ import { useTranslation } from "react-i18next";
 
 import AssigneeDropdown from "../AssigneeDropdown";
 
-const AssigneeField = ({ boardSlug }) => {
+const AssigneeField = ({ boardSlug, variant = "default" }) => {
   const { t } = useTranslation();
   const { setFieldValue, values } = useFormikContext();
+  const isSidebar = variant === "sidebar";
 
   const selectedIds = values.assigneeIds || [];
 
@@ -23,9 +24,13 @@ const AssigneeField = ({ boardSlug }) => {
   };
 
   return (
-    <div className="flex w-full flex-col gap-y-2">
+    <div
+      className={`flex w-full flex-col ${
+        isSidebar ? "card-detail-pane__sidebar-field" : "gap-y-2"
+      }`}
+    >
       <Typography style="body2" weight="semibold">
-        {t("cardDetail.assignee")}
+        {t(isSidebar ? "cardDetail.assignedTo" : "cardDetail.assignee")}
       </Typography>
       <AssigneeDropdown
         boardSlug={boardSlug}
@@ -40,6 +45,7 @@ const AssigneeField = ({ boardSlug }) => {
 
 AssigneeField.propTypes = {
   boardSlug: PropTypes.string.isRequired,
+  variant: PropTypes.oneOf(["default", "sidebar"]),
 };
 
 export default AssigneeField;

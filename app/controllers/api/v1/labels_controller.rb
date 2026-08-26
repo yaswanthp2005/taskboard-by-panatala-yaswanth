@@ -8,7 +8,9 @@ class Api::V1::LabelsController < ApplicationController
 
   def index
     authorize Label
-    @labels = @board.labels.order(:name)
+    labels = @board.labels.order(:name)
+    @pagy, @labels = pagy(labels)
+    @pagination = pagy_metadata(@pagy)
   end
 
   def create

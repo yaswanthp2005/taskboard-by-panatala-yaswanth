@@ -17,7 +17,8 @@ const AssigneeDropdown = ({
   triggerClassName = "shrink-0 text-gray-400",
 }) => {
   const { t } = useTranslation();
-  const { data: members = [], isLoading } = useFetchBoardMembers(boardSlug);
+  const { data, isLoading } = useFetchBoardMembers(boardSlug);
+  const members = data?.members ?? [];
 
   const selectedIdSet = useMemo(() => new Set(selectedIds), [selectedIds]);
 

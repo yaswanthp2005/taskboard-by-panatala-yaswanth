@@ -6,24 +6,27 @@ import {
   useUpdateCard,
 } from "components/hooks/reactQuery/useCardsApi";
 import dayjs from "dayjs";
-import { Pane, Spinner, Typography } from "neetoui";
+import { Checkbox, Pane, Spinner } from "neetoui";
 import { Form as NeetoUIForm, Textarea } from "neetoui/formik";
 import PropTypes from "prop-types";
 import { useTranslation } from "react-i18next";
 
-import AssigneeField from "./AssigneeField";
+import CardDetailHeader from "./CardDetailHeader";
+import { CardDetailSidebarEdit } from "./CardDetailSidebar";
 import CardDetailView from "./CardDetailView";
+import CardTitleField from "./CardTitleField";
 import ChecklistField from "./ChecklistField";
 import {
   buildCardDetailFormInitialValues,
   CARD_DETAIL_FORM_VALIDATION_SCHEMA,
 } from "./constants";
-import DueDateField from "./DueDateField";
 import Footer from "./Footer";
 import HeaderActions from "./HeaderActions";
-import LabelsField from "./LabelsField";
+
+import ActivityFeed from "../ActivityFeed";
 
 const CardDetailPane = ({
+  boardName,
   boardSlug,
   cardId,
   initialEditing = false,
@@ -35,6 +38,7 @@ const CardDetailPane = ({
   const { t } = useTranslation();
   const isCreateMode = Boolean(listId) && !cardId;
   const [isEditing, setIsEditing] = useState(isCreateMode || initialEditing);
+  const [showChecklist, setShowChecklist] = useState(false);
   const { data: card, isLoading } = useFetchCard(cardId, {
     enabled: isOpen && Boolean(cardId),
   });
@@ -47,8 +51,21 @@ const CardDetailPane = ({
     }
   }, [initialEditing, isCreateMode, isOpen, cardId]);
 
+  useEffect(() => {
+    if (!isOpen) {
+      setShowChecklist(false);
+
+      return;
+    }
+
+    if ((card?.checklistItems ?? []).length > 0) {
+      setShowChecklist(true);
+    }
+  }, [card?.checklistItems, isOpen]);
+
   const handleClose = () => {
     setIsEditing(isCreateMode);
+    setShowChecklist(false);
     onClose();
   };
 
@@ -92,33 +109,38 @@ const CardDetailPane = ({
       }}
     >
       <Pane.Body hasFooter>
-        <div className="flex w-full flex-col gap-y-4">
-          <Textarea
-            required
-            autoFocus={!isCreateMode}
-            className="w-full"
-            label={t("cardDetail.titleLabel")}
-            name="title"
-            placeholder={t("cardDetail.titlePlaceholder")}
-            rows={2}
-          />
-          <Textarea
-            className="w-full"
-            label={t("cardDetail.description")}
-            name="description"
-            placeholder={t("cardDetail.descriptionPlaceholder")}
-            rows={6}
-          />
-          <DueDateField />
-          <AssigneeField boardSlug={boardSlug} />
-          <LabelsField boardSlug={boardSlug} />
-          {!isCreateMode && (
-            <ChecklistField
-              boardSlug={boardSlug}
-              cardId={cardId}
-              items={card?.checklistItems ?? []}
+        <div className="card-detail-pane__layout">
+          <div className="card-detail-pane__main">
+            <div className="card-detail-pane__title-row">
+              <Checkbox
+                checked={false}
+                className="card-detail-pane__title-checkbox shrink-0 !grow-0"
+                label=""
+              />
+              <CardTitleField />
+            </div>
+            <Textarea
+              className="w-full"
+              label={t("cardDetail.description")}
+              name="description"
+              placeholder={t("cardDetail.descriptionPlaceholder")}
+              rows={4}
             />
-          )}
+            {!isCreateMode && <ActivityFeed cardId={cardId} />}
+            {!isCreateMode && showChecklist && (
+              <ChecklistField
+                boardSlug={boardSlug}
+                cardId={cardId}
+                items={card?.checklistItems ?? []}
+                onCloseWhenEmpty={() => setShowChecklist(false)}
+              />
+            )}
+          </div>
+          <CardDetailSidebarEdit
+            boardSlug={boardSlug}
+            showChecklistButton={!isCreateMode && !showChecklist}
+            onShowChecklist={() => setShowChecklist(true)}
+          />
         </div>
       </Pane.Body>
       <Pane.Footer>
@@ -155,7 +177,15 @@ const CardDetailPane = ({
 
     return (
       <Pane.Body hasFooter={false}>
-        <CardDetailView boardSlug={boardSlug} card={card} cardId={cardId} />
+        <CardDetailView
+          boardSlug={boardSlug}
+          card={card}
+          cardId={cardId}
+          showChecklist={showChecklist}
+          onEdit={() => setIsEditing(true)}
+          onHideChecklist={() => setShowChecklist(false)}
+          onShowChecklist={() => setShowChecklist(true)}
+        />
       </Pane.Body>
     );
   };
@@ -166,6 +196,7 @@ const CardDetailPane = ({
     <Pane
       closeButton
       closeOnEsc
+      className="card-detail-pane"
       isOpen={isOpen}
       size="large"
       onClose={handleClose}
@@ -176,10 +207,8 @@ const CardDetailPane = ({
           onEdit={() => setIsEditing(true)}
         />
       )}
-      <Pane.Header>
-        <Typography style="h3" weight="semibold">
-          {t(isCreateMode ? "cardDetail.addTitle" : "cardDetail.title")}
-        </Typography>
+      <Pane.Header className="card-detail-pane__header">
+        <CardDetailHeader boardName={boardName} />
       </Pane.Header>
       {renderContent()}
     </Pane>
@@ -187,6 +216,7 @@ const CardDetailPane = ({
 };
 
 CardDetailPane.propTypes = {
+  boardName: PropTypes.string.isRequired,
   boardSlug: PropTypes.string.isRequired,
   cardId: PropTypes.string,
   initialEditing: PropTypes.bool,

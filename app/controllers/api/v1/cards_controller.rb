@@ -63,8 +63,6 @@ class Api::V1::CardsController < ApplicationController
         destination_list_title: destination_list.title
       }
     )
-
-    render_notice(t("successfully_updated", entity: "Card"), :ok)
   end
 
   def destroy
@@ -83,7 +81,7 @@ class Api::V1::CardsController < ApplicationController
 
     def load_board
       @board = policy_scope(Board)
-        .includes(lists: { cards: :assignees })
+        .includes(lists: { cards: [:assignees, :labels] })
         .find_by!(slug: params[:board_slug])
     end
 

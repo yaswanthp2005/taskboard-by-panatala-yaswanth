@@ -51,7 +51,7 @@ class Api::V1::LabelsControllerTest < ActionDispatch::IntegrationTest
     assert_response :success
     label = @board.labels.find_by!(name: "Feature")
     assert_equal "#10B981", label.color
-    assert_equal I18n.t("successfully_created", entity: "Label"), response_body["notice"]
+    assert_equal I18n.t("successfully_created", entity: I18n.t("entities.label")), response_body["notice"]
   end
 
   def test_create_allows_board_member
@@ -112,7 +112,7 @@ class Api::V1::LabelsControllerTest < ActionDispatch::IntegrationTest
     @label.reload
     assert_equal "Critical", @label.name
     assert_equal "#DC2626", @label.color
-    assert_equal I18n.t("successfully_updated", entity: "Label"), response_body["notice"]
+    assert_equal I18n.t("successfully_updated", entity: I18n.t("entities.label")), response_body["notice"]
   end
 
   def test_update_allows_board_member
@@ -166,7 +166,7 @@ class Api::V1::LabelsControllerTest < ActionDispatch::IntegrationTest
 
     assert_response :success
     assert_empty card.reload.labels
-    assert_equal I18n.t("successfully_deleted", count: 1, entity: "Label"), response_body["notice"]
+    assert_equal I18n.t("successfully_deleted", count: 1, entity: I18n.t("entities.label")), response_body["notice"]
   end
 
   def test_destroy_allows_board_member

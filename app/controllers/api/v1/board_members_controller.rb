@@ -3,14 +3,13 @@
 class Api::V1::BoardMembersController < ApplicationController
   after_action :verify_authorized
 
-  before_action :load_board
+  before_action :load_board!
 
   def index
     authorize BoardMember
     member_ids = [@board.owner_id] + @board.member_ids
     members = User.where(id: member_ids).in_order_of(:id, member_ids)
-    @pagy, @members = pagy(members)
-    @pagination = pagy_metadata(@pagy)
+    @members = paginate(members)
   end
 
   def create
@@ -21,7 +20,7 @@ class Api::V1::BoardMembersController < ApplicationController
       board: @board,
       inviter: current_user,
       email: member_params[:email]
-    ).process
+    ).process!
 
     render_notice(t("board_member.invited_successfully"), :ok)
   rescue BoardInviteService::Error => exception
@@ -30,7 +29,7 @@ class Api::V1::BoardMembersController < ApplicationController
 
   private
 
-    def load_board
+    def load_board!
       @board = policy_scope(Board).find_by!(slug: params[:board_slug])
     end
 

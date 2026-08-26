@@ -3,8 +3,8 @@
 class Api::V1::ActivitiesController < ApplicationController
   after_action :verify_authorized
 
-  before_action :load_card, if: -> { params[:card_id].present? }
-  before_action :load_board, if: -> { params[:board_slug].present? }
+  before_action :load_card!, if: -> { params[:card_id].present? }
+  before_action :load_board!, if: -> { params[:board_slug].present? }
 
   def index
     authorize @record, policy_class: ActivityPolicy
@@ -13,7 +13,7 @@ class Api::V1::ActivitiesController < ApplicationController
 
   private
 
-    def load_card
+    def load_card!
       @card = Card.joins(list: :board)
         .merge(policy_scope(Board))
         .find(params[:card_id])
@@ -21,7 +21,7 @@ class Api::V1::ActivitiesController < ApplicationController
       @activities_scope = @card.activities
     end
 
-    def load_board
+    def load_board!
       @board = policy_scope(Board).find_by!(slug: params[:board_slug])
       @record = @board
       @activities_scope = @board.activities

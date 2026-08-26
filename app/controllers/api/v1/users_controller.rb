@@ -5,7 +5,7 @@ class Api::V1::UsersController < ApplicationController
 
   def create
     User.create!(user_params)
-    render_notice(t("successfully_created", entity: "User"), :ok)
+    render_notice(t("successfully_created", entity: t("entities.user")), :ok)
   end
 
   private

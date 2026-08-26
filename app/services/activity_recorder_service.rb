@@ -9,7 +9,7 @@ class ActivityRecorderService
     @metadata = metadata
   end
 
-  def process
+  def process!
     Activity.create!(
       board: @board,
       actor: @actor,

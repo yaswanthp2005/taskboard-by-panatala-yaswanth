@@ -3,9 +3,9 @@
 class Api::V1::CardsController < ApplicationController
   after_action :verify_authorized
 
-  before_action :load_board, only: %i[index create]
-  before_action :load_list, only: :create
-  before_action :load_card, only: %i[show update move destroy]
+  before_action :load_board!, only: %i[index create]
+  before_action :load_list!, only: :create
+  before_action :load_card!, only: %i[show update move destroy]
 
   def index
     authorize @board, :show?
@@ -16,13 +16,13 @@ class Api::V1::CardsController < ApplicationController
     card = @list.cards.build(card_params)
     authorize card
     card.save!
-    record_activity(
+    record_activity!(
       board: @board,
       action: Constants::Activity::CARD_CREATED,
       card:,
       metadata: { card_title: card.title, list_title: @list.title }
     )
-    render_notice(t("successfully_created", entity: "Card"), :ok)
+    render_notice(t("successfully_created", entity: t("entities.card")), :ok)
   end
 
   def show
@@ -32,13 +32,13 @@ class Api::V1::CardsController < ApplicationController
   def update
     authorize @card
     @card.update!(card_params)
-    record_activity(
+    record_activity!(
       board: @card.board,
       action: Constants::Activity::CARD_UPDATED,
       card: @card,
       metadata: { card_title: @card.title }
     )
-    render_notice(t("successfully_updated", entity: "Card"), :ok)
+    render_notice(t("successfully_updated", entity: t("entities.card")), :ok)
   end
 
   def move
@@ -51,9 +51,9 @@ class Api::V1::CardsController < ApplicationController
       card: @card,
       destination_list:,
       position: move_params[:position]
-    ).process
+    ).process!
 
-    record_activity(
+    record_activity!(
       board: @card.board,
       action: Constants::Activity::CARD_MOVED,
       card: @card,
@@ -67,29 +67,29 @@ class Api::V1::CardsController < ApplicationController
 
   def destroy
     authorize @card
-    record_activity(
+    record_activity!(
       board: @card.board,
       action: Constants::Activity::CARD_DELETED,
       card: @card,
       metadata: { card_title: @card.title, list_title: @card.list.title }
     )
     @card.destroy!
-    render_notice(t("successfully_deleted", count: 1, entity: "Card"))
+    render_notice(t("successfully_deleted", count: 1, entity: t("entities.card")))
   end
 
   private
 
-    def load_board
+    def load_board!
       @board = policy_scope(Board)
         .includes(lists: { cards: [:assignees, :labels] })
         .find_by!(slug: params[:board_slug])
     end
 
-    def load_list
+    def load_list!
       @list = @board.lists.find(params[:list_id])
     end
 
-    def load_card
+    def load_card!
       @card = Card.joins(list: :board)
         .merge(policy_scope(Board))
         .includes(:labels, :checklist_items, :assignees)
@@ -102,15 +102,5 @@ class Api::V1::CardsController < ApplicationController
 
     def move_params
       params.permit(:list_id, :position)
-    end
-
-    def record_activity(board:, action:, card: nil, metadata: {})
-      ActivityRecorderService.new(
-        board:,
-        actor: current_user,
-        action:,
-        card:,
-        metadata:
-      ).process
     end
 end

@@ -22,7 +22,7 @@ module ApiExceptions
         render_error(exception, :internal_server_error)
 
       when ActiveRecord::RecordNotFound
-        render_error(t("not_found", entity: exception.model), :not_found)
+        render_error(t("not_found", entity: t("entities.#{exception.model.underscore}")), :not_found)
 
       when ActiveRecord::RecordNotUnique
         render_error(exception)

@@ -23,7 +23,7 @@ class Api::V1::CardsControllerTest < ActionDispatch::IntegrationTest
     assert_response :success
     card = @list.cards.find_by!(title: "Write tests")
     assert_equal 2, card.position
-    assert_equal I18n.t("successfully_created", entity: "Card"), response_body["notice"]
+    assert_equal I18n.t("successfully_created", entity: I18n.t("entities.card")), response_body["notice"]
   end
 
   def test_create_adds_card_to_list_for_member
@@ -440,7 +440,7 @@ class Api::V1::CardsControllerTest < ActionDispatch::IntegrationTest
     assert_response :success
     assert_equal [third_card, @card, second_card], @list.cards.to_a
     assert_equal [1, 2, 3], @list.cards.pluck(:position)
-    assert_equal I18n.t("successfully_updated", entity: "Card"), response_body["notice"]
+    assert_equal I18n.t("successfully_updated", entity: I18n.t("entities.card")), response_body["notice"]
   end
 
   def test_move_allows_board_member_to_reorder_within_list
@@ -472,7 +472,7 @@ class Api::V1::CardsControllerTest < ActionDispatch::IntegrationTest
     assert_equal [second_card], @list.cards.to_a
     assert_equal [@card, destination_list.cards.find_by!(title: "Ship feature")],
       destination_list.cards.to_a
-    assert_equal I18n.t("successfully_updated", entity: "Card"), response_body["notice"]
+    assert_equal I18n.t("successfully_updated", entity: I18n.t("entities.card")), response_body["notice"]
   end
 
   def test_move_allows_board_member
@@ -519,7 +519,7 @@ class Api::V1::CardsControllerTest < ActionDispatch::IntegrationTest
     end
 
     assert_response :success
-    assert_equal I18n.t("successfully_deleted", count: 1, entity: "Card"), response_body["notice"]
+    assert_equal I18n.t("successfully_deleted", count: 1, entity: I18n.t("entities.card")), response_body["notice"]
   end
 
   def test_destroy_allows_board_member

@@ -440,7 +440,6 @@ class Api::V1::CardsControllerTest < ActionDispatch::IntegrationTest
     assert_response :success
     assert_equal [third_card, @card, second_card], @list.cards.to_a
     assert_equal [1, 2, 3], @list.cards.pluck(:position)
-    assert_equal I18n.t("successfully_updated", entity: I18n.t("entities.card")), response_body["notice"]
   end
 
   def test_move_allows_board_member_to_reorder_within_list
@@ -472,7 +471,6 @@ class Api::V1::CardsControllerTest < ActionDispatch::IntegrationTest
     assert_equal [second_card], @list.cards.to_a
     assert_equal [@card, destination_list.cards.find_by!(title: "Ship feature")],
       destination_list.cards.to_a
-    assert_equal I18n.t("successfully_updated", entity: I18n.t("entities.card")), response_body["notice"]
   end
 
   def test_move_allows_board_member

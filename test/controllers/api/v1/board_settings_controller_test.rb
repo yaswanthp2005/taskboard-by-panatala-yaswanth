@@ -12,7 +12,7 @@ class Api::V1::BoardSettingsControllerTest < ActionDispatch::IntegrationTest
   end
 
   def test_show_allows_member_to_load_settings_page
-    get api_v1_board_path(@board), headers: headers(@member), as: :json
+    get api_v1_board_path(@board.slug), headers: headers(@member), as: :json
 
     assert_response :success
     assert_equal "Product Roadmap", response_body["name"]
@@ -21,14 +21,14 @@ class Api::V1::BoardSettingsControllerTest < ActionDispatch::IntegrationTest
   end
 
   def test_show_allows_owner_to_load_settings_page
-    get api_v1_board_path(@board), headers: headers(@owner), as: :json
+    get api_v1_board_path(@board.slug), headers: headers(@owner), as: :json
 
     assert_response :success
     assert response_body["is_owner"]
   end
 
   def test_update_rename_is_owner_only
-    patch api_v1_board_path(@board),
+    patch api_v1_board_path(@board.slug),
       params: { board: { name: "Renamed Board" } },
       headers: headers(@member),
       as: :json
@@ -38,7 +38,7 @@ class Api::V1::BoardSettingsControllerTest < ActionDispatch::IntegrationTest
   end
 
   def test_update_color_is_owner_only
-    patch api_v1_board_path(@board),
+    patch api_v1_board_path(@board.slug),
       params: { board: { color: "#EF4444" } },
       headers: headers(@member),
       as: :json
@@ -49,14 +49,14 @@ class Api::V1::BoardSettingsControllerTest < ActionDispatch::IntegrationTest
 
   def test_destroy_is_owner_only
     assert_no_difference "Board.count" do
-      delete api_v1_board_path(@board), headers: headers(@member), as: :json
+      delete api_v1_board_path(@board.slug), headers: headers(@member), as: :json
     end
 
     assert_response :forbidden
   end
 
   def test_owner_can_update_settings_fields
-    patch api_v1_board_path(@board),
+    patch api_v1_board_path(@board.slug),
       params: { board: { name: "Updated Roadmap", color: "#10B981" } },
       headers: headers(@owner),
       as: :json
@@ -69,7 +69,7 @@ class Api::V1::BoardSettingsControllerTest < ActionDispatch::IntegrationTest
 
   def test_owner_can_delete_board_from_settings
     assert_difference "Board.count", -1 do
-      delete api_v1_board_path(@board), headers: headers(@owner), as: :json
+      delete api_v1_board_path(@board.slug), headers: headers(@owner), as: :json
     end
 
     assert_response :success

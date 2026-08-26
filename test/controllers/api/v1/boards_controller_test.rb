@@ -80,7 +80,7 @@ class Api::V1::BoardsControllerTest < ActionDispatch::IntegrationTest
   def test_show_returns_board_for_owner
     board = create(:board, name: "Product Roadmap", owner: @owner)
 
-    get api_v1_board_path(board), headers: headers(@owner), as: :json
+    get api_v1_board_path(board.slug), headers: headers(@owner), as: :json
 
     assert_response :success
     assert_equal board.name, response_body["name"]
@@ -95,7 +95,7 @@ class Api::V1::BoardsControllerTest < ActionDispatch::IntegrationTest
     in_progress_list = create(:list, title: "In Progress", board:)
     done_list = create(:list, title: "Done", board:)
 
-    get api_v1_board_path(board), headers: headers(@owner), as: :json
+    get api_v1_board_path(board.slug), headers: headers(@owner), as: :json
 
     assert_response :success
     response_lists = response_body["lists"]
@@ -109,7 +109,7 @@ class Api::V1::BoardsControllerTest < ActionDispatch::IntegrationTest
     board = create(:board, name: "Shared Board", owner: @other_user)
     create(:board_member, board:, user: @owner)
 
-    get api_v1_board_path(board), headers: headers(@owner), as: :json
+    get api_v1_board_path(board.slug), headers: headers(@owner), as: :json
 
     assert_response :success
     assert_equal "Shared Board", response_body["name"]
@@ -119,7 +119,7 @@ class Api::V1::BoardsControllerTest < ActionDispatch::IntegrationTest
   def test_show_rejects_non_member
     board = create(:board, name: "Other Board", owner: @other_user)
 
-    get api_v1_board_path(board), headers: headers(@owner), as: :json
+    get api_v1_board_path(board.slug), headers: headers(@owner), as: :json
 
     assert_response :not_found
   end
@@ -164,7 +164,7 @@ class Api::V1::BoardsControllerTest < ActionDispatch::IntegrationTest
   def test_update_changes_board_name
     board = create(:board, name: "Product Roadmap", owner: @owner)
 
-    patch api_v1_board_path(board),
+    patch api_v1_board_path(board.slug),
       params: { board: { name: "Updated Roadmap" } },
       headers: headers(@owner),
       as: :json
@@ -178,7 +178,7 @@ class Api::V1::BoardsControllerTest < ActionDispatch::IntegrationTest
   def test_update_changes_board_color
     board = create(:board, name: "Product Roadmap", color: "#4F46E5", owner: @owner)
 
-    patch api_v1_board_path(board),
+    patch api_v1_board_path(board.slug),
       params: { board: { color: "#EF4444" } },
       headers: headers(@owner),
       as: :json
@@ -192,7 +192,7 @@ class Api::V1::BoardsControllerTest < ActionDispatch::IntegrationTest
   def test_update_changes_board_name_and_color
     board = create(:board, name: "Product Roadmap", color: "#4F46E5", owner: @owner)
 
-    patch api_v1_board_path(board),
+    patch api_v1_board_path(board.slug),
       params: { board: { name: "Updated Roadmap", color: "#10B981" } },
       headers: headers(@owner),
       as: :json
@@ -206,7 +206,7 @@ class Api::V1::BoardsControllerTest < ActionDispatch::IntegrationTest
   def test_update_rejects_blank_name
     board = create(:board, name: "Product Roadmap", owner: @owner)
 
-    patch api_v1_board_path(board),
+    patch api_v1_board_path(board.slug),
       params: { board: { name: "" } },
       headers: headers(@owner),
       as: :json
@@ -218,7 +218,7 @@ class Api::V1::BoardsControllerTest < ActionDispatch::IntegrationTest
   def test_update_rejects_board_from_another_user
     board = create(:board, name: "Other Board", owner: @other_user)
 
-    patch api_v1_board_path(board),
+    patch api_v1_board_path(board.slug),
       params: { board: { name: "Updated Board" } },
       headers: headers(@owner),
       as: :json
@@ -230,7 +230,7 @@ class Api::V1::BoardsControllerTest < ActionDispatch::IntegrationTest
     board = create(:board, name: "Shared Board", owner: @other_user)
     create(:board_member, board:, user: @owner)
 
-    patch api_v1_board_path(board),
+    patch api_v1_board_path(board.slug),
       params: { board: { name: "Updated Board" } },
       headers: headers(@owner),
       as: :json
@@ -243,7 +243,7 @@ class Api::V1::BoardsControllerTest < ActionDispatch::IntegrationTest
     board = create(:board, name: "Product Roadmap", owner: @owner)
 
     assert_difference "Board.count", -1 do
-      delete api_v1_board_path(board), headers: headers(@owner), as: :json
+      delete api_v1_board_path(board.slug), headers: headers(@owner), as: :json
     end
 
     assert_response :success
@@ -254,7 +254,7 @@ class Api::V1::BoardsControllerTest < ActionDispatch::IntegrationTest
     board = create(:board, name: "Other Board", owner: @other_user)
 
     assert_no_difference "Board.count" do
-      delete api_v1_board_path(board), headers: headers(@owner), as: :json
+      delete api_v1_board_path(board.slug), headers: headers(@owner), as: :json
     end
 
     assert_response :not_found
@@ -265,7 +265,7 @@ class Api::V1::BoardsControllerTest < ActionDispatch::IntegrationTest
     create(:board_member, board:, user: @owner)
 
     assert_no_difference "Board.count" do
-      delete api_v1_board_path(board), headers: headers(@owner), as: :json
+      delete api_v1_board_path(board.slug), headers: headers(@owner), as: :json
     end
 
     assert_response :forbidden

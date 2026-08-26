@@ -614,6 +614,25 @@ class Api::V1::CardsControllerTest < ActionDispatch::IntegrationTest
     assert_empty @card.reload.assignees
   end
 
+  def test_show_includes_is_complete
+    @card.update!(is_complete: true)
+
+    get api_v1_card_path(@card), headers: headers(@owner), as: :json
+
+    assert_response :success
+    assert response_body["is_complete"]
+  end
+
+  def test_update_marks_card_is_complete
+    patch api_v1_card_path(@card),
+      params: { card: { is_complete: true } },
+      headers: headers(@owner),
+      as: :json
+
+    assert_response :success
+    assert @card.reload.is_complete
+  end
+
   def test_update_clears_assignees
     create(:board_member, board: @board, user: @member)
     @card.update!(assignee_ids: [@member.id])

@@ -1,9 +1,9 @@
 import React from "react";
 
-import { Checkbox, Typography } from "neetoui";
-import PropTypes from "prop-types";
+import { Typography } from "neetoui";
 import { useTranslation } from "react-i18next";
 
+import CardCompleteCheckbox from "./CardCompleteCheckbox";
 import { CardDetailSidebarView } from "./CardDetailSidebar";
 import CardTitle from "./CardTitle";
 import ChecklistField from "./ChecklistField";
@@ -25,12 +25,18 @@ const CardDetailView = ({
     <div className="card-detail-pane__layout">
       <div className="card-detail-pane__main">
         <div className="card-detail-pane__title-row">
-          <Checkbox
-            checked={false}
+          <CardCompleteCheckbox
+            boardSlug={boardSlug}
+            cardId={cardId}
             className="card-detail-pane__title-checkbox shrink-0 !grow-0"
-            label=""
+            isComplete={card.isComplete}
           />
-          <CardTitle boardSlug={boardSlug} cardId={cardId} title={card.title} />
+          <CardTitle
+            boardSlug={boardSlug}
+            cardId={cardId}
+            isComplete={card.isComplete}
+            title={card.title}
+          />
         </div>
         <Typography
           style="body2"
@@ -58,23 +64,6 @@ const CardDetailView = ({
       />
     </div>
   );
-};
-
-CardDetailView.propTypes = {
-  boardSlug: PropTypes.string.isRequired,
-  card: PropTypes.shape({
-    title: PropTypes.string.isRequired,
-    description: PropTypes.string,
-    dueDate: PropTypes.string,
-    assignees: PropTypes.array,
-    labels: PropTypes.array,
-    checklistItems: PropTypes.array,
-  }).isRequired,
-  cardId: PropTypes.string.isRequired,
-  onEdit: PropTypes.func.isRequired,
-  onHideChecklist: PropTypes.func.isRequired,
-  onShowChecklist: PropTypes.func.isRequired,
-  showChecklist: PropTypes.bool.isRequired,
 };
 
 export default CardDetailView;

@@ -3,7 +3,6 @@ import React from "react";
 import dayjs from "dayjs";
 import { Calendar, MenuHorizontal } from "neetoicons";
 import { Dropdown, Typography } from "neetoui";
-import PropTypes from "prop-types";
 import { useTranslation } from "react-i18next";
 
 import AssigneePicker from "./AssigneePicker";
@@ -33,9 +32,11 @@ const TaskCard = ({ boardSlug, item, onClick, onDelete, onEdit }) => {
     >
       <div className="flex items-start justify-between gap-x-2">
         <Typography
-          className="min-w-0 flex-1 break-words"
           style="body2"
           weight="medium"
+          className={`min-w-0 flex-1 break-words ${
+            item.isComplete ? "text-gray-400 line-through" : ""
+          }`}
         >
           {item.title}
         </Typography>
@@ -97,38 +98,6 @@ const TaskCard = ({ boardSlug, item, onClick, onDelete, onEdit }) => {
       </div>
     </div>
   );
-};
-
-TaskCard.propTypes = {
-  boardSlug: PropTypes.string.isRequired,
-  item: PropTypes.shape({
-    id: PropTypes.string.isRequired,
-    title: PropTypes.string.isRequired,
-    dueDate: PropTypes.string,
-    assignees: PropTypes.arrayOf(
-      PropTypes.shape({
-        id: PropTypes.string.isRequired,
-        firstName: PropTypes.string,
-        lastName: PropTypes.string,
-      })
-    ),
-    labels: PropTypes.arrayOf(
-      PropTypes.shape({
-        id: PropTypes.string.isRequired,
-        name: PropTypes.string.isRequired,
-        color: PropTypes.string.isRequired,
-      })
-    ),
-  }).isRequired,
-  onClick: PropTypes.func,
-  onDelete: PropTypes.func,
-  onEdit: PropTypes.func,
-};
-
-TaskCard.defaultProps = {
-  onClick: undefined,
-  onDelete: undefined,
-  onEdit: undefined,
 };
 
 export default TaskCard;

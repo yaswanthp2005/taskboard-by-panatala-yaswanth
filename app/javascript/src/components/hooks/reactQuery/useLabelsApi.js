@@ -1,17 +1,19 @@
+import { DROPDOWN_FETCH_PARAMS } from "constants/pagination";
 import QUERY_KEYS from "constants/query";
 
 import labelsApi from "apis/labels";
 import { useMutation, useQuery, useQueryClient } from "react-query";
 
-const useFetchLabels = boardSlug =>
+const useFetchLabels = (boardSlug, params = DROPDOWN_FETCH_PARAMS) =>
   useQuery(
-    [QUERY_KEYS.LABELS, boardSlug],
+    [QUERY_KEYS.LABELS, boardSlug, params],
     async () => {
-      const {
-        data: { labels },
-      } = await labelsApi.fetch({ boardSlug });
+      const { data } = await labelsApi.fetch({ boardSlug, params });
 
-      return labels;
+      return {
+        labels: data.labels,
+        pagination: data.pagination,
+      };
     },
     { enabled: Boolean(boardSlug) }
   );

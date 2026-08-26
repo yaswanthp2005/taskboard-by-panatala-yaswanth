@@ -1,5 +1,6 @@
 import React from "react";
 
+import { FormikColorPicker } from "components/commons";
 import { useCreateBoard } from "components/hooks/reactQuery/useBoardsApi";
 import { Pane, Typography } from "neetoui";
 import { Form as NeetoUIForm, Input } from "neetoui/formik";
@@ -60,11 +61,10 @@ const AddBoardPane = ({ isOpen, onClose }) => {
               name="description"
               placeholder={t("boards.form.descriptionPlaceholder")}
             />
-            <Input
+            <FormikColorPicker
               className="w-full"
               label={t("boards.form.color")}
               name="color"
-              placeholder={t("boards.form.colorPlaceholder")}
             />
           </div>
         </Pane.Body>

@@ -9,7 +9,7 @@ const LabelsHeader = ({ isAddDisabled, onAddLabel }) => {
   const { t } = useTranslation();
 
   return (
-    <div className="mb-8 flex items-start justify-between gap-x-4">
+    <div className="mb-8 flex w-[85vw] items-start justify-between gap-x-4">
       <div>
         <Typography style="h2" weight="semibold">
           {t("labels.title")}
@@ -22,7 +22,7 @@ const LabelsHeader = ({ isAddDisabled, onAddLabel }) => {
         disabled={isAddDisabled}
         icon={Plus}
         label={t("labels.addNewLabel")}
-        style="secondary"
+        style="primary"
         onClick={onAddLabel}
       />
     </div>

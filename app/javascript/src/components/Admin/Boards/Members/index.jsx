@@ -4,16 +4,16 @@ import Container from "@bigbinary/neeto-molecules/Container";
 import Scrollable from "@bigbinary/neeto-molecules/Scrollable";
 import BoardNavHeader from "components/Admin/Boards/Show/BoardNavHeader";
 import { useFetchBoard } from "components/hooks/reactQuery/useBoardsApi";
-import { useFetchBoardMembers } from "components/hooks/reactQuery/useMembersApi";
 import Sidebar from "components/Sidebar";
-import { NoData, Spinner, Typography } from "neetoui";
+import { Spinner, Typography } from "neetoui";
 import { useTranslation } from "react-i18next";
 import { useParams } from "react-router-dom";
 import withTitle from "utils/withTitle";
 
 import AddMemberModal from "./AddMemberModal";
 import MembersHeader from "./Header";
-import MembersList from "./List";
+import useMembersTable from "./hooks/useMembersTable";
+import MembersTable from "./Table";
 
 const Members = () => {
   const { t } = useTranslation();
@@ -24,8 +24,15 @@ const Members = () => {
     isLoading: isBoardLoading,
   } = useFetchBoard(slug);
 
-  const { data: members = [], isLoading: isMembersLoading } =
-    useFetchBoardMembers(slug);
+  const {
+    currentPageNumber,
+    handlePageChange,
+    isLoading: isMembersLoading,
+    members,
+    pageSize,
+    totalCount,
+  } = useMembersTable();
+
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
 
   const handleOpenAddModal = () => {
@@ -36,7 +43,7 @@ const Members = () => {
     setIsAddModalOpen(false);
   };
 
-  if (isBoardLoading || isMembersLoading) {
+  if (isBoardLoading) {
     return (
       <div className="flex min-h-screen items-center justify-center">
         <Spinner />
@@ -68,13 +75,14 @@ const Members = () => {
                 isAddDisabled={isAddModalOpen}
                 onAddMember={handleOpenAddModal}
               />
-              <div className="max-w-3xl">
-                {members.length === 0 ? (
-                  <NoData title={t("members.emptyState.title")} />
-                ) : (
-                  <MembersList members={members} />
-                )}
-              </div>
+              <MembersTable
+                currentPageNumber={currentPageNumber}
+                handlePageChange={handlePageChange}
+                isLoading={isMembersLoading}
+                members={members}
+                pageSize={pageSize}
+                totalCount={totalCount}
+              />
             </div>
           </Scrollable>
         </Container>

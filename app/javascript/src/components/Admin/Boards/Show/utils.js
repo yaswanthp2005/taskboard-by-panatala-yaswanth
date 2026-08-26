@@ -16,6 +16,7 @@ const mapListsToSections = (lists = []) =>
           title: card.title,
           dueDate: card.dueDate,
           assignees: card.assignees ?? [],
+          labels: card.labels ?? [],
         })),
     }));
 

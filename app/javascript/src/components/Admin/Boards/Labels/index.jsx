@@ -4,16 +4,16 @@ import Container from "@bigbinary/neeto-molecules/Container";
 import Scrollable from "@bigbinary/neeto-molecules/Scrollable";
 import BoardNavHeader from "components/Admin/Boards/Show/BoardNavHeader";
 import { useFetchBoard } from "components/hooks/reactQuery/useBoardsApi";
-import { useFetchLabels } from "components/hooks/reactQuery/useLabelsApi";
 import Sidebar from "components/Sidebar";
-import { NoData, Spinner, Typography } from "neetoui";
+import { Spinner, Typography } from "neetoui";
 import { useTranslation } from "react-i18next";
 import { useParams } from "react-router-dom";
 import withTitle from "utils/withTitle";
 
 import LabelsHeader from "./Header";
+import useLabelsTable from "./hooks/useLabelsTable";
 import LabelFormModal from "./LabelFormModal";
-import LabelsList from "./List";
+import LabelsTable from "./Table";
 
 const Labels = () => {
   const { t } = useTranslation();
@@ -24,8 +24,15 @@ const Labels = () => {
     isLoading: isBoardLoading,
   } = useFetchBoard(slug);
 
-  const { data: labels = [], isLoading: isLabelsLoading } =
-    useFetchLabels(slug);
+  const {
+    currentPageNumber,
+    handlePageChange,
+    isLoading: isLabelsLoading,
+    labels,
+    pageSize,
+    totalCount,
+  } = useLabelsTable();
+
   const [labelModal, setLabelModal] = useState(null);
   const [labelToDelete, setLabelToDelete] = useState(null);
   const isModalOpen = Boolean(labelModal);
@@ -46,7 +53,7 @@ const Labels = () => {
     setLabelToDelete(null);
   };
 
-  if (isBoardLoading || isLabelsLoading) {
+  if (isBoardLoading) {
     return (
       <div className="flex min-h-screen items-center justify-center">
         <Spinner />
@@ -79,20 +86,19 @@ const Labels = () => {
                 isAddDisabled={isModalOpen}
                 onAddLabel={handleOpenCreateModal}
               />
-              <div className="max-w-3xl">
-                {labels.length === 0 ? (
-                  <NoData title={t("labels.emptyState.title")} />
-                ) : (
-                  <LabelsList
-                    boardSlug={board.slug}
-                    labelToDelete={labelToDelete}
-                    labels={labels}
-                    onCloseDeleteAlert={handleCloseDeleteAlert}
-                    onDelete={setLabelToDelete}
-                    onEdit={handleOpenEditModal}
-                  />
-                )}
-              </div>
+              <LabelsTable
+                boardSlug={board.slug}
+                currentPageNumber={currentPageNumber}
+                handlePageChange={handlePageChange}
+                isLoading={isLabelsLoading}
+                labelToDelete={labelToDelete}
+                labels={labels}
+                pageSize={pageSize}
+                totalCount={totalCount}
+                onCloseDeleteAlert={handleCloseDeleteAlert}
+                onDelete={setLabelToDelete}
+                onEdit={handleOpenEditModal}
+              />
             </div>
           </Scrollable>
         </Container>

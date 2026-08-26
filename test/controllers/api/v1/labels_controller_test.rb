@@ -205,4 +205,20 @@ class Api::V1::LabelsControllerTest < ActionDispatch::IntegrationTest
     assert_response :not_found
     assert Label.exists?(@label.id)
   end
+
+  def test_index_paginates_labels
+    11.times do |index|
+      create(:label, board: @board, name: "Label #{index}")
+    end
+
+    get api_v1_board_labels_path(@board.slug),
+      params: { page: 2 },
+      headers: headers(@owner),
+      as: :json
+
+    assert_response :success
+    assert_equal 12, response_body.dig("pagination", "count")
+    assert_equal 2, response_body.dig("pagination", "page")
+    assert_equal 2, response_body["labels"].size
+  end
 end

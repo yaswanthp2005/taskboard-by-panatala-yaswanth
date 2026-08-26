@@ -133,4 +133,21 @@ class Api::V1::BoardMembersControllerTest < ActionDispatch::IntegrationTest
 
     assert_response :not_found
   end
+
+  def test_index_paginates_members
+    11.times do |index|
+      user = create(:user, email: "member#{index}@example.com")
+      create(:board_member, board: @board, user:)
+    end
+
+    get api_v1_board_members_path(@board.slug),
+      params: { page: 2 },
+      headers: headers(@owner),
+      as: :json
+
+    assert_response :success
+    assert_equal 12, response_body.dig("pagination", "count")
+    assert_equal 2, response_body.dig("pagination", "page")
+    assert_equal 2, response_body["members"].size
+  end
 end

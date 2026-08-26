@@ -80,6 +80,8 @@
   },
   "boardView": {
     "pageTitle": "Board",
+    "backToHome": "Back to home",
+    "backToSettings": "Back to settings",
     "tabs": {
       "lists": "Lists",
       "labels": "Labels",
@@ -128,6 +130,16 @@
     "empty": "No activity yet",
     "thisCard": "this card",
     "aCard": "a card",
+    "verbs": {
+      "created": "created",
+      "updated": "updated",
+      "moved": "moved",
+      "deleted": "deleted",
+      "to": "to",
+      "from": "from",
+      "theList": "the list",
+      "defaultAction": "performed an action"
+    },
     "actions": {
       "cardCreated": "{{actorName}} created {{cardTitle}}",
       "cardUpdated": "{{actorName}} updated {{cardTitle}}",
@@ -156,7 +168,7 @@
       "labelsDescription": "Create and organize labels for cards on this board."
     },
     "dangerZone": {
-      "title": "Danger zone",
+      "title": "Delete Board",
       "subtitle": "Permanently delete this board and all of its lists and cards.",
       "deleteBoard": "Delete board"
     },
@@ -169,6 +181,11 @@
     "pageTitle": "Members",
     "subtitle": "View and manage who has access to this board.",
     "addMember": "Add member",
+    "table": {
+      "name": "Name",
+      "email": "Email",
+      "role": "Role"
+    },
     "emptyState": {
       "title": "No members to show"
     },
@@ -193,6 +210,10 @@
     "manage": "Manage labels",
     "subtitle": "Create and manage labels for this board.",
     "addNewLabel": "Add new label",
+    "table": {
+      "name": "Name",
+      "color": "Color"
+    },
     "emptyState": {
       "title": "No labels to show"
     },
@@ -224,6 +245,15 @@
     "title": "Card details",
     "addTitle": "Add card",
     "edit": "Edit",
+    "copyReference": "Copy card reference",
+    "copied": "Card reference copied",
+    "addDescription": "Add description",
+    "comment": "Comment",
+    "commentPlaceholder": "Write a comment…",
+    "assignedTo": "Assigned To",
+    "tags": "Tags",
+    "addChecklist": "Add checklist",
+    "configureField": "Configure {{field}}",
     "noDescription": "No description",
     "noDueDate": "No due date",
     "noLabels": "No labels assigned",
@@ -253,6 +283,14 @@
       "addItemPlaceholder": "Add a checklist item",
       "removeItem": "Remove",
       "deleteAll": "Delete all items",
+      "deleteItem": {
+        "title": "Remove checklist item?",
+        "confirmMessage": "Are you sure you want to remove the checklist item <1>{{text}}</1>?"
+      },
+      "deleteAllAlert": {
+        "title": "Delete all checklist items?",
+        "confirmMessage": "Are you sure you want to delete all checklist items? This action cannot be undone."
+      },
       "assignMember": "Assign member",
       "setDueDate": "Set due date"
     },

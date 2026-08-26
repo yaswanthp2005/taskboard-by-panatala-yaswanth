@@ -5,6 +5,7 @@ import React, { useState } from "react";
 import Container from "@bigbinary/neeto-molecules/Container";
 import Scrollable from "@bigbinary/neeto-molecules/Scrollable";
 import BoardNavHeader from "components/Admin/Boards/Show/BoardNavHeader";
+import { FormikColorPicker } from "components/commons";
 import {
   useDeleteBoard,
   useFetchBoard,
@@ -129,11 +130,10 @@ const Settings = () => {
                           name="name"
                           placeholder={t("boards.form.namePlaceholder")}
                         />
-                        <Input
+                        <FormikColorPicker
                           className="w-full"
                           label={t("boards.form.color")}
                           name="color"
-                          placeholder={t("boards.form.colorPlaceholder")}
                         />
                         <FormActions />
                       </div>

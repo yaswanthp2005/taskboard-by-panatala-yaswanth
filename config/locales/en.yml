@@ -32,6 +32,7 @@
 en:
   entities:
     board: "Board"
+    board_member: "Member"
     card: "Card"
     list: "List"
     label: "Label"
@@ -64,6 +65,7 @@ en:
     already_member: "This user is already a member of the board."
     owner_already_on_board: "The board owner is already on this board."
     only_owner_can_invite: "Only the board owner can invite members."
+    removed_successfully: "Member was successfully removed."
     owner_cannot_be_member: "The board owner cannot be added as a member."
     invitation_email:
       subject: "%{inviter_name} invited you to %{board_name}"

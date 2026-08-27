@@ -10,6 +10,9 @@ const create = ({ boardSlug, email }) =>
     member: { email },
   });
 
-const membersApi = { create, fetch };
+const destroy = ({ boardSlug, id }) =>
+  axios.delete(`${ADMIN_API_BASE_URL}/boards/${boardSlug}/members/${id}`);
+
+const membersApi = { create, destroy, fetch };
 
 export default membersApi;

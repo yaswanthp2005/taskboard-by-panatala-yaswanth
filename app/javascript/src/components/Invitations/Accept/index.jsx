@@ -4,6 +4,7 @@ import routes from "constants/routes";
 import React, { useCallback, useEffect, useState } from "react";
 
 import invitationsApi from "apis/invitations";
+import { NotFound } from "components/commons";
 import { Button, Spinner, Toastr, Typography } from "neetoui";
 import { useTranslation } from "react-i18next";
 import { useQueryClient } from "react-query";
@@ -16,6 +17,7 @@ const AcceptInvitation = ({ isLoggedIn, match }) => {
   const { token } = match.params;
   const [invitation, setInvitation] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [isNotFound, setIsNotFound] = useState(false);
   const [isAccepting, setIsAccepting] = useState(false);
 
   const redirectToDashboard = useCallback(() => {
@@ -38,6 +40,12 @@ const AcceptInvitation = ({ isLoggedIn, match }) => {
         const { data } = await invitationsApi.show({ token });
         setInvitation(data);
       } catch (error) {
+        if (error?.response?.status === 404) {
+          setIsNotFound(true);
+
+          return;
+        }
+
         Toastr.error(
           error?.response?.data?.error || t("common.somethingWentWrong")
         );
@@ -73,6 +81,10 @@ const AcceptInvitation = ({ isLoggedIn, match }) => {
         <Spinner />
       </div>
     );
+  }
+
+  if (isNotFound) {
+    return <NotFound />;
   }
 
   if (!invitation) {

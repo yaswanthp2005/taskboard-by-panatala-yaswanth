@@ -34,7 +34,7 @@ const useFetchCard = (id, { enabled = true } = {}) =>
     { enabled: Boolean(id) && enabled }
   );
 
-const useFetchCards = (boardSlug, params = {}) =>
+const useFetchCards = (boardSlug, params = {}, { enabled = true } = {}) =>
   useQuery(
     [QUERY_KEYS.CARDS, boardSlug, params],
     async () => {
@@ -43,7 +43,7 @@ const useFetchCards = (boardSlug, params = {}) =>
       return data.lists;
     },
     {
-      enabled: Boolean(boardSlug),
+      enabled: Boolean(boardSlug) && enabled,
       keepPreviousData: true,
     }
   );

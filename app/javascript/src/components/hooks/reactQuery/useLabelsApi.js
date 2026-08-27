@@ -4,7 +4,11 @@ import QUERY_KEYS from "constants/query";
 import labelsApi from "apis/labels";
 import { useMutation, useQuery, useQueryClient } from "react-query";
 
-const useFetchLabels = (boardSlug, params = DROPDOWN_FETCH_PARAMS) =>
+const useFetchLabels = (
+  boardSlug,
+  params = DROPDOWN_FETCH_PARAMS,
+  { enabled = true } = {}
+) =>
   useQuery(
     [QUERY_KEYS.LABELS, boardSlug, params],
     async () => {
@@ -15,7 +19,7 @@ const useFetchLabels = (boardSlug, params = DROPDOWN_FETCH_PARAMS) =>
         pagination: data.pagination,
       };
     },
-    { enabled: Boolean(boardSlug) }
+    { enabled: Boolean(boardSlug) && enabled }
   );
 
 const useCreateLabel = boardSlug => {

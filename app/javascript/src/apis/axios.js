@@ -65,7 +65,11 @@ const handleErrorResponse = axiosErrorObject => {
     );
   }
 
-  if (!axiosErrorObject.config?.skipErrorToast) {
+  const shouldShowErrorToast =
+    !axiosErrorObject.config?.skipErrorToast &&
+    axiosErrorObject.response?.status !== 404;
+
+  if (shouldShowErrorToast) {
     Toastr.error(
       axiosErrorObject.response?.data?.error ||
         i18n.t("common.somethingWentWrong")

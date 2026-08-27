@@ -9,10 +9,6 @@ class BoardPolicy < ApplicationPolicy
     owner?
   end
 
-  def show?
-    accessible?
-  end
-
   def update?
     owner?
   end
@@ -36,13 +32,5 @@ class BoardPolicy < ApplicationPolicy
 
     def owner?
       user.present? && record.owner_id == user.id
-    end
-
-    def member?
-      user.present? && record.members.exists?(id: user.id)
-    end
-
-    def accessible?
-      owner? || member?
     end
 end

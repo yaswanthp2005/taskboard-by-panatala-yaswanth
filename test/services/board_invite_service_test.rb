@@ -29,4 +29,12 @@ class BoardInviteServiceTest < ActiveSupport::TestCase
       @service.process!
     end
   end
+
+  def test_process_rejects_non_owner_inviter
+    service = BoardInviteService.new(board: @board, inviter: create(:user), email: @invitee.email)
+
+    error = assert_raises(BoardInviteService::Error) { service.process! }
+
+    assert_equal I18n.t("board_member.only_owner_can_invite"), error.message
+  end
 end

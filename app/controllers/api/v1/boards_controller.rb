@@ -1,13 +1,13 @@
 # frozen_string_literal: true
 
 class Api::V1::BoardsController < ApplicationController
-  after_action :verify_authorized, except: :index
+  after_action :verify_authorized, except: %i[index show]
   after_action :verify_policy_scoped, only: :index
 
   before_action :load_board!, only: %i[show update destroy]
+  before_action :authorize_board!, only: %i[update destroy]
 
   def index
-    authorize Board
     boards = policy_scope(Board).order(updated_at: :desc)
     boards = BoardFilterService.new(boards, params:).process
     @boards = paginate(boards)
@@ -21,17 +21,14 @@ class Api::V1::BoardsController < ApplicationController
   end
 
   def show
-    authorize @board
   end
 
   def update
-    authorize @board
     @board.update!(board_params)
     render_notice(t("successfully_updated", entity: t("entities.board")), :ok)
   end
 
   def destroy
-    authorize @board
     @board.destroy!
     render_notice(t("successfully_deleted", count: 1, entity: t("entities.board")))
   end
@@ -44,5 +41,9 @@ class Api::V1::BoardsController < ApplicationController
 
     def board_params
       params.require(:board).permit(:name, :description, :color)
+    end
+
+    def authorize_board!
+      authorize @board
     end
 end

@@ -29,23 +29,23 @@ const App = () => {
     <QueryClientProvider client={queryClient}>
       <Router>
         <ToastContainer />
-        <Switch>
-          <Route exact component={Login} path={routes.login} />
-          <Route exact component={Signup} path={routes.signup} />
-          <PrivateRoute
-            exact
-            component={Dashboard}
-            condition={isLoggedIn}
-            path={routes.boards.index}
-            redirectRoute={routes.login}
-          />
-          <Suspense
-            fallback={
-              <div className="flex min-h-screen items-center justify-center">
-                <Spinner />
-              </div>
-            }
-          >
+        <Suspense
+          fallback={
+            <div className="flex min-h-screen items-center justify-center">
+              <Spinner />
+            </div>
+          }
+        >
+          <Switch>
+            <Route exact component={Login} path={routes.login} />
+            <Route exact component={Signup} path={routes.signup} />
+            <PrivateRoute
+              exact
+              component={Dashboard}
+              condition={isLoggedIn}
+              path={routes.boards.index}
+              redirectRoute={routes.login}
+            />
             <PrivateRoute
               exact
               component={BoardLabels}
@@ -88,9 +88,9 @@ const App = () => {
               path={routes.boards.show}
               redirectRoute={routes.login}
             />
-          </Suspense>
-          <Route component={NotFound} />
-        </Switch>
+            <Route component={NotFound} />
+          </Switch>
+        </Suspense>
       </Router>
     </QueryClientProvider>
   );

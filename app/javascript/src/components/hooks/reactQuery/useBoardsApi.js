@@ -29,6 +29,16 @@ const useFetchBoard = (slug, options = {}) =>
     }
   );
 
+const useBoardPage = slug => {
+  const { data: board, isError, isLoading } = useFetchBoard(slug);
+
+  return {
+    board,
+    isLoading,
+    isNotFound: isError || (!isLoading && !board),
+  };
+};
+
 const useCreateBoard = () => {
   const queryClient = useQueryClient();
 
@@ -65,6 +75,7 @@ const useDeleteBoard = () => {
 };
 
 export {
+  useBoardPage,
   useCreateBoard,
   useDeleteBoard,
   useFetchBoard,

@@ -4,7 +4,11 @@ import QUERY_KEYS from "constants/query";
 import membersApi from "apis/members";
 import { useMutation, useQuery, useQueryClient } from "react-query";
 
-const useFetchBoardMembers = (boardSlug, params = DROPDOWN_FETCH_PARAMS) =>
+const useFetchBoardMembers = (
+  boardSlug,
+  params = DROPDOWN_FETCH_PARAMS,
+  { enabled = true } = {}
+) =>
   useQuery(
     [QUERY_KEYS.MEMBERS, boardSlug, params],
     async () => {
@@ -15,7 +19,7 @@ const useFetchBoardMembers = (boardSlug, params = DROPDOWN_FETCH_PARAMS) =>
         pagination: data.pagination,
       };
     },
-    { enabled: Boolean(boardSlug) }
+    { enabled: Boolean(boardSlug) && enabled }
   );
 
 const useInviteMember = boardSlug => {

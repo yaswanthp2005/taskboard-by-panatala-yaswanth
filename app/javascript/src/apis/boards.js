@@ -4,7 +4,8 @@ import axios from "axios";
 
 const fetch = params => axios.get(`${ADMIN_API_BASE_URL}/boards`, { params });
 
-const show = slug => axios.get(`${ADMIN_API_BASE_URL}/boards/${slug}`);
+const show = slug =>
+  axios.get(`${ADMIN_API_BASE_URL}/boards/${slug}`, { skipErrorToast: true });
 
 const create = payload =>
   axios.post(`${ADMIN_API_BASE_URL}/boards`, { board: payload });

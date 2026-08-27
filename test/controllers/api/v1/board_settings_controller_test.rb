@@ -90,14 +90,17 @@ class Api::V1::BoardSettingsControllerTest < ActionDispatch::IntegrationTest
   def test_owner_can_invite_member_from_settings
     invitee = create(:user, email: "invitee@example.com")
 
-    assert_difference -> { @board.board_members.count }, 1 do
-      post api_v1_board_members_path(@board.slug),
-        params: { member: { email: invitee.email } },
-        headers: headers(@owner),
-        as: :json
+    assert_difference -> { @board.board_invitations.count }, 1 do
+      assert_no_difference -> { @board.board_members.count } do
+        post api_v1_board_members_path(@board.slug),
+          params: { member: { email: invitee.email } },
+          headers: headers(@owner),
+          as: :json
+      end
     end
 
     assert_response :success
-    assert @board.members.exists?(id: invitee.id)
+    assert_not @board.members.exists?(id: invitee.id)
+    assert @board.board_invitations.pending.exists?(invitee_id: invitee.id)
   end
 end

@@ -12,6 +12,9 @@ const routes = {
     members: `${BASE_URL}:slug/members`,
     settings: `${BASE_URL}:slug/settings`,
   },
+  invitations: {
+    accept: `${BASE_URL}invitations/:token`,
+  },
 };
 
 export default routes;

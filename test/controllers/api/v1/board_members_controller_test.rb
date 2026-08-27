@@ -11,20 +11,23 @@ class Api::V1::BoardMembersControllerTest < ActionDispatch::IntegrationTest
   end
 
   def test_create_invites_registered_user
-    assert_difference -> { @board.board_members.count }, 1 do
-      post api_v1_board_members_path(@board.slug),
-        params: { member: { email: @member.email } },
-        headers: headers(@owner),
-        as: :json
+    assert_difference -> { @board.board_invitations.count }, 1 do
+      assert_no_difference -> { @board.board_members.count } do
+        post api_v1_board_members_path(@board.slug),
+          params: { member: { email: @member.email } },
+          headers: headers(@owner),
+          as: :json
+      end
     end
 
     assert_response :success
     assert_equal I18n.t("board_member.invited_successfully"), response_body["notice"]
-    assert @board.members.exists?(id: @member.id)
+    assert_not @board.members.exists?(id: @member.id)
+    assert @board.board_invitations.pending.exists?(invitee_id: @member.id)
   end
 
   def test_create_rejects_non_registered_email
-    assert_no_difference "BoardMember.count" do
+    assert_no_difference "BoardInvitation.count" do
       post api_v1_board_members_path(@board.slug),
         params: { member: { email: "unknown@example.com" } },
         headers: headers(@owner),

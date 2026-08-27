@@ -1,6 +1,10 @@
 # frozen_string_literal: true
 
 module ApplicationHelper
+  def full_name(user)
+    [user.first_name, user.last_name].compact_blank.join(" ")
+  end
+
   def get_client_props
     {}
   end

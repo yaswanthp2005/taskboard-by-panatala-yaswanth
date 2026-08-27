@@ -54,13 +54,22 @@ en:
     slug:
       immutable: "cannot be changed once created"
   board_member:
-    invited_successfully: "Member was successfully invited to the board."
+    invited_successfully: "Invitation was successfully sent."
+    invitation_accepted: "You have successfully joined the board."
+    invitation_not_found: "This invitation is invalid or has expired."
+    invitation_invalid_recipient: "This invitation was sent to a different user."
+    invitation_already_sent: "An invitation has already been sent to this user."
     email_required: "Email is required."
     user_not_registered: "No registered user found with this email."
     already_member: "This user is already a member of the board."
     owner_already_on_board: "The board owner is already on this board."
     only_owner_can_invite: "Only the board owner can invite members."
     owner_cannot_be_member: "The board owner cannot be added as a member."
+    invitation_email:
+      subject: "%{inviter_name} invited you to %{board_name}"
+      greeting: "Hi %{name},"
+      body: '%{inviter_name} has invited you to collaborate on the board "%{board_name}". Click the link below to accept the invitation.'
+      cta: "Accept invitation"
   list:
     move:
       invalid_position: "must be a positive integer"

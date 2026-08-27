@@ -18,8 +18,9 @@ class BoardInviteService
     invitee = find_registered_user!
     validate_not_owner!(invitee)
     validate_not_existing_member!(invitee)
+    validate_no_pending_invitation!(invitee)
 
-    board.board_members.create!(user: invitee)
+    invitation = board.board_invitations.create!(inviter:, invitee:)
   end
 
   private
@@ -53,5 +54,11 @@ class BoardInviteService
       return unless board.members.exists?(id: invitee.id)
 
       raise Error, I18n.t("board_member.already_member")
+    end
+
+    def validate_no_pending_invitation!(invitee)
+      return unless board.board_invitations.pending.exists?(invitee_id: invitee.id)
+
+      raise Error, I18n.t("board_member.invitation_already_sent")
     end
 end

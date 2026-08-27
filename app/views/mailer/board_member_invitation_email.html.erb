@@ -1,0 +1,11 @@
+<p><%= t("board_member.invitation_email.greeting", name: full_name(@invitee)) %></p>
+<p>
+  <%= t(
+        "board_member.invitation_email.body",
+        inviter_name: full_name(@inviter),
+        board_name: @board.name
+  ) %>
+</p>
+<p>
+  <a href="<%= @accept_url %>"><%= t("board_member.invitation_email.cta") %></a>
+</p>

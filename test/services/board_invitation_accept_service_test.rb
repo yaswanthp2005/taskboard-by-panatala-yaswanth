@@ -56,4 +56,14 @@ class BoardInvitationAcceptServiceTest < ActiveSupport::TestCase
     assert @invitation.reload.accepted?
     assert other_invitation.reload.pending?
   end
+
+  def test_process_rejects_accepted_invitation_when_member_was_removed
+    service = BoardInvitationAcceptService.new(token: @invitation.token, user: @invitee)
+    service.process!
+    @board.board_members.find_by(user: @invitee).destroy!
+
+    error = assert_raises(BoardInvitationAcceptService::Error) { service.process! }
+
+    assert_equal I18n.t("board_member.invitation_not_found"), error.message
+  end
 end

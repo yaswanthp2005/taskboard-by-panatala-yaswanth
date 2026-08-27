@@ -62,6 +62,7 @@ const Settings = () => {
   const handleDeleteBoard = async () => {
     try {
       await deleteBoard({ slug: board.slug });
+      setIsDeleteAlertOpen(false);
       history.push(routes.boards.index);
     } catch (error) {
       logger.error(error);

@@ -124,11 +124,11 @@
       "resultsCount_one": "Showing {{count}} todo",
       "resultsCount_other": "Showing {{count}} todos"
     },
-    "defaultCardTitle": "New card",
+    "defaultCardTitle": "New todo",
     "deleteList": {
       "action": "Delete list",
       "title": "Delete list?",
-      "confirmMessage": "Are you sure you want to delete the list <1>{{name}}</1>? All cards in this list will also be deleted."
+      "confirmMessage": "Are you sure you want to delete the list <1>{{name}}</1>? All todos in this list will also be deleted."
     }
   },
   "activity": {
@@ -136,8 +136,8 @@
     "pageTitle": "Activity",
     "subtitle": "Recent activity on this board.",
     "empty": "No activity yet",
-    "thisCard": "this card",
-    "aCard": "a card",
+    "thisCard": "this todo",
+    "aCard": "a todo",
     "verbs": {
       "created": "created",
       "updated": "updated",
@@ -173,11 +173,11 @@
       "members": "Manage members",
       "membersDescription": "Invite and manage who has access to this board.",
       "labels": "Manage labels",
-      "labelsDescription": "Create and organize labels for cards on this board."
+      "labelsDescription": "Create and organize labels for todos on this board."
     },
     "dangerZone": {
       "title": "Delete Board",
-      "subtitle": "Permanently delete this board and all of its lists and cards.",
+      "subtitle": "Permanently delete this board and all of its lists and todos.",
       "deleteBoard": "Delete board"
     },
     "form": {
@@ -257,7 +257,7 @@
   },
   "cardDetail": {
     "title": "Card details",
-    "addTitle": "Add card",
+    "addTitle": "Add todo",
     "edit": "Edit",
     "copyReference": "Copy card reference",
     "copied": "Card reference copied",
@@ -275,7 +275,7 @@
       "menu": "Card actions"
     },
     "titleLabel": "Title",
-    "titlePlaceholder": "Enter card title",
+    "titlePlaceholder": "Enter todo",
     "description": "Description",
     "descriptionPlaceholder": "Add a more detailed description…",
     "dueDate": "Due date",
@@ -313,8 +313,8 @@
     },
     "delete": {
       "action": "Delete",
-      "title": "Delete card?",
-      "confirmMessage": "Are you sure you want to delete the card <1>{{title}}</1>?"
+      "title": "Delete todo?",
+      "confirmMessage": "Are you sure you want to delete the todo <1>{{title}}</1>?"
     }
   },
   "neetoMolecules": {

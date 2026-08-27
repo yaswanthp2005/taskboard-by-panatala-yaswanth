@@ -53,6 +53,24 @@ class Api::V1::BoardInvitationsControllerTest < ActionDispatch::IntegrationTest
     assert_equal full_name(@owner), response_body["inviter_name"]
   end
 
+  def test_show_rejects_wrong_user
+    get api_v1_board_invitation_path(@invitation.token),
+      headers: headers(@other_user),
+      as: :json
+
+    assert_response :unprocessable_entity
+    assert_equal I18n.t("board_member.invitation_invalid_recipient"), response_body["error"]
+  end
+
+  def test_show_rejects_invalid_token
+    get api_v1_board_invitation_path("invalid-token"),
+      headers: headers(@invitee),
+      as: :json
+
+    assert_response :unprocessable_entity
+    assert_equal I18n.t("board_member.invitation_not_found"), response_body["error"]
+  end
+
   def test_accept_does_not_accept_other_pending_invitations
     other_owner = create(:user)
     other_board = create(:board, owner: other_owner)

@@ -13,7 +13,7 @@ const useFetchBoards = (params = {}) =>
     };
   });
 
-const useFetchBoard = slug =>
+const useFetchBoard = (slug, options = {}) =>
   useQuery(
     [QUERY_KEYS.BOARDS, slug],
     async () => {
@@ -21,7 +21,12 @@ const useFetchBoard = slug =>
 
       return data;
     },
-    { enabled: Boolean(slug) }
+    {
+      enabled: Boolean(slug),
+      retry: (failureCount, error) =>
+        error?.response?.status !== 404 && failureCount < 3,
+      ...options,
+    }
   );
 
 const useCreateBoard = () => {
@@ -49,8 +54,12 @@ const useDeleteBoard = () => {
   const queryClient = useQueryClient();
 
   return useMutation(payload => boardsApi.destroy(payload), {
-    onSuccess: () => {
-      queryClient.invalidateQueries([QUERY_KEYS.BOARDS]);
+    onSuccess: (_, { slug }) => {
+      queryClient.cancelQueries([QUERY_KEYS.BOARDS, slug]);
+      queryClient.invalidateQueries({
+        predicate: ({ queryKey }) =>
+          queryKey[0] === QUERY_KEYS.BOARDS && typeof queryKey[1] === "object",
+      });
     },
   });
 };

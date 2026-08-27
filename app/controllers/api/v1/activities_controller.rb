@@ -1,13 +1,10 @@
 # frozen_string_literal: true
 
 class Api::V1::ActivitiesController < ApplicationController
-  after_action :verify_authorized
-
   before_action :load_card!, if: -> { params[:card_id].present? }
   before_action :load_board!, if: -> { params[:board_slug].present? }
 
   def index
-    authorize @record, policy_class: ActivityPolicy
     @activities = @record.activities.order(created_at: :asc).includes(:actor)
   end
 

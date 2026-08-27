@@ -1,14 +1,11 @@
 # frozen_string_literal: true
 
 class Api::V1::ListsController < ApplicationController
-  after_action :verify_authorized
-
   before_action :load_board!
   before_action :load_list!, only: %i[update destroy move]
 
   def create
     list = @board.lists.build(list_params)
-    authorize list
     list.save!
     record_activity!(
       board: @board,
@@ -19,7 +16,6 @@ class Api::V1::ListsController < ApplicationController
   end
 
   def update
-    authorize @list
     @list.update!(list_params)
     record_activity!(
       board: @board,
@@ -30,7 +26,6 @@ class Api::V1::ListsController < ApplicationController
   end
 
   def destroy
-    authorize @list
     record_activity!(
       board: @board,
       action: Constants::Activity::LIST_DELETED,
@@ -41,8 +36,6 @@ class Api::V1::ListsController < ApplicationController
   end
 
   def move
-    authorize @list, :move?
-
     ListMoveService.new(
       list: @list,
       position: move_params[:position]

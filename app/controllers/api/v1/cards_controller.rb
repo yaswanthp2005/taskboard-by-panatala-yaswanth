@@ -1,20 +1,16 @@
 # frozen_string_literal: true
 
 class Api::V1::CardsController < ApplicationController
-  after_action :verify_authorized
-
   before_action :load_board!, only: %i[index create]
   before_action :load_list!, only: :create
   before_action :load_card!, only: %i[show update move destroy]
 
   def index
-    authorize @board, :show?
     @filtered_card_ids = CardFilterService.new(@board.cards, params:).process.pluck(:id).to_set
   end
 
   def create
     card = @list.cards.build(card_params)
-    authorize card
     card.save!
     record_activity!(
       board: @board,
@@ -26,11 +22,9 @@ class Api::V1::CardsController < ApplicationController
   end
 
   def show
-    authorize @card
   end
 
   def update
-    authorize @card
     @card.update!(card_params)
     record_activity!(
       board: @card.board,
@@ -42,8 +36,6 @@ class Api::V1::CardsController < ApplicationController
   end
 
   def move
-    authorize @card, :move?
-
     destination_list = @card.board.lists.find(move_params[:list_id])
     source_list_title = @card.list.title
 
@@ -66,7 +58,6 @@ class Api::V1::CardsController < ApplicationController
   end
 
   def destroy
-    authorize @card
     record_activity!(
       board: @card.board,
       action: Constants::Activity::CARD_DELETED,

@@ -1,12 +1,11 @@
 # frozen_string_literal: true
 
 class Api::V1::BoardMembersController < ApplicationController
-  after_action :verify_authorized
+  after_action :verify_authorized, except: :index
 
   before_action :load_board!
 
   def index
-    authorize BoardMember
     member_ids = [@board.owner_id] + @board.member_ids
     members = User.where(id: member_ids).in_order_of(:id, member_ids)
     @members = paginate(members)

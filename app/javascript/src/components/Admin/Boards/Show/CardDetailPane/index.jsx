@@ -6,7 +6,7 @@ import {
   useUpdateCard,
 } from "components/hooks/reactQuery/useCardsApi";
 import dayjs from "dayjs";
-import { Pane, Spinner } from "neetoui";
+import { Pane, Spinner, Typography } from "neetoui";
 import {
   Checkbox as FormikCheckbox,
   Form as NeetoUIForm,
@@ -14,6 +14,7 @@ import {
 } from "neetoui/formik";
 import { useTranslation } from "react-i18next";
 
+import CardCreateForm from "./CardCreateForm";
 import { ChecklistField } from "./Checklist";
 import {
   buildCardDetailFormInitialValues,
@@ -71,7 +72,7 @@ const CardDetailPane = ({
     onClose();
   };
 
-  const handleSubmit = async (values, { resetForm, setSubmitting }) => {
+  const handleCreateSubmit = async (values, { resetForm, setSubmitting }) => {
     const payload = {
       assigneeIds: values.assigneeIds,
       description: values.description.trim(),
@@ -82,16 +83,30 @@ const CardDetailPane = ({
     };
 
     try {
-      if (isCreateMode) {
-        await createCard({ listId, ...payload });
+      await createCard({ listId, ...payload });
+      resetForm();
+      handleClose();
+    } catch (error) {
+      logger.error(error);
+    } finally {
+      setSubmitting(false);
+    }
+  };
 
-        resetForm();
-        handleClose();
-      } else {
-        await updateCard({ id: cardId, ...payload });
-        resetForm();
-        setIsEditing(false);
-      }
+  const handleUpdateSubmit = async (values, { resetForm, setSubmitting }) => {
+    const payload = {
+      assigneeIds: values.assigneeIds,
+      description: values.description.trim(),
+      dueDate: values.dueDate ? values.dueDate.format("YYYY-MM-DD") : null,
+      isComplete: values.isComplete,
+      labelIds: values.labelIds,
+      title: values.title.trim(),
+    };
+
+    try {
+      await updateCard({ id: cardId, ...payload });
+      resetForm();
+      setIsEditing(false);
     } catch (error) {
       logger.error(error);
     } finally {
@@ -102,13 +117,13 @@ const CardDetailPane = ({
   const renderEditForm = initialValues => (
     <NeetoUIForm
       className="w-full"
-      key={isCreateMode ? `card-create-${listId}` : `card-edit-${cardId}`}
+      key={`card-edit-${cardId}`}
       formikProps={{
         enableReinitialize: true,
         initialValues,
         validateOnMount: true,
         validationSchema: CARD_DETAIL_FORM_VALIDATION_SCHEMA,
-        onSubmit: handleSubmit,
+        onSubmit: handleUpdateSubmit,
       }}
     >
       <Pane.Body hasFooter>
@@ -129,7 +144,7 @@ const CardDetailPane = ({
               placeholder={t("cardDetail.descriptionPlaceholder")}
               rows={4}
             />
-            {!isCreateMode && showChecklist && (
+            {showChecklist && (
               <ChecklistField
                 boardSlug={boardSlug}
                 cardId={cardId}
@@ -137,18 +152,18 @@ const CardDetailPane = ({
                 onCloseWhenEmpty={() => setShowChecklist(false)}
               />
             )}
-            {!isCreateMode && <ActivityFeed cardId={cardId} />}
+            <ActivityFeed cardId={cardId} />
           </div>
           <CardDetailSidebarEdit
             boardSlug={boardSlug}
-            showChecklistButton={!isCreateMode && !showChecklist}
+            showChecklistButton={!showChecklist}
             onShowChecklist={() => setShowChecklist(true)}
           />
         </div>
       </Pane.Body>
       <Pane.Footer>
         <Footer
-          isCreateMode={isCreateMode}
+          isCreateMode={false}
           onCancelEdit={() => setIsEditing(false)}
           onClose={handleClose}
         />
@@ -157,7 +172,18 @@ const CardDetailPane = ({
   );
 
   const renderContent = () => {
-    if (!isCreateMode && (isLoading || !card)) {
+    if (isCreateMode) {
+      return (
+        <CardCreateForm
+          boardSlug={boardSlug}
+          listId={listId}
+          onClose={handleClose}
+          onSubmit={handleCreateSubmit}
+        />
+      );
+    }
+
+    if (isLoading || !card) {
       return (
         <Pane.Body hasFooter={false}>
           <div className="flex w-full items-center justify-center py-12">
@@ -167,13 +193,11 @@ const CardDetailPane = ({
       );
     }
 
-    if (isCreateMode || isEditing) {
-      const initialValues = isCreateMode
-        ? buildCardDetailFormInitialValues()
-        : buildCardDetailFormInitialValues({
-            ...card,
-            dueDate: card.dueDate ? dayjs(card.dueDate) : null,
-          });
+    if (isEditing) {
+      const initialValues = buildCardDetailFormInitialValues({
+        ...card,
+        dueDate: card.dueDate ? dayjs(card.dueDate) : null,
+      });
 
       return renderEditForm(initialValues);
     }
@@ -211,7 +235,13 @@ const CardDetailPane = ({
         />
       )}
       <Pane.Header className="card-detail-pane__header">
-        <CardDetailHeader boardName={boardName} />
+        {isCreateMode ? (
+          <Typography style="h3" weight="semibold">
+            {t("cardDetail.addTitle")}
+          </Typography>
+        ) : (
+          <CardDetailHeader boardName={boardName} />
+        )}
       </Pane.Header>
       {renderContent()}
     </Pane>

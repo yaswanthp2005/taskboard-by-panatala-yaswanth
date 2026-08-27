@@ -153,4 +153,73 @@ class Api::V1::BoardMembersControllerTest < ActionDispatch::IntegrationTest
     assert_equal 2, response_body.dig("pagination", "page")
     assert_equal 2, response_body["members"].size
   end
+
+  def test_destroy_removes_board_member
+    create(:board_member, board: @board, user: @member)
+
+    assert_difference -> { @board.board_members.count }, -1 do
+      delete api_v1_board_member_path(@board.slug, @member.id),
+        headers: headers(@owner),
+        as: :json
+    end
+
+    assert_response :success
+    assert_equal I18n.t("board_member.removed_successfully"), response_body["notice"]
+    assert_not @board.members.exists?(id: @member.id)
+  end
+
+  def test_destroy_unassigns_member_from_board_cards
+    create(:board_member, board: @board, user: @member)
+    list = create(:list, board: @board)
+    card = create(:card, list:)
+    card.update!(assignee_ids: [@member.id])
+
+    delete api_v1_board_member_path(@board.slug, @member.id),
+      headers: headers(@owner),
+      as: :json
+
+    assert_response :success
+    assert_empty card.reload.assignees
+  end
+
+  def test_destroy_rejects_board_member
+    other_member = create(:user)
+    create(:board_member, board: @board, user: @member)
+    create(:board_member, board: @board, user: other_member)
+
+    delete api_v1_board_member_path(@board.slug, other_member.id),
+      headers: headers(@member),
+      as: :json
+
+    assert_response :forbidden
+    assert @board.members.exists?(id: other_member.id)
+  end
+
+  def test_destroy_rejects_non_member
+    create(:board_member, board: @board, user: @member)
+
+    delete api_v1_board_member_path(@board.slug, @member.id),
+      headers: headers(@other_user),
+      as: :json
+
+    assert_response :not_found
+    assert @board.members.exists?(id: @member.id)
+  end
+
+  def test_destroy_rejects_unknown_member
+    delete api_v1_board_member_path(@board.slug, SecureRandom.uuid),
+      headers: headers(@owner),
+      as: :json
+
+    assert_response :not_found
+  end
+
+  def test_destroy_rejects_unauthenticated_request
+    create(:board_member, board: @board, user: @member)
+
+    delete api_v1_board_member_path(@board.slug, @member.id), as: :json
+
+    assert_response :unauthorized
+    assert @board.members.exists?(id: @member.id)
+  end
 end

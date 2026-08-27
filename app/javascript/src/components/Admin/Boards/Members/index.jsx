@@ -19,6 +19,7 @@ const MembersContent = ({ board }) => {
   } = useMembersTable();
 
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+  const [memberToRemove, setMemberToRemove] = useState(null);
 
   const handleOpenAddModal = () => {
     setIsAddModalOpen(true);
@@ -36,12 +37,17 @@ const MembersContent = ({ board }) => {
         onAddMember={handleOpenAddModal}
       />
       <MembersTable
+        boardSlug={board.slug}
+        canRemoveMembers={board.isOwner}
         currentPageNumber={currentPageNumber}
         handlePageChange={handlePageChange}
         isLoading={isMembersLoading}
+        memberToRemove={memberToRemove}
         members={members}
         pageSize={pageSize}
         totalCount={totalCount}
+        onCloseDeleteAlert={() => setMemberToRemove(null)}
+        onRemove={setMemberToRemove}
       />
       <AddMemberModal
         boardSlug={board.slug}

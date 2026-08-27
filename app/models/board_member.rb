@@ -7,7 +7,13 @@ class BoardMember < ApplicationRecord
   validates :user_id, uniqueness: { scope: :board_id }
   validate :user_cannot_be_board_owner
 
+  after_destroy :remove_assignments_from_board_cards
+
   private
+
+    def remove_assignments_from_board_cards
+      CardAssignee.joins(card: :list).where(user_id:, lists: { board_id: }).delete_all
+    end
 
     def user_cannot_be_board_owner
       return if user_id.blank? || board.blank?

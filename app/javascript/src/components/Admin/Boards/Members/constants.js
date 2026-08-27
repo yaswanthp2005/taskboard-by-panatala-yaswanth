@@ -25,6 +25,7 @@ const COLUMN_KEYS = {
   NAME: "name",
   EMAIL: "email",
   ROLE: "role",
+  ACTIONS: "actions",
 };
 
 const buildMembersRequestParams = ({ limit, page }) => ({

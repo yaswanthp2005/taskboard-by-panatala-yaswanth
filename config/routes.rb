@@ -8,7 +8,7 @@ Rails.application.routes.draw do
         resources :users, only: :create
         resource :session, only: %i[create destroy]
         resources :boards, only: %i[index show create update destroy], param: :slug do
-          resources :members, only: %i[index create], controller: "board_members"
+          resources :members, only: %i[index create destroy], controller: "board_members"
           resources :activities, only: :index
           resources :labels, only: %i[index create update destroy]
           resources :cards, only: :index

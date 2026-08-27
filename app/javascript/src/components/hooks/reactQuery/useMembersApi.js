@@ -32,4 +32,14 @@ const useInviteMember = boardSlug => {
   });
 };
 
-export { useFetchBoardMembers, useInviteMember };
+const useRemoveMember = boardSlug => {
+  const queryClient = useQueryClient();
+
+  return useMutation(({ id }) => membersApi.destroy({ boardSlug, id }), {
+    onSuccess: () => {
+      queryClient.invalidateQueries([QUERY_KEYS.MEMBERS, boardSlug]);
+    },
+  });
+};
+
+export { useFetchBoardMembers, useInviteMember, useRemoveMember };

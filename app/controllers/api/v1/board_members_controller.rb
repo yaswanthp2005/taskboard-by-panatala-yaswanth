@@ -4,6 +4,7 @@ class Api::V1::BoardMembersController < ApplicationController
   after_action :verify_authorized, except: :index
 
   before_action :load_board!
+  before_action :load_board_member!, only: :destroy
 
   def index
     member_ids = [@board.owner_id] + @board.member_ids
@@ -26,10 +27,20 @@ class Api::V1::BoardMembersController < ApplicationController
     render_error(exception.message, :unprocessable_entity)
   end
 
+  def destroy
+    authorize @board_member
+    @board_member.destroy!
+    render_notice(t("board_member.removed_successfully"))
+  end
+
   private
 
     def load_board!
       @board = policy_scope(Board).find_by!(slug: params[:board_slug])
+    end
+
+    def load_board_member!
+      @board_member = @board.board_members.find_by!(user_id: params[:id])
     end
 
     def member_params

@@ -210,6 +210,12 @@
         "emailRequired": "Email is required",
         "emailInvalid": "Enter a valid email"
       }
+    },
+    "delete": {
+      "action": "Remove member",
+      "title": "Remove member?",
+      "confirmMessage": "Are you sure you want to remove <1>{{name}}</1> from this board?",
+      "submit": "Yes, remove"
     }
   },
   "invitations": {

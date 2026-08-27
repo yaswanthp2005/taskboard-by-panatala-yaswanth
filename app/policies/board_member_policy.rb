@@ -2,6 +2,16 @@
 
 class BoardMemberPolicy < ApplicationPolicy
   def create?
-    user.present? && record.board.owner_id == user.id
+    owner?
   end
+
+  def destroy?
+    owner?
+  end
+
+  private
+
+    def owner?
+      user.present? && record.board.owner_id == user.id
+    end
 end

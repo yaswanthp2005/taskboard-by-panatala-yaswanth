@@ -8,7 +8,10 @@ class Api::V1::SessionsController < ApplicationController
 
     unless @user.authenticate(login_params[:password])
       render_error(t("invalid_credentials"), :unauthorized)
+      return
     end
+
+    @pending_invitation_token = BoardInvitationNotificationService.new(user: @user).process!
   end
 
   def destroy

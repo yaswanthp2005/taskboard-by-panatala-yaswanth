@@ -30,7 +30,15 @@ const handleLoginSubmit = async (values, { setSubmitting }) => {
       userName,
     });
     setAuthHeaders();
-    window.location.href = routes.root;
+
+    const invitationRedirect = sessionStorage.getItem("invitationRedirect");
+
+    if (invitationRedirect) {
+      sessionStorage.removeItem("invitationRedirect");
+      window.location.href = invitationRedirect;
+    } else {
+      window.location.href = routes.root;
+    }
   } catch (error) {
     logger.error(error);
   } finally {

@@ -3,6 +3,8 @@
 require "test_helper"
 
 class Api::V1::SessionsControllerTest < ActionDispatch::IntegrationTest
+  include ActionMailer::TestHelper
+
   def setup
     @user = create(:user)
   end
@@ -14,6 +16,23 @@ class Api::V1::SessionsControllerTest < ActionDispatch::IntegrationTest
 
     assert_response :success
     assert_equal @user.authentication_token, response_body["authentication_token"]
+    assert_nil response_body["pending_invitation_token"]
+  end
+
+  def test_create_delivers_pending_invitation_email_and_returns_token
+    owner = create(:user)
+    board = create(:board, owner:)
+    invitation = create(:board_invitation, board:, inviter: owner, invitee: @user)
+
+    assert_emails 1 do
+      post api_v1_session_path,
+        params: { login: { email: @user.email, password: @user.password } },
+        as: :json
+    end
+
+    assert_response :success
+    assert_equal invitation.token, response_body["pending_invitation_token"]
+    assert invitation.reload.invitation_email_sent_at.present?
   end
 
   def test_create_rejects_invalid_credentials

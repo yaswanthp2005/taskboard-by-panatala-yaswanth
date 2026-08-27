@@ -205,12 +205,18 @@
       "addTitle": "Add member",
       "emailLabel": "Email",
       "emailPlaceholder": "member@example.com",
-      "submitAdd": "Add member",
+      "submitAdd": "Send invitation",
       "validation": {
         "emailRequired": "Email is required",
         "emailInvalid": "Enter a valid email"
       }
     }
+  },
+  "invitations": {
+    "acceptTitle": "Board invitation",
+    "acceptDescription": "{{inviterName}} has invited you to join \"{{boardName}}\".",
+    "acceptButton": "Accept invitation",
+    "redirecting": "Redirecting..."
   },
   "labels": {
     "title": "Labels",

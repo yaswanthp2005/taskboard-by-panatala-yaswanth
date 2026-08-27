@@ -29,6 +29,11 @@ Rails.application.routes.draw do
             end
           end
         end
+        resources :board_invitations, only: :show, param: :token do
+          member do
+            patch :accept
+          end
+        end
       end
     end
   end

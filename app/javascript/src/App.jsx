@@ -19,6 +19,7 @@ const BoardActivities = lazy(() =>
 );
 const BoardMembers = lazy(() => import("components/Admin/Boards/Members"));
 const BoardSettings = lazy(() => import("components/Admin/Boards/Settings"));
+const AcceptInvitation = lazy(() => import("components/Invitations/Accept"));
 
 const App = () => {
   const authToken = getFromLocalStorage("authToken");
@@ -65,6 +66,13 @@ const App = () => {
               condition={isLoggedIn}
               path={routes.boards.members}
               redirectRoute={routes.login}
+            />
+            <Route
+              exact
+              path={routes.invitations.accept}
+              render={routeProps => (
+                <AcceptInvitation {...routeProps} isLoggedIn={isLoggedIn} />
+              )}
             />
             <PrivateRoute
               exact

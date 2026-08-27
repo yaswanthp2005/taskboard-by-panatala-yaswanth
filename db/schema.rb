@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2026_08_26_120000) do
+ActiveRecord::Schema[7.1].define(version: 2026_08_26_150000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pgcrypto"
   enable_extension "plpgsql"
@@ -28,6 +28,24 @@ ActiveRecord::Schema[7.1].define(version: 2026_08_26_120000) do
     t.index ["board_id"], name: "index_activities_on_board_id"
     t.index ["card_id", "created_at"], name: "index_activities_on_card_id_and_created_at"
     t.index ["card_id"], name: "index_activities_on_card_id"
+  end
+
+  create_table "board_invitations", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.uuid "board_id", null: false
+    t.uuid "inviter_id", null: false
+    t.uuid "invitee_id", null: false
+    t.string "token", null: false
+    t.string "status", default: "pending", null: false
+    t.datetime "invitation_email_sent_at"
+    t.datetime "accepted_at"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["board_id", "invitee_id"], name: "index_board_invitations_on_board_id_and_invitee_id", unique: true
+    t.index ["board_id"], name: "index_board_invitations_on_board_id"
+    t.index ["invitee_id"], name: "index_board_invitations_on_invitee_id"
+    t.index ["inviter_id"], name: "index_board_invitations_on_inviter_id"
+    t.index ["status"], name: "index_board_invitations_on_status"
+    t.index ["token"], name: "index_board_invitations_on_token", unique: true
   end
 
   create_table "board_members", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
@@ -130,6 +148,9 @@ ActiveRecord::Schema[7.1].define(version: 2026_08_26_120000) do
   add_foreign_key "activities", "boards"
   add_foreign_key "activities", "cards"
   add_foreign_key "activities", "users", column: "actor_id"
+  add_foreign_key "board_invitations", "boards"
+  add_foreign_key "board_invitations", "users", column: "invitee_id"
+  add_foreign_key "board_invitations", "users", column: "inviter_id"
   add_foreign_key "board_members", "boards"
   add_foreign_key "board_members", "users"
   add_foreign_key "boards", "users", column: "owner_id"
